@@ -21,6 +21,7 @@ type Storage interface {
 	Delete(path string) error
 	Exists(path string) bool
 	GetURL(path string, host string) string
+	HealthCheck() error
 }
 
 // ============================================
@@ -99,6 +100,18 @@ func (s *LocalStorage) GetURL(path string, host string) string {
 	// 组装完整 URL
 	serverHost := strings.TrimSuffix(host, "/")
 	return serverHost + "/uploads/" + urlPath
+}
+
+// HealthCheck 检查存储可用性
+func (s *LocalStorage) HealthCheck() error {
+	info, err := os.Stat(s.basePath)
+	if err != nil {
+		return fmt.Errorf("存储目录不存在: %w", err)
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("存储路径不是目录")
+	}
+	return nil
 }
 
 // removeEmptyDirs 递归删除空目录

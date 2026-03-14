@@ -197,6 +197,20 @@ func (s *S3UnifiedStorage) Exists(filePath string) bool {
 	return err == nil
 }
 
+// HealthCheck 检查存储可用性
+func (s *S3UnifiedStorage) HealthCheck() error {
+	if err := s.ensureClient(); err != nil {
+		return fmt.Errorf("初始化存储客户端失败: %w", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := s.client.BucketExists(ctx, s.bucketName)
+	if err != nil {
+		return fmt.Errorf("存储桶不可访问: %w", err)
+	}
+	return nil
+}
+
 // GetObjectInfo 获取对象信息
 func (s *S3UnifiedStorage) GetObjectInfo(filePath string) (*ObjectInfo, error) {
 	objectKey := s.buildObjectKey(filePath)

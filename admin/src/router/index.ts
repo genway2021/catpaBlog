@@ -88,8 +88,14 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'settings',
         name: 'Settings',
-        component: () => import('@/views/system/SystemSettings.vue'),
+        component: () => import('@/views/setting/Setting.vue'),
         meta: { title: '系统设置', requiresAuth: true }
+      },
+      {
+        path: 'systems',
+        name: 'Systems',
+        component: () => import('@/views/system/System.vue'),
+        meta: { title: '系统信息', requiresAuth: true }
       }
     ]
   },

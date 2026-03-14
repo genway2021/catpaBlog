@@ -183,6 +183,18 @@ func (m *Manager) GetMaxFileSize() int64 {
 	return m.config.Upload.MaxFileSize
 }
 
+// GetStorageType 获取存储类型
+func (m *Manager) GetStorageType() string {
+	return m.config.Upload.StorageType
+}
+
+// HealthCheck 检查存储服务可用性
+func (m *Manager) HealthCheck() error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.storage.HealthCheck()
+}
+
 // ReloadStorage 重新加载存储实例（用于热重载）
 func (m *Manager) ReloadStorage() error {
 	m.mu.Lock()

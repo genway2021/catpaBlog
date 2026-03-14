@@ -6,8 +6,10 @@ import (
 	"flec_blog/pkg/logger"
 	"fmt"
 	"sync"
+	"time"
 
 	lark "github.com/larksuite/oapi-sdk-go/v3"
+	larkcore "github.com/larksuite/oapi-sdk-go/v3/core"
 	"github.com/larksuite/oapi-sdk-go/v3/event/dispatcher"
 	"github.com/larksuite/oapi-sdk-go/v3/event/dispatcher/callback"
 	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
@@ -84,6 +86,26 @@ func NewClient(appID, appSecret, chatID string) *Client {
 // IsEnabled 检查客户端是否启用
 func (c *Client) IsEnabled() bool {
 	return c.enable
+}
+
+// HealthCheck 检查飞书服务可用性
+func (c *Client) HealthCheck() error {
+	if !c.enable || c.client == nil {
+		return fmt.Errorf("未配置")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	resp, err := c.client.GetTenantAccessTokenBySelfBuiltApp(ctx, &larkcore.SelfBuiltTenantAccessTokenReq{
+		AppID:     c.appID,
+		AppSecret: c.appSecret,
+	})
+	if err != nil {
+		return err
+	}
+	if resp.Code != 0 {
+		return fmt.Errorf("认证失败")
+	}
+	return nil
 }
 
 // RegisterCardActionHandler 注册卡片动作处理器

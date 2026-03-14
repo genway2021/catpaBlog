@@ -106,6 +106,7 @@ func InitRouter(db *database.Database, conf *config.Config) *gin.Engine {
 	toolsHandler := v1.NewToolsController()
 	aiController := v1.NewAIController(settingService)
 	rssFeedController := v1.NewRssFeedController(rssFeedService)
+	systemHandler := v1.NewSystemHandler(db.DB, uploadManager, emailClient, feishuClient)
 
 	// Atom 订阅
 	r.GET("/atom.xml", atomController.GetAtomFeed)
@@ -410,6 +411,11 @@ func InitRouter(db *database.Database, conf *config.Config) *gin.Engine {
 			settingManagement.GET("/:group", settingController.GetGroup)      // 获取指定分组的配置
 			settingManagement.PATCH("/:group", settingController.UpdateGroup) // 更新指定分组的配置
 		}
+
+		// ==================== 系统信息 ====================
+		systemManagement := adminAPI.Group("/system")
+		systemManagement.GET("/static", systemHandler.GetSystemStatic)   // 获取系统静态信息
+		systemManagement.GET("/dynamic", systemHandler.GetSystemDynamic) // 获取系统动态信息
 
 		// ==================== 管理工具相关 ====================
 		toolsManagement := adminAPI.Group("/tools")

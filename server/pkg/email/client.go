@@ -114,3 +114,19 @@ func (c *Client) SendEmail(to, subject, htmlBody, fromName string) error {
 	logger.Info("邮件发送成功 to=%s subject=%s from=%s", to, subject, fromName)
 	return nil
 }
+
+// HealthCheck 检查邮件服务可用性
+func (c *Client) HealthCheck() error {
+	if c == nil {
+		return fmt.Errorf("未配置")
+	}
+	cfg := c.config.Notification
+	dialer := gomail.NewDialer(cfg.EmailHost, cfg.EmailPort, cfg.EmailUsername, cfg.EmailPassword)
+	dialer.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+	conn, err := dialer.Dial()
+	if err != nil {
+		return err
+	}
+	conn.Close()
+	return nil
+}

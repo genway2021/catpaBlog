@@ -64,6 +64,48 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true
         }
       }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Vue 核心
+            'vue-vendor': ['vue', 'vue-router'],
+            // Element Plus UI 框架
+            'element-plus': ['element-plus'],
+            // CodeMirror 编辑器核心
+            'codemirror': [
+              '@codemirror/autocomplete',
+              '@codemirror/commands',
+              '@codemirror/lang-markdown',
+              '@codemirror/language',
+              '@codemirror/lint',
+              '@codemirror/search',
+              '@codemirror/state',
+              '@codemirror/view',
+              'codemirror'
+            ],
+            // Mermaid 图表库（体积较大，单独分割）
+            'mermaid': ['mermaid'],
+            // Markdown 解析器及插件
+            'markdown': [
+              'markdown-it',
+              'markdown-it-anchor',
+              'markdown-it-kbd',
+              'markdown-it-link-attributes',
+              'markdown-it-mark',
+              'markdown-it-plugin-underline',
+              'markdown-it-sub',
+              'markdown-it-sup',
+              'markdown-it-task-lists'
+            ],
+            // 其他工具库
+            'utils': ['axios', 'dayjs', 'dompurify', '@vueuse/core'],
+            // 图表库
+            'echarts': ['echarts', 'echarts-wordcloud']
+          }
+        }
+      }
     }
   }
 })

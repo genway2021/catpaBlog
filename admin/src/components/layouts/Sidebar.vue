@@ -69,6 +69,10 @@
           <i class="ri-file-list-3-line ri-lg"></i>
           <template #title>访问日志</template>
         </el-menu-item>
+        <el-menu-item index="/systems">
+          <i class="ri-information-line ri-lg"></i>
+          <template #title>系统信息</template>
+        </el-menu-item>
         <el-menu-item index="/settings">
           <i class="ri-settings-3-line ri-lg"></i>
           <template #title>系统设置</template>
