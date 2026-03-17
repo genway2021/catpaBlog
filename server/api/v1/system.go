@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
@@ -126,6 +127,33 @@ func (h *SystemHandler) GetSystemDynamic(c *gin.Context) {
 	h.setDynamicDB(info)
 
 	response.Success(c, info)
+}
+
+func (h *SystemHandler) GetSystemStatus(_ context.Context) (*feishu.SystemStatus, error) {
+	status := &feishu.SystemStatus{
+		DBStatus:      h.checkDB(),
+		StorageStatus: h.checkStorage(),
+		EmailStatus:   h.checkEmail(),
+		FeishuStatus:  h.checkFeishu(),
+	}
+
+	if p, err := cpu.Percent(time.Second, false); err == nil && len(p) > 0 {
+		status.CPUUsage = p[0]
+	}
+	if m, err := mem.VirtualMemory(); err == nil {
+		status.MemoryTotal = m.Total
+		status.MemoryUsed = m.Used
+	}
+	dp := "/"
+	if runtime.GOOS == "windows" {
+		dp = "C:"
+	}
+	if du, err := disk.Usage(dp); err == nil {
+		status.DiskTotal = du.Total
+		status.DiskUsed = du.Used
+	}
+
+	return status, nil
 }
 
 func (h *SystemHandler) setDynamicCPU(info *SystemDynamicResponse) {

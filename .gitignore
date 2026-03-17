@@ -49,6 +49,8 @@ logs/
 .zed/
 continue/
 .github/copilot/
+.codex-cache/
+AGENTS.md
 
 # 系统文件
 .DS_Store

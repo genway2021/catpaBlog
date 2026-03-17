@@ -2,11 +2,13 @@ package feishu
 
 import (
 	"context"
-	"flec_blog/config"
-	"flec_blog/pkg/logger"
 	"fmt"
 	"sync"
 	"time"
+
+	"flec_blog/config"
+	"flec_blog/internal/dto"
+	"flec_blog/pkg/logger"
 
 	lark "github.com/larksuite/oapi-sdk-go/v3"
 	larkcore "github.com/larksuite/oapi-sdk-go/v3/core"
@@ -40,14 +42,37 @@ type UserBinder interface {
 	BindFeishuByEmail(email, openID string) error
 }
 
-// RssArticleReader RSS文章已读接口
+// StatsProvider 站点统计接口
+type StatsProvider interface {
+	GetDashboardStats() (*dto.DashboardStats, error)
+}
+
+// SystemProvider 系统状态接口
+type SystemProvider interface {
+	GetSystemStatus(ctx context.Context) (*SystemStatus, error)
+}
+
+type SystemStatus struct {
+	CPUUsage      float64
+	MemoryTotal   uint64
+	MemoryUsed    uint64
+	DiskTotal     uint64
+	DiskUsed      uint64
+	DBStatus      string
+	StorageStatus string
+	EmailStatus   string
+	FeishuStatus  string
+}
+
+// RssArticleReader RSS 文章已读接口
 type RssArticleReader interface {
 	MarkAllReadFromFeishu(ctx context.Context) error
 }
 
 var userBinderInstance UserBinder
+var statsProviderInstance StatsProvider
+var systemProviderInstance SystemProvider
 
-// 全局客户端实例（用于热重载）
 var (
 	globalClient *Client
 	globalMu     sync.RWMutex
@@ -91,10 +116,12 @@ func (c *Client) IsEnabled() bool {
 // HealthCheck 检查飞书服务可用性
 func (c *Client) HealthCheck() error {
 	if !c.enable || c.client == nil {
-		return fmt.Errorf("未配置")
+		return fmt.Errorf("未配置飞书客户端")
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
 	resp, err := c.client.GetTenantAccessTokenBySelfBuiltApp(ctx, &larkcore.SelfBuiltTenantAccessTokenReq{
 		AppID:     c.appID,
 		AppSecret: c.appSecret,
@@ -103,7 +130,7 @@ func (c *Client) HealthCheck() error {
 		return err
 	}
 	if resp.Code != 0 {
-		return fmt.Errorf("认证失败")
+		return fmt.Errorf("飞书认证失败")
 	}
 	return nil
 }
@@ -139,17 +166,14 @@ func handleCardAction(ctx context.Context, event *callback.CardActionTriggerEven
 		return nil, nil
 	}
 
-	// 获取用户 OpenID
 	var openID string
 	if event.Event.Operator != nil {
 		openID = event.Event.Operator.OpenID
 	}
 
-	// 获取输入框内容
 	if event.Event.Action.Name != "" && event.Event.Action.InputValue != "" {
 		actionValue[event.Event.Action.Name] = event.Event.Action.InputValue
 	}
-
 	actionValue["open_id"] = openID
 
 	if err := handler(ctx, action, actionValue); err != nil {
@@ -160,7 +184,7 @@ func handleCardAction(ctx context.Context, event *callback.CardActionTriggerEven
 	}
 
 	return &callback.CardActionTriggerResponse{
-		Toast: &callback.Toast{Type: "success", Content: "操作成功！"},
+		Toast: &callback.Toast{Type: "success", Content: "操作成功"},
 	}, nil
 }
 
@@ -178,7 +202,6 @@ func (c *Client) SendMessage(ctx context.Context, cardJSON string) error {
 			Content(cardJSON).
 			Build()).
 		Build())
-
 	if err != nil {
 		return err
 	}
@@ -237,7 +260,7 @@ func Initialize(conf *config.Config) *Client {
 	return c
 }
 
-// Reload 重新加载配置（热重载）
+// Reload 重新加载配置
 func Reload(appID, appSecret, chatID string) {
 	globalMu.Lock()
 	defer globalMu.Unlock()
@@ -274,8 +297,8 @@ func Reload(appID, appSecret, chatID string) {
 }
 
 // InitCardHandlers 初始化卡片动作处理器
-func InitCardHandlers(friendService FriendApprover, commentService CommentReplier, userService UserBinder, rssService RssArticleReader) {
-	InitCommands(userService)
+func InitCardHandlers(friendService FriendApprover, commentService CommentReplier, userService UserBinder, statsService StatsProvider, systemService SystemProvider, rssService RssArticleReader) {
+	InitCommands(userService, statsService, systemService)
 
 	RegisterCardActionHandler("approve_friend", func(ctx context.Context, action string, value map[string]interface{}) error {
 		friendID := uint(value["friend_id"].(float64))

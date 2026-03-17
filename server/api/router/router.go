@@ -78,7 +78,8 @@ func InitRouter(db *database.Database, conf *config.Config) *gin.Engine {
 	feedbackService := service.NewFeedbackService(feedbackRepo, notificationService, fileService)
 	subscriberService := service.NewSubscriberService(subscriberRepo, emailClient, conf)
 	rssFeedService := service.NewRssFeedService(rssFeedRepo, notificationService)
-	feishu.InitCardHandlers(friendService, commentService, userService, rssFeedService)
+	systemHandler := v1.NewSystemHandler(db.DB, uploadManager, emailClient, feishuClient)
+	feishu.InitCardHandlers(friendService, commentService, userService, statsService, systemHandler, rssFeedService)
 	settingService := service.NewSettingService(db.DB)
 	settingService.SetConfig(conf)                         // 设置全局配置对象，用于热重载
 	settingService.SetFileService(fileService)             // 设置文件服务，用于文件状态管理
@@ -106,7 +107,6 @@ func InitRouter(db *database.Database, conf *config.Config) *gin.Engine {
 	toolsHandler := v1.NewToolsController()
 	aiController := v1.NewAIController(settingService)
 	rssFeedController := v1.NewRssFeedController(rssFeedService)
-	systemHandler := v1.NewSystemHandler(db.DB, uploadManager, emailClient, feishuClient)
 
 	// Atom 订阅
 	r.GET("/atom.xml", atomController.GetAtomFeed)
