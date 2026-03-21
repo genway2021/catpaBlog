@@ -16,6 +16,8 @@
     <a href="">赞助支持</a>
     &middot;
     <a href="https://ccnlf8xcz6k3.feishu.cn/wiki/space/7618178485001046989">使用文档</a>
+    &middot;
+    <a href="https://qm.qq.com/q/Zzm9XN6lOi">社群讨论</a>
   </p>
 </div>
 

@@ -115,6 +115,7 @@ const blogForm = ref({
   favicon: '',
   background_image: '',
   screenshot: '',
+  announcement: '',
   typingTextsList: [] as Array<{ value: string }>,
 
   // 社交媒体
@@ -231,6 +232,7 @@ const loadBlogConfigs = async () => {
       favicon: configs.favicon || '',
       background_image: configs.background_image || '',
       screenshot: configs.screenshot || '',
+      announcement: configs.announcement || '',
 
       // 关于页面配置
       about_describe: configs.about_describe || '',
@@ -441,6 +443,7 @@ const handleSave = async () => {
       'blog.favicon': blogForm.value.favicon,
       'blog.background_image': blogForm.value.background_image,
       'blog.screenshot': blogForm.value.screenshot,
+      'blog.announcement': blogForm.value.announcement,
       'blog.typing_texts': JSON.stringify(blogForm.value.typingTextsList.map(item => item.value)),
       'blog.sidebar_social': JSON.stringify(blogForm.value.sidebarSocialList),
       'blog.footer_social': JSON.stringify(blogForm.value.footerSocialList),

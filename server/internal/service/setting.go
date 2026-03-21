@@ -42,6 +42,7 @@ const (
 	KeyBlogFavicon           = "blog.favicon"             // 网站Favicon
 	KeyBlogBackgroundImage   = "blog.background_image"    // 背景图片
 	KeyBlogScreenshot        = "blog.screenshot"          // 站点截图
+	KeyBlogAnnouncement      = "blog.announcement"        // 公告内容
 	KeyBlogTypingTexts       = "blog.typing_texts"        // 打字机效果文本（JSON数组）
 	KeyBlogSidebarSocial     = "blog.sidebar_social"      // 侧边栏社交媒体（JSON数组）
 	KeyBlogFooterSocial      = "blog.footer_social"       // 页脚社交媒体（JSON数组）
@@ -370,6 +371,9 @@ func (s *SettingService) ApplyDatabaseConfig(cfg *config.Config) error {
 		}
 		if v, ok := blogSettings[KeyBlogScreenshot]; ok && v != "" {
 			cfg.Blog.Screenshot = v
+		}
+		if v, ok := blogSettings[KeyBlogAnnouncement]; ok {
+			cfg.Blog.Announcement = v
 		}
 		if v, ok := blogSettings[KeyBlogCustomHead]; ok && v != "" {
 			cfg.Blog.CustomHead = v

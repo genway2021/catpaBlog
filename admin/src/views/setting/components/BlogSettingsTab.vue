@@ -46,6 +46,11 @@
       </el-form-item>
     </div>
 
+    <el-form-item label="侧边栏公告">
+      <el-input v-model="form.announcement" type="textarea" :rows="4" placeholder="支持多行文案和简单 HTML"
+        :disabled="loading" />
+    </el-form-item>
+
     <el-form-item label="打字机文本">
       <JsonListEditor v-model="form.typingTextsList" :fields="typingTextsFields" :default-item="{ value: '' }"
         :disabled="loading" />
@@ -226,6 +231,7 @@ interface BlogFormData {
   favicon: string
   background_image: string
   screenshot: string
+  announcement: string
   typingTextsList: Array<{ value: string }>
 
   // 社交媒体

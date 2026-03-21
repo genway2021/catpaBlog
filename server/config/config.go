@@ -66,6 +66,7 @@ type BlogConfig struct {
 	Favicon         string // 网站Favicon
 	BackgroundImage string // 背景图片
 	Screenshot      string // 站点截图
+	Announcement    string // 公告内容
 	CustomHead      string // 自定义 Head 代码
 	CustomBody      string // 自定义 Body 代码
 	Emojis          string // 表情包配置

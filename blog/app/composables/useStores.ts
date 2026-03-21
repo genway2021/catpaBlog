@@ -329,6 +329,7 @@ export function useSysConfig() {
     'favicon': '',
     'background_image': '',
     'screenshot': '',
+    'announcement': '',
     'typing_texts': '',
     'sidebar_social': '',
     'footer_social': '',
