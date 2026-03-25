@@ -33,7 +33,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { login } from '@/api/user'
-import { setTokens } from '@/utils/auth'
+import { fetchUserInfo, setTokens, clearAuthState } from '@/utils/auth'
 import type { LoginParams } from '@/types/user'
 
 const router = useRouter()
@@ -51,12 +51,13 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    const { access_token, refresh_token, user } = await login(formState)
+    const { access_token, refresh_token } = await login(formState)
     setTokens(access_token, refresh_token)
-    localStorage.setItem('userInfo', JSON.stringify(user))
+    await fetchUserInfo()
     ElMessage.success('登录成功')
     router.push('/')
   } catch (error) {
+    clearAuthState()
     ElMessage.error(error instanceof Error ? error.message : '登录失败')
   } finally {
     loading.value = false

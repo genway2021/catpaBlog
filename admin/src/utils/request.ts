@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { getAccessToken, getRefreshToken, setTokens, logout } from '@/utils/auth'
+import { getAccessToken, getRefreshToken, setTokens, redirectToLogin } from '@/utils/auth'
 
 interface ApiResponse<T = any> {
   code: number
@@ -98,8 +98,8 @@ request.interceptors.response.use(
 
       const refresh = getRefreshToken()
       if (!refresh) {
-        // 没有refresh token，直接登出
-        logout()
+        // 没有refresh token，直接跳转登录页
+        redirectToLogin()
         return Promise.reject(error)
       }
 
@@ -118,9 +118,9 @@ request.interceptors.response.use(
         // 重试原请求
         return request(originalRequest)
       } catch (refreshError) {
-        // 刷新失败，清空队列并登出
+        // 刷新失败，清空队列并跳转登录页
         processQueue(refreshError)
-        logout()
+        redirectToLogin()
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false

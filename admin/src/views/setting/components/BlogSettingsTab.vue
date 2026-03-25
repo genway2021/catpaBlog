@@ -32,17 +32,17 @@
     <div class="image-row">
       <el-form-item label="网站Favicon">
         <ImageUploader ref="faviconUploaderRef" v-model="form.favicon" upload-type="博客图标" width="120px"
-          height="120px" />
+          height="120px" :disabled="loading" />
       </el-form-item>
 
       <el-form-item label="背景图片">
         <ImageUploader ref="backgroundUploaderRef" v-model="form.background_image" upload-type="博客背景" width="213px"
-          height="120px" />
+          height="120px" :disabled="loading" />
       </el-form-item>
 
       <el-form-item label="站点截图">
         <ImageUploader ref="screenshotUploaderRef" v-model="form.screenshot" upload-type="博客截图" width="213px"
-          height="120px" />
+          height="120px" :disabled="loading" />
       </el-form-item>
     </div>
 
@@ -80,7 +80,7 @@
 
     <el-form-item label="展览图片">
       <ImageUploader ref="aboutExhibitionUploaderRef" v-model="form.about_exhibition" upload-type="展览图片" width="213px"
-        height="120px" />
+        height="120px" :disabled="loading" />
     </el-form-item>
 
     <el-form-item label="个人资料">

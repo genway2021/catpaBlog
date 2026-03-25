@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"flec_blog/internal/model"
 
@@ -41,19 +42,17 @@ func (r *SettingRepository) GetByGroup(group string, isPublicOnly ...bool) (map[
 }
 
 // UpdateGroup 更新配置
-func (r *SettingRepository) UpdateGroup(updates map[string]string) error {
+func (r *SettingRepository) UpdateGroup(group string, updates map[string]string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for key, value := range updates {
 			var setting model.Setting
-			err := tx.Where("\"key\" = ?", key).First(&setting).Error
-
+			err := tx.Where("\"group\" = ? AND \"key\" = ?", group, key).First(&setting).Error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				continue
+				return fmt.Errorf("配置项不存在: %s", key)
 			}
 			if err != nil {
 				return err
 			}
-			// 存在则更新 value
 			if err := tx.Model(&setting).Update("value", value).Error; err != nil {
 				return err
 			}

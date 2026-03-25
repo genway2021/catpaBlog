@@ -1,18 +1,18 @@
 <template>
   <el-form label-width="100px" class="setting-form">
     <el-form-item label="文章数据">
-      <el-button type="primary" @click="articleImportVisible = true">导入文章</el-button>
+      <el-button type="primary" :disabled="readonly" @click="articleImportVisible = true">导入文章</el-button>
     </el-form-item>
 
     <el-form-item label="评论数据">
-      <el-button type="primary" @click="commentImportVisible = true">导入评论</el-button>
+      <el-button type="primary" :disabled="readonly" @click="commentImportVisible = true">导入评论</el-button>
     </el-form-item>
   </el-form>
 
   <!-- 文章导入对话框 -->
   <el-dialog v-model="articleImportVisible" title="导入文章" width="500px" :close-on-click-modal="false">
     <el-upload :auto-upload="false" :file-list="articleFileList" :on-change="handleArticleFileChange"
-      :on-remove="handleArticleFileRemove" accept=".md,.markdown" :limit="100" multiple drag>
+      :on-remove="handleArticleFileRemove" accept=".md,.markdown" :limit="100" multiple drag :disabled="readonly">
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
       <div class="el-upload__text">拖拽或点击选择 Markdown 文件</div>
       <template #tip>
@@ -30,7 +30,7 @@
 
     <template #footer>
       <el-button @click="articleImportVisible = false">取消</el-button>
-      <el-button type="primary" :loading="articleUploading" :disabled="articleFileList.length === 0"
+      <el-button type="primary" :loading="articleUploading" :disabled="readonly || articleFileList.length === 0"
         @click="handleArticleImport">
         {{ articleUploading ? '导入中...' : '开始导入' }}
       </el-button>
@@ -41,7 +41,7 @@
   <el-dialog v-model="commentImportVisible" title="导入评论" width="600px" :close-on-click-modal="false">
     <el-form label-width="100px">
       <el-form-item label="数据来源">
-        <el-select v-model="commentSourceType" placeholder="请选择数据来源" style="width: 100%">
+        <el-select v-model="commentSourceType" placeholder="请选择数据来源" style="width: 100%" :disabled="readonly">
           <el-option label="Artalk" value="artalk" />
         </el-select>
         <div class="form-tip">
@@ -51,7 +51,7 @@
 
       <el-form-item label="上传文件">
         <el-upload :auto-upload="false" :file-list="commentFileList" :on-change="handleCommentFileChange"
-          :on-remove="handleCommentFileRemove" accept=".json,.artrans" :limit="1" drag>
+          :on-remove="handleCommentFileRemove" accept=".json,.artrans" :limit="1" drag :disabled="readonly">
           <el-icon class="el-icon--upload"><upload-filled /></el-icon>
           <div class="el-upload__text">拖拽或点击选择文件</div>
           <template #tip>
@@ -87,7 +87,7 @@
     <template #footer>
       <el-button @click="commentImportVisible = false">取消</el-button>
       <el-button type="primary" :loading="commentUploading"
-        :disabled="commentFileList.length === 0 || !commentSourceType" @click="handleCommentImport">
+        :disabled="readonly || commentFileList.length === 0 || !commentSourceType" @click="handleCommentImport">
         {{ commentUploading ? '导入中...' : '开始导入' }}
       </el-button>
     </template>
@@ -103,6 +103,10 @@ import { importArticles } from '@/api/article'
 import { importComments } from '@/api/comment'
 import type { ImportArticlesResult } from '@/types/article'
 import type { ImportCommentsResult } from '@/types/comment'
+
+const props = withDefaults(defineProps<{ readonly?: boolean }>(), {
+  readonly: false
+})
 
 const emit = defineEmits<{
   'import-success': []
@@ -123,6 +127,11 @@ const handleArticleFileRemove = (file: UploadFile, files: UploadUserFile[]) => {
 }
 
 const handleArticleImport = async () => {
+  if (props.readonly) {
+    ElMessage.warning('仅超级管理员可执行导入操作')
+    return
+  }
+
   if (articleFileList.value.length === 0) return
 
   try {
@@ -178,6 +187,11 @@ const handleCommentFileRemove = (file: UploadFile, files: UploadUserFile[]) => {
 }
 
 const handleCommentImport = async () => {
+  if (props.readonly) {
+    ElMessage.warning('仅超级管理员可执行导入操作')
+    return
+  }
+
   if (commentFileList.value.length === 0) {
     ElMessage.warning('请选择要导入的文件')
     return

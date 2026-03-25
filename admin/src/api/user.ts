@@ -12,6 +12,14 @@ export function login(data: LoginParams): Promise<LoginResponse> {
 }
 
 /**
+ * 获取当前登录用户信息
+ * @returns Promise<User>
+ */
+export function getProfile(): Promise<User> {
+  return request.get("/user/profile");
+}
+
+/**
  * 刷新Token
  * @param data 刷新Token参数
  * @returns Promise<RefreshTokenResponse>

@@ -2,11 +2,6 @@
   <common-list title="文件管理" :data="fileList" :loading="loading" :total="total" :show-create="false"
     v-model:page="query.page" v-model:page-size="query.page_size" @refresh="loadList" @update:page="loadList"
     @update:pageSize="loadList">
-    <!-- 右上角工具栏 -->
-    <template #toolbar-after>
-      <el-button type="primary" @click="uploadDialogVisible = true">上传配置</el-button>
-    </template>
-
     <!-- 表格列 -->
     <el-table-column label="预览" width="80" align="center">
       <template #default="{ row }">
@@ -48,10 +43,6 @@
         <el-button link type="danger" size="small" @click="handleDelete(row.id)">删除</el-button>
       </template>
     </el-table-column>
-    <!-- 额外挂载区域 -->
-    <template #extra>
-      <upload-config-dialog v-model="uploadDialogVisible" />
-    </template>
   </common-list>
 </template>
 
@@ -62,13 +53,11 @@ import CommonList from '@/components/common/CommonList.vue'
 import { getFileList, deleteFile } from '@/api/file'
 import type { FileInfo, FileListQuery } from '@/types/file'
 import { formatDateTime } from '@/utils/date'
-import UploadConfigDialog from '@/views/file/components/UploadConfigDialog.vue'
 
 const query = reactive<FileListQuery>({ page: 1, page_size: 20 })
 const fileList = ref<FileInfo[]>([])
 const total = ref(0)
 const loading = ref(false)
-const uploadDialogVisible = ref(false)
 
 const loadList = async () => {
   loading.value = true

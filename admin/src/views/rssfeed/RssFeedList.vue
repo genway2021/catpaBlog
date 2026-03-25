@@ -111,21 +111,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Message } from '@element-plus/icons-vue'
 import CommonList from '@/components/common/CommonList.vue'
 import type { RssArticle, RssArticleQuery } from '@/types/rssfeed'
-import type { User } from '@/types/user'
 import type { Subscriber } from '@/types/subscriber'
 import { getRssArticles, markRssArticleRead, markAllRssArticlesRead } from '@/api/rssfeed'
 import { getSubscribers, deleteSubscriber } from '@/api/subscriber'
 import { formatDateTime } from '@/utils/date'
+import { isSuperAdmin as checkSuperAdmin } from '@/utils/auth'
 
-const userInfo = computed(() => {
-  const stored = localStorage.getItem('userInfo')
-  if (stored) {
-    return JSON.parse(stored) as User
-  }
-  return null
-})
-
-const isSuperAdmin = computed(() => userInfo.value?.role === 'super_admin')
+const isSuperAdmin = computed(() => checkSuperAdmin())
 
 const loading = ref(false)
 const articleList = ref<RssArticle[]>([])

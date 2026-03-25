@@ -17,12 +17,12 @@
     <div class="image-row">
       <el-form-item label="站长头像">
         <ImageUploader ref="authorAvatarUploaderRef" v-model="form.author_avatar" upload-type="站长头像" width="120px"
-          height="120px" />
+          height="120px" :disabled="loading" />
       </el-form-item>
 
       <el-form-item label="站长形象">
         <ImageUploader ref="authorPhotoUploaderRef" v-model="form.author_photo" upload-type="站长形象" width="80px"
-          height="120px" />
+          height="120px" :disabled="loading" />
       </el-form-item>
     </div>
 

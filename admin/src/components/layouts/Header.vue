@@ -37,20 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { User, SwitchButton, ArrowDown } from '@element-plus/icons-vue'
 import NotificationBell from '@/components/common/NotificationBell.vue'
 import { logout as logoutApi } from '@/api/user'
-import { removeTokens } from '@/utils/auth'
+import { clearAuthState, getUserInfo } from '@/utils/auth'
 
 const router = useRouter()
-
-const userInfoStr = localStorage.getItem('userInfo')
-const userInfo = userInfoStr ? JSON.parse(userInfoStr) : {}
-const nickname = ref(userInfo.nickname || 'Admin')
-const userAvatar = ref(userInfo.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png')
+const DEFAULT_AVATAR = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+const nickname = computed(() => getUserInfo()?.nickname || 'Admin')
+const userAvatar = computed(() => getUserInfo()?.avatar || DEFAULT_AVATAR)
 
 // 接收 props
 interface Props {
@@ -75,18 +73,13 @@ const handleLogout = async () => {
       cancelButtonText: '取消'
     })
 
-    // 调用后端登出 API，将 token 加入黑名单
     try {
       await logoutApi()
     } catch (error) {
       console.error('登出 API 调用失败:', error)
-      // 即使后端 API 失败，也要清除本地 token
     }
 
-    // 清除所有本地存储的认证信息
-    removeTokens()
-    localStorage.removeItem('userInfo')
-
+    clearAuthState()
     ElMessage.success('已退出登录')
     router.push('/login')
   } catch {}

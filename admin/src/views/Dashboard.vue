@@ -252,13 +252,13 @@ import { View, User, ChatDotRound, UserFilled, CaretTop, CaretBottom, Right } fr
 import * as echarts from 'echarts'
 import 'echarts-wordcloud'
 import { getToday, getDaysAgo, getMonthsAgo, generateDateSeries } from '@/utils/date'
+import { getUserInfo } from '@/utils/auth'
 
 // 响应式断点
 
-const userInfoStr = localStorage.getItem('userInfo')
-const userInfo = userInfoStr ? JSON.parse(userInfoStr) : {}
-const nickName = ref(userInfo.nickname || 'Admin')
-const userAvatar = ref(userInfo.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png')
+const DEFAULT_AVATAR = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+const nickName = computed(() => getUserInfo()?.nickname || 'Admin')
+const userAvatar = computed(() => getUserInfo()?.avatar || DEFAULT_AVATAR)
 const hitokoto = ref('加载中...')
 
 const dashboardData = ref<DashboardStats>({

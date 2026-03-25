@@ -84,7 +84,7 @@
 
     <el-table-column label="操作" width="180" align="center" fixed="right">
       <template #default="{ row }">
-        <template v-if="!row.deleted_at">
+        <template v-if="!row.deleted_at && canOperateUser(row)">
           <el-button type="primary" link size="small" @click="handleEdit(row)">编辑</el-button>
           <el-button type="danger" link size="small" @click="handleDelete(row.id)">删除</el-button>
         </template>
@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { User } from '@element-plus/icons-vue'
 import CommonList from '@/components/common/CommonList.vue'
@@ -109,15 +109,20 @@ import { getUsers, deleteUser } from '@/api/user'
 import type { PaginationQuery } from '@/types/request'
 import UserFormDialog from './components/UserFormDialog.vue'
 import { formatDateTime } from '@/utils/date'
+import { getCurrentUserRole } from '@/utils/auth'
 
 const loading = ref(false)
 const userList = ref<UserType[]>([])
 const total = ref(0)
 const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 })
+const currentRole = computed(() => getCurrentUserRole())
 
 // 对话框相关
 const dialogVisible = ref(false)
 const currentUser = ref<UserType | null>(null)
+
+const isManagedRole = (role: string) => role === 'admin' || role === 'super_admin'
+const canOperateUser = (user: UserType) => currentRole.value === 'super_admin' || !isManagedRole(user.role)
 
 const fetchUsers = async () => {
   loading.value = true
@@ -141,11 +146,15 @@ const handleCreate = () => {
 }
 
 const handleEdit = (user: UserType) => {
+  if (!canOperateUser(user)) return
   currentUser.value = user
   dialogVisible.value = true
 }
 
 const handleDelete = async (id: number) => {
+  const target = userList.value.find(user => user.id === id)
+  if (target && !canOperateUser(target)) return
+
   try {
     await ElMessageBox.confirm('确定要删除这个用户吗？', '提示', { type: 'warning' })
     await deleteUser(id)

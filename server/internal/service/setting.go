@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -188,6 +189,10 @@ func (s *SettingService) GetAIConfig() (*config.AIConfig, error) {
 
 // UpdateGroup 更新某个分组的配置（patch 方式），更新后自动重载
 func (s *SettingService) UpdateGroup(group string, updates map[string]string) error {
+	if err := validateSettingGroupUpdates(group, updates); err != nil {
+		return err
+	}
+
 	// 处理基本配置中的图片文件状态切换
 	if group == model.SettingGroupBasic && s.fileService != nil {
 		// 获取旧的配置值
@@ -281,7 +286,7 @@ func (s *SettingService) UpdateGroup(group string, updates map[string]string) er
 	}
 
 	// 更新数据库
-	if err := s.repo.UpdateGroup(updates); err != nil {
+	if err := s.repo.UpdateGroup(group, updates); err != nil {
 		return err
 	}
 
@@ -292,6 +297,16 @@ func (s *SettingService) UpdateGroup(group string, updates map[string]string) er
 		return s.ApplyDatabaseConfig(s.config)
 	}
 
+	return nil
+}
+
+// validateSettingGroupUpdates 校验配置项是否都属于指定分组
+func validateSettingGroupUpdates(group string, updates map[string]string) error {
+	for key := range updates {
+		if !strings.HasPrefix(key, group+".") {
+			return fmt.Errorf("配置项 %s 不属于分组 %s", key, group)
+		}
+	}
 	return nil
 }
 
@@ -501,7 +516,7 @@ func (s *SettingService) ApplyDatabaseConfig(cfg *config.Config) error {
 	} else {
 		// 自动生成并保存
 		sessionSecret = random.String(32)
-		_ = s.repo.UpdateGroup(map[string]string{
+		_ = s.repo.UpdateGroup(model.SettingGroupOAuth, map[string]string{
 			KeyOAuthSessionSecret: sessionSecret,
 		})
 	}

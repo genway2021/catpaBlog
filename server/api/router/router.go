@@ -412,14 +412,16 @@ func InitRouter(db *database.Database, conf *config.Config) *gin.Engine {
 		// ==================== 配置管理 ====================
 		settingManagement := adminAPI.Group("/settings")
 		{
-			settingManagement.GET("/:group", settingController.GetGroup)      // 获取指定分组的配置
-			settingManagement.PATCH("/:group", settingController.UpdateGroup) // 更新指定分组的配置
+			settingManagement.GET("/:group", settingController.GetGroup)                                  // 获取指定分组的配置
+			settingManagement.PATCH("/:group", middleware.IsSuperAdmin(), settingController.UpdateGroup) // 更新指定分组的配置（仅超级管理员）
 		}
 
 		// ==================== 系统信息 ====================
 		systemManagement := adminAPI.Group("/system")
-		systemManagement.GET("/static", systemController.GetSystemStatic)   // 获取系统静态信息
-		systemManagement.GET("/dynamic", systemController.GetSystemDynamic) // 获取系统动态信息
+		{
+			systemManagement.GET("/static", systemController.GetSystemStatic)   // 获取系统静态信息
+			systemManagement.GET("/dynamic", systemController.GetSystemDynamic) // 获取系统动态信息
+		}
 
 		// ==================== 管理工具相关 ====================
 		toolsManagement := adminAPI.Group("/tools")

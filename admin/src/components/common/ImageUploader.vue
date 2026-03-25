@@ -1,7 +1,7 @@
 <template>
   <div class="image-uploader">
     <div class="uploader-container" :style="{ width, height }">
-      <el-upload class="uploader-box" :show-file-list="false" :http-request="handleUpload" accept="image/*">
+      <el-upload class="uploader-box" :show-file-list="false" :http-request="handleUpload" accept="image/*" :disabled="disabled">
         <img v-if="imageUrl" :src="imageUrl" class="preview-image" />
         <div v-else class="upload-placeholder">
           <el-icon :size="40">
@@ -10,7 +10,7 @@
         </div>
       </el-upload>
 
-      <div v-if="imageUrl" class="delete-btn" @click.stop="handleDelete" title="删除">
+      <div v-if="imageUrl && !disabled" class="delete-btn" @click.stop="handleDelete" title="删除">
         <el-icon>
           <Delete />
         </el-icon>
@@ -30,12 +30,14 @@ export interface ImageUploaderProps {
   uploadType?: string // 上传用途（如：用户头像、文章封面）
   width?: string // 宽度
   height?: string // 高度
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<ImageUploaderProps>(), {
   uploadType: '图片',
   width: '120px',
-  height: '120px'
+  height: '120px',
+  disabled: false
 })
 
 const emit = defineEmits<{
@@ -54,6 +56,10 @@ const imageUrl = computed(() => {
 
 // 上传处理（延迟上传：只做本地预览）
 const handleUpload = async (options: UploadRequestOptions): Promise<void> => {
+  if (props.disabled) {
+    return Promise.resolve()
+  }
+
   const file = options.file as File
 
   // 验证文件类型
@@ -76,6 +82,8 @@ const handleUpload = async (options: UploadRequestOptions): Promise<void> => {
 
 // 删除文件
 const handleDelete = () => {
+  if (props.disabled) return
+
   // 清理本地预览
   if (previewUrl.value) {
     URL.revokeObjectURL(previewUrl.value)
@@ -87,7 +95,7 @@ const handleDelete = () => {
 
 // 暴露上传方法供父组件调用
 const uploadPendingFile = async (): Promise<string | null> => {
-  if (!pendingFile.value) return null
+  if (props.disabled || !pendingFile.value) return null
 
   try {
     const loading = ElMessage.info({ message: '正在上传...', duration: 0 })

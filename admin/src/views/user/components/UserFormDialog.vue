@@ -2,19 +2,19 @@
   <el-dialog v-model="visible" :title="dialogTitle" width="600px" :close-on-click-modal="false">
     <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model="formData.email" placeholder="请输入邮箱" clearable />
+        <el-input v-model="formData.email" placeholder="请输入用户邮箱" clearable />
       </el-form-item>
 
       <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="formData.nickname" placeholder="请输入昵称" clearable />
+        <el-input v-model="formData.nickname" placeholder="请输入用户昵称" clearable />
       </el-form-item>
 
-      <el-form-item label="网站地址" prop="website">
-        <el-input v-model="formData.website" placeholder="请输入网站地址" clearable />
+      <el-form-item label="网站" prop="website">
+        <el-input v-model="formData.website" placeholder="请输入用户网站（可选）" clearable />
       </el-form-item>
 
-      <el-form-item label="铭牌标识" prop="badge">
-        <el-input v-model="formData.badge" placeholder="请输入铭牌标识" clearable autocomplete="off" />
+      <el-form-item label="徽章" prop="badge">
+        <el-input v-model="formData.badge" placeholder="请输入用户徽章（可选）" clearable />
       </el-form-item>
 
       <el-form-item label="密码" prop="password">
@@ -29,14 +29,11 @@
 
       <el-form-item label="角色" prop="role">
         <el-select v-model="formData.role" placeholder="请选择角色" style="width: 100%">
-          <el-option label="超级管理员" value="super_admin" />
-          <el-option label="管理员" value="admin" />
-          <el-option label="普通用户" value="user" />
-          <el-option label="访客" value="guest" />
+          <el-option v-for="option in roleOptions" :key="option.value" :label="option.label" :value="option.value" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="启用状态" prop="is_enabled" v-if="isEdit">
+      <el-form-item v-if="isEdit" label="状态" prop="is_enabled">
         <el-switch v-model="formData.is_enabled" active-text="启用" inactive-text="禁用" />
       </el-form-item>
     </el-form>
@@ -53,11 +50,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import type { User, CreateUserRequest, UpdateUserRequest } from '@/types/user'
 import { createUser, updateUser } from '@/api/user'
 import ImageUploader from '@/components/common/ImageUploader.vue'
+import { isSuperAdmin } from '@/utils/auth'
+
+type UserRoleOption = CreateUserRequest['role']
+
+interface UserFormData {
+  password: string
+  email: string
+  nickname: string
+  avatar?: string
+  badge?: string
+  website?: string
+  role: UserRoleOption
+  is_enabled?: boolean
+}
+
 const props = defineProps<{
   modelValue: boolean
   editUser?: User | null
@@ -72,20 +84,39 @@ const visible = computed({
 
 const isEdit = computed(() => !!props.editUser)
 const dialogTitle = computed(() => isEdit.value ? '编辑用户' : '新增用户')
+const canAssignAdminRole = computed(() => isSuperAdmin())
+const roleOptions = computed<{ label: string; value: UserRoleOption }[]>(() => {
+  const options: { label: string; value: UserRoleOption }[] = [
+    { label: '普通用户', value: 'user' },
+    { label: '访客', value: 'guest' }
+  ]
+
+  if (canAssignAdminRole.value) {
+    return [
+      { label: '超级管理员', value: 'super_admin' },
+      { label: '管理员', value: 'admin' },
+      ...options
+    ]
+  }
+
+  return options
+})
 
 const submitLoading = ref(false)
 const formRef = ref<FormInstance>()
 const avatarUploaderRef = ref<InstanceType<typeof ImageUploader>>()
 
+const getDefaultRole = (): UserRoleOption => roleOptions.value[0]?.value || 'user'
+
 // 表单数据
-const formData = ref<CreateUserRequest & { is_enabled?: boolean }>({
+const formData = ref<UserFormData>({
   password: '',
   email: '',
   nickname: '',
   avatar: '',
   badge: '',
   website: '',
-  role: 'user',
+  role: getDefaultRole(),
   is_enabled: true
 })
 
@@ -120,6 +151,20 @@ const formRules = computed<FormRules>(() => ({
   ]
 }))
 
+// 重置表单数据
+const resetFormData = () => {
+  formData.value = {
+    password: '',
+    email: '',
+    nickname: '',
+    avatar: '',
+    badge: '',
+    website: '',
+    role: getDefaultRole(),
+    is_enabled: true
+  }
+}
+
 // 监听编辑用户变化
 watch(() => props.editUser, (user) => {
   if (user) {
@@ -130,20 +175,11 @@ watch(() => props.editUser, (user) => {
       avatar: user.avatar || '',
       badge: user.badge || '',
       website: user.website || '',
-      role: user.role as any,
+      role: user.role as UserRoleOption,
       is_enabled: user.is_enabled
     }
   } else {
-    formData.value = {
-      password: '',
-      email: '',
-      nickname: '',
-      avatar: '',
-      badge: '',
-      website: '',
-      role: 'user',
-      is_enabled: true
-    }
+    resetFormData()
   }
 
   // 清除表单验证
@@ -151,6 +187,12 @@ watch(() => props.editUser, (user) => {
     formRef.value?.clearValidate()
   }, 0)
 }, { immediate: true })
+
+watch(roleOptions, (options) => {
+  if (!options.some(option => option.value === formData.value.role)) {
+    formData.value.role = getDefaultRole()
+  }
+})
 
 // 取消
 const handleCancel = () => {

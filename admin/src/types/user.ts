@@ -28,13 +28,6 @@ export interface LoginParams {
 export interface LoginResponse {
     access_token: string
     refresh_token: string
-    user: {
-        id: number
-        nickname: string
-        email: string
-        avatar: string
-        role: string
-    }
 }
 
 // 重置密码请求

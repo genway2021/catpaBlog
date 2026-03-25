@@ -96,7 +96,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import type { Friend, FriendType, CreateFriendRequest, UpdateFriendRequest } from '@/types/friend'
 import { createFriend, updateFriend, getFriendTypes } from '@/api/friend'
-import { fetchLinkInfo, downloadImage } from '@/api/tools'
+import { fetchLinkInfo } from '@/api/tools'
 import request from '@/utils/request'
 import ImageUploader from '@/components/common/ImageUploader.vue'
 const props = defineProps<{

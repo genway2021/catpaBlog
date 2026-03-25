@@ -31,7 +31,7 @@ func NewSettingController(settingService *service.SettingService, db *gorm.DB, u
 // GetGroup 获取某个分组的所有配置
 //
 //	@Summary		获取配置分组
-//	@Description	获取指定分组的所有配置项（需要管理员权限）
+//	@Description	获取指定分组的所有配置项（需要管理员及以上权限）
 //	@Tags			配置管理
 //	@Accept			json
 //	@Produce		json
@@ -61,7 +61,7 @@ func (c *SettingController) GetGroup(ctx *gin.Context) {
 // UpdateGroup 更新某个分组的配置
 //
 //	@Summary		更新配置分组
-//	@Description	批量更新指定分组的配置项（patch 方式，只更新传入的配置）
+//	@Description	批量更新指定分组的配置项（patch 方式，只更新传入的配置，仅超级管理员可修改）
 //	@Tags			配置管理
 //	@Accept			json
 //	@Produce		json

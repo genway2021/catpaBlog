@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { checkAuth } from '@/utils/auth'
+import { checkAuth, ensureUserInfo, isSuperAdmin } from '@/utils/auth'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -118,28 +118,39 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  // 检查是否需要认证
+router.beforeEach(async (to) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresSuperAdmin = to.matched.some(record => record.meta.requiresSuperAdmin)
   const isAuthenticated = checkAuth()
 
-  // 如果是登录页面
   if (to.path === '/login') {
-    // 已登录则重定向到首页
-    if (isAuthenticated) {
-      next('/')
-    } else {
-      next()
+    if (!isAuthenticated) return true
+
+    try {
+      await ensureUserInfo()
+      return '/'
+    } catch {
+      return true
     }
-    return
   }
 
-  // 需要认证但未登录，重定向到登录页
   if (requiresAuth && !isAuthenticated) {
-    next('/login')
-  } else {
-    next()
+    return '/login'
   }
+
+  if (requiresAuth) {
+    try {
+      await ensureUserInfo()
+    } catch {
+      return '/login'
+    }
+  }
+
+  if (requiresSuperAdmin && !isSuperAdmin()) {
+    return '/'
+  }
+
+  return true
 })
 
 export default router

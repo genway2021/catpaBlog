@@ -5,7 +5,7 @@
       <div class="toolbar">
         <h2>系统设置</h2>
         <div class="actions">
-          <el-button type="primary" :loading="saving" @click="handleSave">
+          <el-button type="primary" :loading="saving" :disabled="!canEditSettings" @click="handleSave">
             保存配置
           </el-button>
           <el-button @click="loadAllConfigs">重置</el-button>
@@ -16,37 +16,42 @@
       <el-tabs v-model="activeTab" class="setting-tabs">
         <!-- 基本配置标签页 -->
         <el-tab-pane label="基本配置" name="basic">
-          <BasicSettingsTab ref="basicTabRef" v-model:form="basicForm" :loading="loading" />
+          <BasicSettingsTab ref="basicTabRef" v-model:form="basicForm" :loading="loading || !canEditSettings" />
         </el-tab-pane>
 
         <!-- 博客配置标签页 -->
         <el-tab-pane label="博客配置" name="blog">
-          <BlogSettingsTab ref="blogTabRef" v-model:form="blogForm" :loading="loading" />
+          <BlogSettingsTab ref="blogTabRef" v-model:form="blogForm" :loading="loading || !canEditSettings" />
         </el-tab-pane>
 
         <!-- 通知配置标签页 -->
         <el-tab-pane label="通知配置" name="notification">
-          <NotificationSettingsTab v-model:form="notificationForm" :loading="loading" />
+          <NotificationSettingsTab v-model:form="notificationForm" :loading="loading || !canEditSettings" />
+        </el-tab-pane>
+
+        <!-- 上传配置标签页 -->
+        <el-tab-pane label="上传配置" name="upload">
+          <UploadSettingsTab v-model:form="uploadForm" :loading="loading || !canEditSettings" />
         </el-tab-pane>
 
         <!-- AI 配置标签页 -->
         <el-tab-pane label="AI 配置" name="ai">
-          <AISettingsTab v-model:form="aiForm" :loading="loading" />
+          <AISettingsTab v-model:form="aiForm" :loading="loading || !canEditSettings" />
         </el-tab-pane>
 
         <!-- OAuth 配置标签页 -->
         <el-tab-pane label="OAuth 配置" name="oauth">
-          <OAuthSettingsTab v-model:form="oauthForm" :loading="loading" />
+          <OAuthSettingsTab v-model:form="oauthForm" :loading="loading || !canEditSettings" />
         </el-tab-pane>
 
         <!-- 微信公众号配置标签页 -->
         <el-tab-pane label="微信公众号" name="wechat">
-          <WeChatSettingsTab v-model:form="wechatForm" :loading="loading" />
+          <WeChatSettingsTab v-model:form="wechatForm" :loading="loading || !canEditSettings" />
         </el-tab-pane>
 
         <!-- 导入导出标签页 -->
         <el-tab-pane label="导入导出" name="import-export">
-          <ImportExportTab @import-success="handleImportSuccess" />
+          <ImportExportTab :readonly="!canEditSettings" @import-success="handleImportSuccess" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -54,23 +59,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getSettingGroup, updateSettingGroup } from '@/api/sysconfig'
+import { isSuperAdmin } from '@/utils/auth'
 import BasicSettingsTab from './components/BasicSettingsTab.vue'
 import BlogSettingsTab from './components/BlogSettingsTab.vue'
 import NotificationSettingsTab from './components/NotificationSettingsTab.vue'
+import UploadSettingsTab from './components/UploadSettingsTab.vue'
 import AISettingsTab from './components/AISettingsTab.vue'
 import OAuthSettingsTab from './components/OAuthSettingsTab.vue'
 import WeChatSettingsTab from './components/WeChatSettingsTab.vue'
 import ImportExportTab from './components/ImportExportTab.vue'
 import type { SettingGroupType } from '@/types/sysconfig'
 import type { NotificationForm } from './components/NotificationSettingsTab.vue'
+import type { UploadForm } from './components/UploadSettingsTab.vue'
 
 // 页面状态
 const activeTab = ref('basic')
+const route = useRoute()
 const loading = ref(false)
 const saving = ref(false)
+const canEditSettings = computed(() => isSuperAdmin())
 
 // 标签页引用
 const blogTabRef = ref<InstanceType<typeof BlogSettingsTab>>()
@@ -139,6 +150,20 @@ const blogForm = ref({
   custom_body: '',
   emojis: '',
   font: ''
+})
+
+// 上传配置表单
+const uploadForm = ref<UploadForm>({
+  storage_type: 'local',
+  max_file_size: 10,
+  path_pattern: '{timestamp}_{random}{ext}',
+  access_key: '',
+  secret_key: '',
+  region: '',
+  bucket: '',
+  endpoint: '',
+  domain: '',
+  use_ssl: true
 })
 
 // AI 配置表单
@@ -295,6 +320,27 @@ const loadNotificationConfigs = async () => {
   }
 }
 
+// 加载上传配置
+const loadUploadConfigs = async () => {
+  try {
+    const configs = await loadConfigs('upload')
+    Object.assign(uploadForm.value, {
+      storage_type: configs.storage_type || 'local',
+      max_file_size: Number(configs.max_file_size || 10),
+      path_pattern: configs.path_pattern || '{timestamp}_{random}{ext}',
+      access_key: configs.access_key || '',
+      secret_key: configs.secret_key || '',
+      region: configs.region || '',
+      bucket: configs.bucket || '',
+      endpoint: configs.endpoint || '',
+      domain: configs.domain || '',
+      use_ssl: (configs.use_ssl || 'true') === 'true'
+    })
+  } catch {
+    ElMessage.error('获取上传配置失败')
+  }
+}
+
 // JSON 解析辅助函数
 const parseJSON = <T>(jsonStr: string, fallback: T): T => {
   try {
@@ -370,6 +416,7 @@ const loadAllConfigs = async () => {
       loadBasicConfigs(),
       loadBlogConfigs(),
       loadNotificationConfigs(),
+      loadUploadConfigs(),
       loadAIConfigs(),
       loadOAuthConfigs(),
       loadWeChatConfigs()
@@ -381,6 +428,11 @@ const loadAllConfigs = async () => {
 
 // 统一保存配置
 const handleSave = async () => {
+  if (!canEditSettings.value) {
+    ElMessage.warning('仅超级管理员可修改系统配置')
+    return
+  }
+
   saving.value = true
   try {
     // 先上传待上传的图片
@@ -476,6 +528,20 @@ const handleSave = async () => {
       'notification.feishu_chat_id': notificationForm.value.feishu_chat_id
     }
 
+    // 上传配置
+    const uploadPayload: Record<string, string> = {
+      'upload.storage_type': uploadForm.value.storage_type,
+      'upload.max_file_size': String(uploadForm.value.max_file_size),
+      'upload.path_pattern': uploadForm.value.path_pattern,
+      'upload.access_key': uploadForm.value.access_key,
+      'upload.secret_key': uploadForm.value.secret_key,
+      'upload.region': uploadForm.value.region,
+      'upload.bucket': uploadForm.value.bucket,
+      'upload.endpoint': uploadForm.value.endpoint,
+      'upload.domain': uploadForm.value.domain,
+      'upload.use_ssl': uploadForm.value.use_ssl ? 'true' : 'false'
+    }
+
     // AI 配置
     const aiPayload: Record<string, string> = {
       'ai.base_url': aiForm.value.base_url,
@@ -518,6 +584,7 @@ const handleSave = async () => {
       updateSettingGroup('basic', basicPayload),
       updateSettingGroup('blog', blogPayload),
       updateSettingGroup('notification', notificationPayload),
+      updateSettingGroup('upload', uploadPayload),
       updateSettingGroup('ai', aiPayload),
       updateSettingGroup('oauth', oauthPayload),
       updateSettingGroup('wechat', wechatPayload)
@@ -534,6 +601,27 @@ const handleSave = async () => {
     saving.value = false
   }
 }
+
+const validTabs = new Set<SettingGroupType | 'import-export'>([
+  'basic',
+  'blog',
+  'notification',
+  'upload',
+  'ai',
+  'oauth',
+  'wechat',
+  'import-export'
+])
+
+watch(
+  () => route.query.tab,
+  (tab) => {
+    if (typeof tab === 'string' && validTabs.has(tab as SettingGroupType | 'import-export')) {
+      activeTab.value = tab
+    }
+  },
+  { immediate: true }
+)
 
 // 导入成功回调
 const handleImportSuccess = () => {

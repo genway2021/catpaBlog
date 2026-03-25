@@ -68,9 +68,9 @@ func (s *VerificationService) SendPasswordReset(req *dto.ForgotPasswordRequest) 
 		return err
 	}
 
-	// 管理员账号不支持此方式重置密码
-	if user.Role == "admin" {
-		return errors.New("管理员账号不支持此方式重置密码")
+	// 高权限账号不支持此方式重置密码
+	if user.Role == model.RoleAdmin || user.Role == model.RoleSuperAdmin {
+		return errors.New("管理员及超级管理员账号不支持此方式重置密码")
 	}
 
 	// 生成6位验证码

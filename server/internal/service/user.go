@@ -597,7 +597,11 @@ func (s *UserService) List(req *dto.ListUsersRequest) ([]dto.UserListResponse, i
 }
 
 // Create 管理员创建用户
-func (s *UserService) Create(req *dto.AdminCreateUserRequest, host string) error {
+func (s *UserService) Create(operator *model.User, req *dto.AdminCreateUserRequest, host string) error {
+	if err := s.ensureCanCreateUser(operator, req.Role); err != nil {
+		return err
+	}
+
 	// 检查邮箱是否存在
 	if s.repo.ExistsByEmail(req.Email) {
 		return errors.New("邮箱已存在")
@@ -647,9 +651,13 @@ func (s *UserService) Create(req *dto.AdminCreateUserRequest, host string) error
 }
 
 // Update 管理员更新用户
-func (s *UserService) Update(id uint, req *dto.AdminUpdateUserRequest) error {
+func (s *UserService) Update(operator *model.User, id uint, req *dto.AdminUpdateUserRequest) error {
 	user, err := s.repo.Get(id)
 	if err != nil {
+		return err
+	}
+
+	if err := s.ensureCanUpdateUser(operator, user, req); err != nil {
 		return err
 	}
 
@@ -711,9 +719,13 @@ func (s *UserService) Update(id uint, req *dto.AdminUpdateUserRequest) error {
 }
 
 // Delete 软删除用户
-func (s *UserService) Delete(id uint) error {
+func (s *UserService) Delete(operator *model.User, id uint) error {
 	user, err := s.repo.Get(id)
 	if err != nil {
+		return err
+	}
+
+	if err := s.ensureCanDeleteUser(operator, user); err != nil {
 		return err
 	}
 
@@ -726,6 +738,71 @@ func (s *UserService) Delete(id uint) error {
 }
 
 // ============ 辅助方法 ============
+
+// ensureCanCreateUser 校验当前操作人是否可以创建指定角色的用户
+func (s *UserService) ensureCanCreateUser(operator *model.User, role model.UserRole) error {
+	if operator == nil {
+		return errors.New("未找到当前用户信息")
+	}
+	if operator.Role == model.RoleSuperAdmin {
+		return nil
+	}
+	if operator.Role != model.RoleAdmin {
+		return errors.New("无权限执行该操作")
+	}
+	if isAdminManagedRole(role) {
+		return errors.New("管理员不能创建管理员或超级管理员")
+	}
+	return nil
+}
+
+// ensureCanUpdateUser 校验当前操作人是否可以更新目标用户
+func (s *UserService) ensureCanUpdateUser(operator, target *model.User, req *dto.AdminUpdateUserRequest) error {
+	if operator == nil {
+		return errors.New("未找到当前用户信息")
+	}
+	if target == nil {
+		return errors.New("用户不存在")
+	}
+	if operator.Role == model.RoleSuperAdmin {
+		return nil
+	}
+	if operator.Role != model.RoleAdmin {
+		return errors.New("无权限执行该操作")
+	}
+	if isAdminManagedRole(target.Role) {
+		return errors.New("管理员不能操作管理员或超级管理员账号")
+	}
+	if isAdminManagedRole(req.Role) {
+		return errors.New("管理员不能将用户提升为管理员或超级管理员")
+	}
+	return nil
+}
+
+// ensureCanDeleteUser 校验当前操作人是否可以删除目标用户
+func (s *UserService) ensureCanDeleteUser(operator, target *model.User) error {
+	if operator == nil {
+		return errors.New("未找到当前用户信息")
+	}
+	if target == nil {
+		return errors.New("用户不存在")
+	}
+	if operator.Role == model.RoleSuperAdmin {
+		return nil
+	}
+	if operator.Role != model.RoleAdmin {
+		return errors.New("无权限执行该操作")
+	}
+	if isAdminManagedRole(target.Role) {
+		return errors.New("管理员不能操作管理员或超级管理员账号")
+	}
+	return nil
+}
+
+// isAdminManagedRole 判断是否为管理员可管理受限角色
+func isAdminManagedRole(role model.UserRole) bool {
+	return role == model.RoleAdmin || role == model.RoleSuperAdmin
+}
 
 // downloadAndSaveCravatarAvatar 下载并保存Cravatar头像
 func (s *UserService) downloadAndSaveCravatarAvatar(email string, userID uint, host string) (string, error) {

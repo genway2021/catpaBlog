@@ -8,6 +8,7 @@ import (
 
 	"flec_blog/config"
 	"flec_blog/internal/dto"
+	"flec_blog/internal/model"
 	"flec_blog/internal/service"
 	"flec_blog/pkg/response"
 	"flec_blog/pkg/upload"
@@ -611,8 +612,20 @@ func (c *UserController) Create(ctx *gin.Context) {
 		return
 	}
 
+	operator, ok := ctx.Get("user")
+	if !ok {
+		response.Failed(ctx, "未找到当前用户信息")
+		return
+	}
+
+	authUser, ok := operator.(*model.User)
+	if !ok || authUser == nil {
+		response.Failed(ctx, "当前用户信息无效")
+		return
+	}
+
 	host := upload.ExtractHostFromContext(ctx)
-	if err := c.userService.Create(&req, host); err != nil {
+	if err := c.userService.Create(authUser, &req, host); err != nil {
 		response.Failed(ctx, err.Error())
 		return
 	}
@@ -648,7 +661,19 @@ func (c *UserController) Update(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.userService.Update(uint(userID), &req); err != nil {
+	operator, ok := ctx.Get("user")
+	if !ok {
+		response.Failed(ctx, "未找到当前用户信息")
+		return
+	}
+
+	authUser, ok := operator.(*model.User)
+	if !ok || authUser == nil {
+		response.Failed(ctx, "当前用户信息无效")
+		return
+	}
+
+	if err := c.userService.Update(authUser, uint(userID), &req); err != nil {
 		response.Failed(ctx, err.Error())
 		return
 	}
@@ -677,7 +702,19 @@ func (c *UserController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.userService.Delete(uint(userID)); err != nil {
+	operator, ok := ctx.Get("user")
+	if !ok {
+		response.Failed(ctx, "未找到当前用户信息")
+		return
+	}
+
+	authUser, ok := operator.(*model.User)
+	if !ok || authUser == nil {
+		response.Failed(ctx, "当前用户信息无效")
+		return
+	}
+
+	if err := c.userService.Delete(authUser, uint(userID)); err != nil {
 		response.Failed(ctx, err.Error())
 		return
 	}
