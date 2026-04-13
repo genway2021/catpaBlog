@@ -1,4 +1,4 @@
-import { ref, nextTick, onMounted } from "vue";
+import { ref, nextTick, onMounted, onUnmounted } from "vue";
 import type { Ref } from "vue";
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 
@@ -26,7 +26,9 @@ export function useWaterfall(options: WaterfallOptions) {
 
   const isLayoutReady: Ref<boolean> = ref(false)
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
+  let imageLoadListeners: Array<{ img: HTMLImageElement; listener: () => void }> = []
 
+  // 根据窗口宽度获取列数
   const getColumns = (): number => {
     const width = window.innerWidth
     if (width <= breakpoints.mobile) return 1
@@ -34,6 +36,7 @@ export function useWaterfall(options: WaterfallOptions) {
     return columns
   }
 
+  // 等待所有图片加载完成
   const waitForImagesLoad = async (): Promise<void> => {
     await nextTick()
     const images = document.querySelectorAll(`${containerSelector} img`)
@@ -53,6 +56,7 @@ export function useWaterfall(options: WaterfallOptions) {
     return Promise.all(imagePromises).then(() => { })
   }
 
+  // 执行瀑布流布局计算
   const waterfallLayout = () => {
     const container = document.querySelector(containerSelector)
     if (!container) return
@@ -87,6 +91,7 @@ export function useWaterfall(options: WaterfallOptions) {
     }
   }
 
+  // 防抖布局函数
   const debouncedLayout = () => {
     if (debounceTimer) clearTimeout(debounceTimer)
     debounceTimer = setTimeout(() => {
@@ -94,29 +99,63 @@ export function useWaterfall(options: WaterfallOptions) {
     }, debounceDelay)
   }
 
-  const waterfall = async () => {
-    isLayoutReady.value = false
-    if (waitForImages) {
-      await waitForImagesLoad()
-    }
-    waterfallLayout()
+  // 清理图片加载监听器
+  const cleanupImageListeners = () => {
+    imageLoadListeners.forEach(({ img, listener }) => {
+      img.removeEventListener('load', listener)
+    })
+    imageLoadListeners = []
   }
 
-  const initListeners = () => {
-    const container = document.querySelector(containerSelector) as HTMLElement
-    if (container) {
-      useResizeObserver(container, debouncedLayout)
+  // 设置图片加载监听，图片加载完成后自动重新布局
+  const setupImageLoadListeners = () => {
+    cleanupImageListeners()
+
+    const container = document.querySelector(containerSelector)
+    if (!container) return
+
+    const images = container.querySelectorAll('img')
+    images.forEach((img) => {
+      const htmlImg = img as HTMLImageElement
+      if (!htmlImg.complete) {
+        const listener = () => {
+          debouncedLayout()
+        }
+        htmlImg.addEventListener('load', listener)
+        imageLoadListeners.push({ img: htmlImg, listener })
+      }
+    })
+  }
+
+  // 主瀑布流函数
+  const waterfall = async () => {
+    isLayoutReady.value = false
+    cleanupImageListeners()
+
+    if (waitForImages) {
+      await waitForImagesLoad()
+    } else {
+      await nextTick()
     }
-    useEventListener(window, 'resize', debouncedLayout)
+
+    waterfallLayout()
+    setupImageLoadListeners()
   }
 
   onMounted(() => {
     const container = document.querySelector(containerSelector) as HTMLElement
     if (container) {
-      useResizeObserver(container, waterfall)
+      useResizeObserver(container, debouncedLayout)
     }
     useEventListener(window, 'load', waterfall)
-    useEventListener(window, 'resize', waterfall)
+    useEventListener(window, 'resize', debouncedLayout)
+  })
+
+  onUnmounted(() => {
+    cleanupImageListeners()
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+    }
   })
 
   return {
@@ -124,7 +163,6 @@ export function useWaterfall(options: WaterfallOptions) {
     waterfallLayout,
     debouncedLayout,
     isLayoutReady,
-    initListeners,
     waitForImagesLoad
   }
 }

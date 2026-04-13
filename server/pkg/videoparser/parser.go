@@ -7,8 +7,8 @@ import (
 
 // VideoInfo 视频信息
 type VideoInfo struct {
-	Platform string // bilibili, youtube, 或空（本地视频）
-	VideoID  string // 视频ID
+	Platform string `json:"platform"` // bilibili, youtube, 或空（本地视频）
+	VideoID  string `json:"video_id"` // 视频ID
 }
 
 // ParseVideoURL 解析视频URL，识别平台和视频ID

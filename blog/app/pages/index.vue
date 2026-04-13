@@ -44,7 +44,22 @@ onMounted(async () => {
   // 只在客户端初始化瀑布流
   if (process.client) {
     await nextTick()
-    waterfall()
+    // 延迟执行以确保 DOM 完全渲染
+    requestAnimationFrame(() => {
+      waterfall()
+    })
+  }
+})
+
+// 监听路由变化，处理从详情页返回的情况
+const route = useRoute()
+watch(() => route.path, async (newPath) => {
+  if (newPath === '/' && process.client) {
+    await nextTick()
+    // 给 DOM 一点时间稳定
+    setTimeout(() => {
+      waterfall()
+    }, 50)
   }
 })
 

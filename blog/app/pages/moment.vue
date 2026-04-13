@@ -31,7 +31,7 @@ if (initialData.value) {
   moments.value = initialData.value.list
 }
 
-const { waterfall, isLayoutReady, initListeners } = useWaterfall({
+const { waterfall, isLayoutReady } = useWaterfall({
   containerSelector: '#moment-list',
   columns: 3,
   gap: 15,
@@ -67,7 +67,6 @@ const initZoom = () => {
 onMounted(async () => {
   await nextTick()
   await waterfall()
-  initListeners()
   initZoom()
 })
 
