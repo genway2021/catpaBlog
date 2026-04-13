@@ -36,3 +36,15 @@ type UpdateCategoryRequest struct {
 	Description string `json:"description" binding:"max=200"`
 	Sort        int    `json:"sort"`
 }
+
+// CategoryResponse 分类响应
+type CategoryResponse struct {
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	Count       int    `json:"count"`
+	Sort        int    `json:"sort"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}

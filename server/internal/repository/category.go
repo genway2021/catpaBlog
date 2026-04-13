@@ -80,19 +80,3 @@ func (r *CategoryRepository) Update(ctx context.Context, category *model.Categor
 func (r *CategoryRepository) Delete(ctx context.Context, id uint) error {
 	return r.db.WithContext(ctx).Unscoped().Delete(&model.Category{}, id).Error
 }
-
-// ============ 计数管理 ============
-
-// IncrementCount 增加分类文章计数
-func (r *CategoryRepository) IncrementCount(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Model(&model.Category{}).
-		Where("id = ?", id).
-		UpdateColumn("count", gorm.Expr("count + ?", 1)).Error
-}
-
-// DecrementCount 减少分类文章计数
-func (r *CategoryRepository) DecrementCount(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Model(&model.Category{}).
-		Where("id = ?", id).
-		UpdateColumn("count", gorm.Expr("CASE WHEN count > 0 THEN count - ? ELSE 0 END", 1)).Error
-}

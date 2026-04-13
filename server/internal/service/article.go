@@ -456,11 +456,6 @@ func (s *ArticleService) Create(ctx context.Context, req *dto.CreateArticleReque
 		return nil, err
 	}
 
-	// 如果是发布状态，增加分类和标签计数
-	if article.IsPublish {
-		s.incrementCounts(ctx, article)
-	}
-
 	// 标记封面为使用中
 	if req.Cover != "" && s.fileService != nil {
 		_ = s.fileService.MarkAsUsed(req.Cover)
@@ -496,8 +491,6 @@ func (s *ArticleService) Update(ctx context.Context, id uint, req *dto.UpdateArt
 	}
 
 	// 保存旧值用于后续处理
-	oldCategoryID := article.CategoryID
-	oldTagIDs := extractTagIDs(article.Tags)
 	oldCover := article.Cover
 	oldContent := article.Content
 	oldIsPublish := article.IsPublish
@@ -551,20 +544,6 @@ func (s *ArticleService) Update(ctx context.Context, id uint, req *dto.UpdateArt
 		return nil, err
 	}
 
-	// 处理发布状态变化的计数
-	if oldIsPublish != article.IsPublish {
-		if article.IsPublish {
-			// 草稿 -> 已发布：增加计数
-			s.incrementCounts(ctx, article)
-		} else {
-			// 已发布 -> 草稿：减少计数
-			s.decrementCounts(ctx, article)
-		}
-	} else if article.IsPublish {
-		// 如果一直是已发布状态，更新分类和标签计数（处理分类/标签变更）
-		s.updateCountsOnChange(ctx, oldCategoryID, req.CategoryID, oldTagIDs, req.TagIDs)
-	}
-
 	// 处理封面变化
 	if s.fileService != nil && oldCover != req.Cover {
 		if oldCover != "" {
@@ -599,11 +578,6 @@ func (s *ArticleService) Delete(ctx context.Context, id uint) error {
 		return err
 	}
 
-	// 如果是已发布文章，减少计数
-	if article.IsPublish {
-		s.decrementCounts(ctx, article)
-	}
-
 	// 标记封面为未使用
 	if s.fileService != nil && article.Cover != "" {
 		_ = s.fileService.MarkAsUnused(article.Cover)
@@ -616,95 +590,6 @@ func (s *ArticleService) Delete(ctx context.Context, id uint) error {
 }
 
 // ============ 辅助方法 ============
-
-// extractTagIDs 提取标签ID列表
-func extractTagIDs(tags []model.Tag) []uint {
-	if len(tags) == 0 {
-		return nil
-	}
-	ids := make([]uint, 0, len(tags))
-	for _, tag := range tags {
-		ids = append(ids, tag.ID)
-	}
-	return ids
-}
-
-// incrementCounts 增加分类和标签的文章计数
-func (s *ArticleService) incrementCounts(ctx context.Context, article *model.Article) {
-	if article.CategoryID != nil && *article.CategoryID > 0 {
-		_ = s.categoryRepo.IncrementCount(ctx, *article.CategoryID)
-	}
-	if tagIDs := extractTagIDs(article.Tags); len(tagIDs) > 0 {
-		_ = s.tagRepo.IncrementCountBatch(ctx, tagIDs)
-	}
-}
-
-// decrementCounts 减少分类和标签的文章计数
-func (s *ArticleService) decrementCounts(ctx context.Context, article *model.Article) {
-	if article.CategoryID != nil && *article.CategoryID > 0 {
-		_ = s.categoryRepo.DecrementCount(ctx, *article.CategoryID)
-	}
-	if tagIDs := extractTagIDs(article.Tags); len(tagIDs) > 0 {
-		_ = s.tagRepo.DecrementCountBatch(ctx, tagIDs)
-	}
-}
-
-// diffTagIDs 比较标签ID列表差异
-func diffTagIDs(oldIDs, newIDs []uint) (removed, added []uint) {
-	oldMap := make(map[uint]bool, len(oldIDs))
-	for _, id := range oldIDs {
-		oldMap[id] = true
-	}
-
-	newMap := make(map[uint]bool, len(newIDs))
-	for _, id := range newIDs {
-		newMap[id] = true
-		if !oldMap[id] {
-			added = append(added, id)
-		}
-	}
-
-	for _, id := range oldIDs {
-		if !newMap[id] {
-			removed = append(removed, id)
-		}
-	}
-	return
-}
-
-// updateCountsOnChange 更新文章时处理计数变化
-func (s *ArticleService) updateCountsOnChange(ctx context.Context, oldCategoryID, newCategoryID *uint, oldTagIDs, newTagIDs []uint) {
-	// 处理分类计数变化
-	oldID := getIDValue(oldCategoryID)
-	newID := getIDValue(newCategoryID)
-	if oldID != newID {
-		if oldID > 0 {
-			_ = s.categoryRepo.DecrementCount(ctx, oldID)
-		}
-		if newID > 0 {
-			_ = s.categoryRepo.IncrementCount(ctx, newID)
-		}
-	}
-
-	// 处理标签计数变化
-	if newTagIDs != nil {
-		removed, added := diffTagIDs(oldTagIDs, newTagIDs)
-		if len(removed) > 0 {
-			_ = s.tagRepo.DecrementCountBatch(ctx, removed)
-		}
-		if len(added) > 0 {
-			_ = s.tagRepo.IncrementCountBatch(ctx, added)
-		}
-	}
-}
-
-// getIDValue 安全获取指针ID的值
-func getIDValue(id *uint) uint {
-	if id == nil {
-		return 0
-	}
-	return *id
-}
 
 // extractContentImages 从 Markdown/HTML 内容中提取所有图片 URL
 func extractContentImages(content string) []string {
@@ -885,9 +770,6 @@ func (s *ArticleService) importSingleHexoArticle(
 	if err := s.articleRepo.Create(article, tagIDs); err != nil {
 		return fmt.Errorf("保存失败: %w", err)
 	}
-
-	// 增加分类和标签计数
-	s.incrementCounts(ctx, article)
 
 	return nil
 }

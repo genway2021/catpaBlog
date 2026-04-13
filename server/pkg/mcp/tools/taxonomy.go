@@ -500,7 +500,7 @@ func buildTargetActionSchema(target, action, description string, payload *jsonsc
 
 // ============ 辅助函数============
 
-func convertCategoryToItem(category model.Category) TaxonomyItem {
+func convertCategoryToItem(category dto.CategoryResponse) TaxonomyItem {
 	return TaxonomyItem{
 		ID:          category.ID,
 		Name:        category.Name,
@@ -511,7 +511,7 @@ func convertCategoryToItem(category model.Category) TaxonomyItem {
 	}
 }
 
-func convertTagToItem(tag model.Tag) TaxonomyItem {
+func convertTagToItem(tag dto.TagResponse) TaxonomyItem {
 	return TaxonomyItem{
 		ID:          tag.ID,
 		Name:        tag.Name,

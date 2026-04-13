@@ -76,13 +76,47 @@ func (s *CategoryService) GetBySlug(ctx context.Context, slug string) (*dto.Cate
 // ============ 后台管理服务 ============
 
 // List 获取分类列表
-func (s *CategoryService) List(ctx context.Context, page, pageSize int) ([]model.Category, int64, error) {
-	return s.repo.List(ctx, page, pageSize)
+func (s *CategoryService) List(ctx context.Context, page, pageSize int) ([]dto.CategoryResponse, int64, error) {
+	categories, total, err := s.repo.List(ctx, page, pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	result := make([]dto.CategoryResponse, 0, len(categories))
+	for _, category := range categories {
+		count, _ := s.articleRepo.CountByCategory(category.ID, false)
+		result = append(result, dto.CategoryResponse{
+			ID:          category.ID,
+			Name:        category.Name,
+			Slug:        category.Slug,
+			Description: category.Description,
+			Count:       int(count),
+			Sort:        category.Sort,
+			CreatedAt:   category.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:   category.UpdatedAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+	return result, total, nil
 }
 
 // Get 获取分类详情
-func (s *CategoryService) Get(ctx context.Context, id uint) (*model.Category, error) {
-	return s.repo.Get(ctx, id)
+func (s *CategoryService) Get(ctx context.Context, id uint) (*dto.CategoryResponse, error) {
+	category, err := s.repo.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	count, _ := s.articleRepo.CountByCategory(category.ID, false)
+	return &dto.CategoryResponse{
+		ID:          category.ID,
+		Name:        category.Name,
+		Slug:        category.Slug,
+		Description: category.Description,
+		Count:       int(count),
+		Sort:        category.Sort,
+		CreatedAt:   category.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:   category.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}, nil
 }
 
 // Create 创建分类

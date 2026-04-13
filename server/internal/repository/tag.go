@@ -82,39 +82,3 @@ func (r *TagRepository) Delete(ctx context.Context, id uint) error {
 	r.db.WithContext(ctx).Exec("DELETE FROM article_tags WHERE tag_id = ?", id)
 	return r.db.WithContext(ctx).Unscoped().Delete(&model.Tag{}, id).Error
 }
-
-// ============ 计数管理 ============
-
-// IncrementCount 增加标签文章计数
-func (r *TagRepository) IncrementCount(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Model(&model.Tag{}).
-		Where("id = ?", id).
-		UpdateColumn("count", gorm.Expr("count + ?", 1)).Error
-}
-
-// DecrementCount 减少标签文章计数
-func (r *TagRepository) DecrementCount(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Model(&model.Tag{}).
-		Where("id = ?", id).
-		UpdateColumn("count", gorm.Expr("CASE WHEN count > 0 THEN count - ? ELSE 0 END", 1)).Error
-}
-
-// IncrementCountBatch 批量增加标签文章计数
-func (r *TagRepository) IncrementCountBatch(ctx context.Context, ids []uint) error {
-	if len(ids) == 0 {
-		return nil
-	}
-	return r.db.WithContext(ctx).Model(&model.Tag{}).
-		Where("id IN ?", ids).
-		UpdateColumn("count", gorm.Expr("count + ?", 1)).Error
-}
-
-// DecrementCountBatch 批量减少标签文章计数
-func (r *TagRepository) DecrementCountBatch(ctx context.Context, ids []uint) error {
-	if len(ids) == 0 {
-		return nil
-	}
-	return r.db.WithContext(ctx).Model(&model.Tag{}).
-		Where("id IN ?", ids).
-		UpdateColumn("count", gorm.Expr("CASE WHEN count > 0 THEN count - ? ELSE 0 END", 1)).Error
-}

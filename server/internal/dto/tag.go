@@ -33,3 +33,14 @@ type UpdateTagRequest struct {
 	Name        string `json:"name" binding:"required,max=50"`
 	Description string `json:"description" binding:"max=200"`
 }
+
+// TagResponse 标签响应
+type TagResponse struct {
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	Count       int    `json:"count"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
