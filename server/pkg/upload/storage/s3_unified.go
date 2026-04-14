@@ -78,10 +78,15 @@ func (s *S3UnifiedStorage) ensureClient() error {
 		}
 	}
 
+	region := s.cfg.Region
+	if s.storageType == "minio" && region == "" {
+		region = "us-east-1"
+	}
+
 	client, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(s.cfg.AccessKey, s.cfg.SecretKey, ""),
 		Secure: useSSL,
-		Region: s.cfg.Region,
+		Region: region,
 	})
 	if err != nil {
 		return fmt.Errorf("创建存储实例失败: %w", err)
