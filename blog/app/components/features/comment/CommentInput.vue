@@ -1,336 +1,351 @@
 <script setup lang="ts">
-import { uploadFile } from '~/utils/upload'
+import { uploadFile } from '~/utils/upload';
 
 interface Props {
   // 评论ID，如果提供则为回复模式
-  commentId?: number
+  commentId?: number;
   // 回复的目标昵称
-  replyTo?: string
+  replyTo?: string;
 }
 
-const props = defineProps<Props>()
-const { success, info } = useToast()
-const { triggerOnComment } = useBindEmail()
+const props = defineProps<Props>();
+const { success, info } = useToast();
+const { triggerOnComment } = useBindEmail();
 
 // 获取评论上下文
-const context = useCommentContext()
+const context = useCommentContext();
 
 // 状态（延迟从本地存储初始化，避免 SSR 时 localStorage 不存在）
-const nickname = ref('')
-const email = ref('')
-const website = ref('')
-const commentContent = ref('')
+const nickname = ref('');
+const email = ref('');
+const website = ref('');
+const commentContent = ref('');
 
 // 在客户端加载本地存储数据
 onMounted(() => {
   // 加载游客信息
-  const stored = localStorage.getItem('guest_info')
+  const stored = localStorage.getItem('guest_info');
   if (stored) {
-    const saved = JSON.parse(stored)
-    nickname.value = saved.nickname || ''
-    email.value = saved.email || ''
-    website.value = saved.website || ''
+    const saved = JSON.parse(stored);
+    nickname.value = saved.nickname || '';
+    email.value = saved.email || '';
+    website.value = saved.website || '';
   }
   // 加载评论草稿
-  commentContent.value = localStorage.getItem('comment_draft') || ''
-})
+  commentContent.value = localStorage.getItem('comment_draft') || '';
+});
 
-const isSubmitting = ref(false)
-const showPreview = ref(false)
-const showExpandedBtn = ref(false)
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
-const buttonGroupRef = ref<HTMLElement | null>(null)
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const isSubmitting = ref(false);
+const showPreview = ref(false);
+const showExpandedBtn = ref(false);
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const buttonGroupRef = ref<HTMLElement | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 // 错误提示
 const errors = ref({
   nickname: '',
   email: '',
   website: '',
-  content: ''
-})
+  content: '',
+});
 
 // 计算属性
-const isLoggedIn = useAuth()
-const isReplyMode = computed(() => !!props.replyTo)
-const isUserInfoFilled = computed(() => nickname.value.trim() && email.value.trim())
-const shouldShowSend = computed(() => isLoggedIn.value || isUserInfoFilled.value)
+const isLoggedIn = useAuth();
+const isReplyMode = computed(() => !!props.replyTo);
+const isUserInfoFilled = computed(() => nickname.value.trim() && email.value.trim());
+const shouldShowSend = computed(() => isLoggedIn.value || isUserInfoFilled.value);
 const mainBtn = computed(() => {
-  if (isSubmitting.value) return { text: '发送中...', icon: 'ri-loader-4-line rotating' }
+  if (isSubmitting.value) return { text: '发送中...', icon: 'ri-loader-4-line rotating' };
   return shouldShowSend.value
     ? { text: '发送', icon: 'ri-send-plane-fill' }
-    : { text: '登录', icon: 'ri-login-box-line' }
-})
+    : { text: '登录', icon: 'ri-login-box-line' };
+});
 
 const secondaryBtn = computed(() =>
   isUserInfoFilled.value
     ? { text: '登录', icon: 'ri-login-box-line' }
     : { text: '发送', icon: 'ri-send-plane-fill' }
-)
-const renderedMarkdown = computed(() => renderSimpleMarkdown(commentContent.value))
+);
+const renderedMarkdown = computed(() => renderSimpleMarkdown(commentContent.value));
 const guestPrivacyNotice = [
   '游客无需注册即可评论。',
   '你提交的昵称、邮箱、网址和评论内容会保存在服务端，用于展示评论身份、接收回复及必要的安全审计。',
   '浏览器会本地保存已填游客信息和评论草稿，方便下次免填。',
-  '回复提醒会通过站内消息和邮件通知。'
-]
+  '回复提醒会通过站内消息和邮件通知。',
+];
 
 // 工具函数
 const resetTextareaHeight = () => {
   if (textareaRef.value) {
-    textareaRef.value.style.height = 'auto'
-    textareaRef.value.style.height = textareaRef.value.scrollHeight + 'px'
+    textareaRef.value.style.height = 'auto';
+    textareaRef.value.style.height = textareaRef.value.scrollHeight + 'px';
   }
-}
+};
 
 const validateForm = () => {
-  errors.value = { nickname: '', email: '', website: '', content: '' }
+  errors.value = { nickname: '', email: '', website: '', content: '' };
 
   if (!isLoggedIn.value) {
-    const nick = nickname.value.trim()
+    const nick = nickname.value.trim();
     if (!nick) {
-      errors.value.nickname = '请输入昵称'
-      return false
+      errors.value.nickname = '请输入昵称';
+      return false;
     }
     if (nick.length < 2 || nick.length > 32) {
-      errors.value.nickname = nick.length < 2 ? '昵称至少需要2个字符' : '昵称不能超过32个字符'
-      return false
+      errors.value.nickname = nick.length < 2 ? '昵称至少需要2个字符' : '昵称不能超过32个字符';
+      return false;
     }
 
     if (!email.value.trim()) {
-      errors.value.email = '请输入邮箱'
-      return false
+      errors.value.email = '请输入邮箱';
+      return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-      errors.value.email = '请输入正确的邮箱格式'
-      return false
+      errors.value.email = '请输入正确的邮箱格式';
+      return false;
     }
 
-    const site = website.value.trim()
+    const site = website.value.trim();
     if (site && !/^https?:\/\/.+/.test(site)) {
-      errors.value.website = '网站地址格式不正确'
-      return false
+      errors.value.website = '网站地址格式不正确';
+      return false;
     }
   }
 
   if (!commentContent.value.trim()) {
-    errors.value.content = '请输入评论内容'
-    return false
+    errors.value.content = '请输入评论内容';
+    return false;
   }
 
-  return true
-}
+  return true;
+};
 
 // 清除特定字段的错误
 const clearError = (field: 'nickname' | 'email' | 'website' | 'content') => {
-  errors.value[field] = ''
-}
+  errors.value[field] = '';
+};
+
+/**
+ * 处理文本框输入事件
+ */
+const handleTextareaInput = () => {
+  clearError('content');
+  resetTextareaHeight();
+};
 
 // 事件处理
 const handleSubmitComment = async () => {
-  if (!validateForm()) return
+  if (!validateForm()) return;
 
-  isSubmitting.value = true
+  isSubmitting.value = true;
   try {
     if (pendingImages.value.size > 0) {
-      isUploading.value = true
+      isUploading.value = true;
       try {
-        await uploadPendingImages()
+        await uploadPendingImages();
       } catch (error: any) {
-        info(error.message || '图片上传失败')
-        return
+        info(error.message || '图片上传失败');
+        return;
       } finally {
-        isUploading.value = false
+        isUploading.value = false;
       }
     }
 
-    const content = commentContent.value.trim()
-    const guestInfo = !isLoggedIn.value ? {
-      nickname: nickname.value.trim(),
-      email: email.value.trim(),
-      website: website.value.trim() || undefined
-    } : undefined
+    const content = commentContent.value.trim();
+    const guestInfo = !isLoggedIn.value
+      ? {
+          nickname: nickname.value.trim(),
+          email: email.value.trim(),
+          website: website.value.trim() || undefined,
+        }
+      : undefined;
 
     if (isReplyMode.value && props.commentId) {
-      await context.addReply(props.commentId, content, guestInfo)
+      await context.addReply(props.commentId, content, guestInfo);
     } else {
-      await context.addComment(content, guestInfo)
+      await context.addComment(content, guestInfo);
     }
 
     if (!isLoggedIn.value) {
-      localStorage.setItem('guest_info', JSON.stringify({
-        nickname: nickname.value.trim(),
-        email: email.value.trim(),
-        website: website.value.trim()
-      }))
+      localStorage.setItem(
+        'guest_info',
+        JSON.stringify({
+          nickname: nickname.value.trim(),
+          email: email.value.trim(),
+          website: website.value.trim(),
+        })
+      );
     }
 
-    commentContent.value = ''
-    resetTextareaHeight()
-    success('评论发表成功')
+    commentContent.value = '';
+    resetTextareaHeight();
+    success('评论发表成功');
 
-    if (isLoggedIn.value) triggerOnComment()
+    if (isLoggedIn.value) triggerOnComment();
   } catch (error: any) {
-    errors.value.email = error.message || error.response?.data?.message || '评论发表失败'
+    errors.value.email = error.message || error.response?.data?.message || '评论发表失败';
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
-const handleLogin = () => context.showLogin()
-const handleMainAction = () => shouldShowSend.value ? handleSubmitComment() : handleLogin()
+const handleLogin = () => context.showLogin();
+const handleMainAction = () => (shouldShowSend.value ? handleSubmitComment() : handleLogin());
 const handleSecondaryAction = (event: Event) => {
-  event.stopPropagation()
-  showExpandedBtn.value = false
-  isUserInfoFilled.value ? handleLogin() : handleSubmitComment()
-}
+  event.stopPropagation();
+  showExpandedBtn.value = false;
+  isUserInfoFilled.value ? handleLogin() : handleSubmitComment();
+};
 const toggleExpandedBtn = (event: Event) => {
-  event.stopPropagation()
-  showExpandedBtn.value = !showExpandedBtn.value
-}
-const togglePreview = () => showPreview.value = !showPreview.value
+  event.stopPropagation();
+  showExpandedBtn.value = !showExpandedBtn.value;
+};
+const togglePreview = () => (showPreview.value = !showPreview.value);
 
 const handleCancelReply = () => {
-  context.replyState.cancelReply()
-  cleanupPendingImages()
-  commentContent.value = ''
-  resetTextareaHeight()
-}
+  context.replyState.cancelReply();
+  cleanupPendingImages();
+  commentContent.value = '';
+  resetTextareaHeight();
+};
 
 // 图片上传相关
-const isUploading = ref(false)
-const pendingImages = ref<Map<string, File>>(new Map())
+const isUploading = ref(false);
+const pendingImages = ref<Map<string, File>>(new Map());
 
 // 表情选择器相关
-const showEmojiPicker = ref(false)
-const emojiButtonRef = ref<HTMLElement | null>(null)
-const emojiPickerRef = ref<HTMLElement | null>(null)
+const showEmojiPicker = ref(false);
+const emojiButtonRef = ref<HTMLElement | null>(null);
+const emojiPickerRef = ref<HTMLElement | null>(null);
 
-const handleImageUpload = () => fileInputRef.value?.click()
+const handleImageUpload = () => fileInputRef.value?.click();
 const handleFileSelect = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
+  const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
-    insertImagePlaceholder(file)
-      ; (event.target as HTMLInputElement).value = ''
+    insertImagePlaceholder(file);
+    (event.target as HTMLInputElement).value = '';
   }
-}
+};
 
 const insertImagePlaceholder = (file: File) => {
-  const error = validateFile(file, '评论贴图')
+  const error = validateFile(file, '评论贴图');
   if (error) {
-    info(error)
-    return
+    info(error);
+    return;
   }
 
-  const blobUrl = URL.createObjectURL(file)
-  pendingImages.value.set(blobUrl, file)
+  const blobUrl = URL.createObjectURL(file);
+  pendingImages.value.set(blobUrl, file);
 
-  const textarea = textareaRef.value
-  if (!textarea) return
+  const textarea = textareaRef.value;
+  if (!textarea) return;
 
-  const { selectionStart, selectionEnd } = textarea
-  const imageMarkdown = `![图片](${blobUrl})`
+  const { selectionStart, selectionEnd } = textarea;
+  const imageMarkdown = `![图片](${blobUrl})`;
 
   commentContent.value =
     commentContent.value.substring(0, selectionStart) +
     imageMarkdown +
-    commentContent.value.substring(selectionEnd)
+    commentContent.value.substring(selectionEnd);
 
   nextTick(() => {
-    textarea.focus()
-    const newPosition = selectionStart + imageMarkdown.length
-    textarea.setSelectionRange(newPosition, newPosition)
-    resetTextareaHeight()
-  })
-}
+    textarea.focus();
+    const newPosition = selectionStart + imageMarkdown.length;
+    textarea.setSelectionRange(newPosition, newPosition);
+    resetTextareaHeight();
+  });
+};
 
 const handlePaste = (event: ClipboardEvent) => {
   const file = Array.from(event.clipboardData?.items || [])
     .find(item => item.type.startsWith('image/'))
-    ?.getAsFile()
+    ?.getAsFile();
 
   if (file) {
-    event.preventDefault()
-    insertImagePlaceholder(file)
+    event.preventDefault();
+    insertImagePlaceholder(file);
   }
-}
+};
 
 // 表情选择
 const toggleEmojiPicker = () => {
-  showEmojiPicker.value = !showEmojiPicker.value
-}
+  showEmojiPicker.value = !showEmojiPicker.value;
+};
 
 const handleEmojiSelect = (emoji: string) => {
-  const textarea = textareaRef.value
-  if (!textarea) return
+  const textarea = textareaRef.value;
+  if (!textarea) return;
 
-  const { selectionStart, selectionEnd } = textarea
+  const { selectionStart, selectionEnd } = textarea;
 
   commentContent.value =
     commentContent.value.substring(0, selectionStart) +
     emoji +
-    commentContent.value.substring(selectionEnd)
+    commentContent.value.substring(selectionEnd);
 
   nextTick(() => {
-    textarea.focus()
-    const newPosition = selectionStart + emoji.length
-    textarea.setSelectionRange(newPosition, newPosition)
-    resetTextareaHeight()
-  })
+    textarea.focus();
+    const newPosition = selectionStart + emoji.length;
+    textarea.setSelectionRange(newPosition, newPosition);
+    resetTextareaHeight();
+  });
 
-  showEmojiPicker.value = false
-}
+  showEmojiPicker.value = false;
+};
 
 const uploadPendingImages = async () => {
-  if (pendingImages.value.size === 0) return
+  if (pendingImages.value.size === 0) return;
 
-  const uploads = Array.from(pendingImages.value.entries()).map(
-    async ([blobUrl, file]) => {
-      const result = await uploadFile(file, '评论贴图')
-      return { blobUrl, realUrl: result.file_url }
-    }
-  )
+  const uploads = Array.from(pendingImages.value.entries()).map(async ([blobUrl, file]) => {
+    const result = await uploadFile(file, '评论贴图');
+    return { blobUrl, realUrl: result.file_url };
+  });
 
-  const results = await Promise.all(uploads)
+  const results = await Promise.all(uploads);
 
   results.forEach(({ blobUrl, realUrl }) => {
-    commentContent.value = commentContent.value.replace(blobUrl, realUrl)
-    URL.revokeObjectURL(blobUrl)
-  })
+    commentContent.value = commentContent.value.replace(blobUrl, realUrl);
+    URL.revokeObjectURL(blobUrl);
+  });
 
-  pendingImages.value.clear()
-}
+  pendingImages.value.clear();
+};
 
 const cleanupPendingImages = () => {
-  pendingImages.value.forEach((_, blobUrl) => URL.revokeObjectURL(blobUrl))
-  pendingImages.value.clear()
-}
+  pendingImages.value.forEach((_, blobUrl) => URL.revokeObjectURL(blobUrl));
+  pendingImages.value.clear();
+};
 
 // 实时保存评论内容到本地存储
-watch(commentContent, (newContent) => {
+watch(commentContent, newContent => {
   if (newContent) {
-    localStorage.setItem('comment_draft', newContent)
+    localStorage.setItem('comment_draft', newContent);
   } else {
-    localStorage.removeItem('comment_draft')
+    localStorage.removeItem('comment_draft');
   }
-})
+});
 
 // 点击外部关闭扩展按钮
 onClickOutside(buttonGroupRef, () => {
-  showExpandedBtn.value = false
-})
+  showExpandedBtn.value = false;
+});
 
 // 点击外部关闭表情选择器
-onClickOutside(emojiButtonRef, () => {
-  showEmojiPicker.value = false
-}, {
-  ignore: [emojiPickerRef]
-})
+onClickOutside(
+  emojiButtonRef,
+  () => {
+    showEmojiPicker.value = false;
+  },
+  {
+    ignore: [emojiPickerRef],
+  }
+);
 
 // 组件卸载时清理 blob URL
 onUnmounted(() => {
-  cleanupPendingImages()
-})
+  cleanupPendingImages();
+});
 </script>
 
 <template>
@@ -338,24 +353,47 @@ onUnmounted(() => {
     <template v-if="!isLoggedIn">
       <div class="user-info-row">
         <div class="input-wrapper">
-          <input v-model="nickname" type="text" placeholder="昵称 *" :disabled="isSubmitting"
-            :class="{ error: errors.nickname }" @input="clearError('nickname')" />
+          <input
+            v-model="nickname"
+            type="text"
+            placeholder="昵称 *"
+            :disabled="isSubmitting"
+            :class="{ error: errors.nickname }"
+            @input="clearError('nickname')"
+          />
           <transition name="fade">
             <div v-if="errors.nickname" class="error-tooltip">{{ errors.nickname }}</div>
           </transition>
         </div>
         <div class="input-wrapper">
-          <input v-model="email" type="email" placeholder="邮箱 *" :disabled="isSubmitting"
-            :class="{ error: errors.email }" @input="clearError('email')" />
+          <input
+            v-model="email"
+            type="email"
+            placeholder="邮箱 *"
+            :disabled="isSubmitting"
+            :class="{ error: errors.email }"
+            @input="clearError('email')"
+          />
           <transition name="fade">
             <div v-if="errors.email" class="error-tooltip">{{ errors.email }}</div>
           </transition>
         </div>
         <div class="input-wrapper policy-input">
-          <input v-model="website" type="url" placeholder="网址" :disabled="isSubmitting"
-            :class="{ error: errors.website }" @input="clearError('website')" />
+          <input
+            v-model="website"
+            type="url"
+            placeholder="网址"
+            :disabled="isSubmitting"
+            :class="{ error: errors.website }"
+            @input="clearError('website')"
+          />
           <div class="guest-policy-tip">
-            <button type="button" class="guest-policy-trigger" aria-label="游客评论信息说明" title="游客评论信息说明">
+            <button
+              type="button"
+              class="guest-policy-trigger"
+              aria-label="游客评论信息说明"
+              title="游客评论信息说明"
+            >
               <i class="ri-information-line"></i>
             </button>
             <div class="guest-policy-tooltip" role="note">
@@ -370,15 +408,25 @@ onUnmounted(() => {
     </template>
 
     <div class="editor-container">
-      <textarea ref="textareaRef" v-model="commentContent" placeholder="写下你的评论...支持 Markdown 语法" rows="3"
-        :disabled="isSubmitting" :class="{ error: errors.content }"
-        @input="clearError('content'); resetTextareaHeight()" @paste="handlePaste" />
+      <textarea
+        ref="textareaRef"
+        v-model="commentContent"
+        placeholder="写下你的评论...支持 Markdown 语法"
+        rows="3"
+        :disabled="isSubmitting"
+        :class="{ error: errors.content }"
+        @input="handleTextareaInput"
+        @paste="handlePaste"
+      />
       <transition name="fade">
         <div v-if="errors.content" class="error-tooltip content-error">{{ errors.content }}</div>
       </transition>
       <transition name="expand">
-        <div v-if="showPreview" class="preview-area markdown-body"
-          v-html="renderedMarkdown || '<p class=\'empty-hint\'>暂无内容</p>'"></div>
+        <div
+          v-if="showPreview"
+          class="preview-area markdown-body"
+          v-html="renderedMarkdown || '<p class=\'empty-hint\'>暂无内容</p>'"
+        ></div>
       </transition>
     </div>
 
@@ -386,44 +434,90 @@ onUnmounted(() => {
       <div class="toolbar-left">
         <div v-if="isReplyMode" class="reply-tag">
           <span class="reply-tag-text">回复 {{ replyTo }}</span>
-          <button class="reply-tag-close" @click="handleCancelReply" :disabled="isSubmitting" aria-label="取消回复">
+          <button
+            class="reply-tag-close"
+            @click="handleCancelReply"
+            :disabled="isSubmitting"
+            aria-label="取消回复"
+          >
             <i class="ri-close-line"></i>
           </button>
         </div>
         <div class="emoji-wrapper">
-          <button ref="emojiButtonRef" class="tool-btn" @click="toggleEmojiPicker" title="表情" aria-label="插入表情"
-            :disabled="isSubmitting || isUploading" :class="{ active: showEmojiPicker }">
+          <button
+            ref="emojiButtonRef"
+            class="tool-btn"
+            @click="toggleEmojiPicker"
+            title="表情"
+            aria-label="插入表情"
+            :disabled="isSubmitting || isUploading"
+            :class="{ active: showEmojiPicker }"
+          >
             <i class="ri-emotion-line"></i>
           </button>
         </div>
         <transition name="fade-scale">
-          <FeaturesCommentEmojiPicker v-if="showEmojiPicker" ref="emojiPickerRef" class="emoji-picker-portal"
-            @select="handleEmojiSelect" />
+          <FeaturesCommentEmojiPicker
+            v-if="showEmojiPicker"
+            ref="emojiPickerRef"
+            class="emoji-picker-portal"
+            @select="handleEmojiSelect"
+          />
         </transition>
-        <button class="tool-btn" @click="handleImageUpload" title="图片" aria-label="上传图片"
-          :disabled="isSubmitting || isUploading" :class="{ uploading: isUploading }">
+        <button
+          class="tool-btn"
+          @click="handleImageUpload"
+          title="图片"
+          aria-label="上传图片"
+          :disabled="isSubmitting || isUploading"
+          :class="{ uploading: isUploading }"
+        >
           <i :class="isUploading ? 'ri-loader-4-line rotating' : 'ri-image-line'"></i>
         </button>
-        <input ref="fileInputRef" type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-          style="display: none" @change="handleFileSelect" />
-        <button class="tool-btn" @click="togglePreview" :title="showPreview ? '编辑' : 'Markdown预览'"
-          :aria-label="showPreview ? '切换到编辑模式' : '切换到预览模式'" :class="{ active: showPreview }"
-          :disabled="isSubmitting || isUploading">
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+          style="display: none"
+          @change="handleFileSelect"
+        />
+        <button
+          class="tool-btn"
+          @click="togglePreview"
+          :title="showPreview ? '编辑' : 'Markdown预览'"
+          :aria-label="showPreview ? '切换到编辑模式' : '切换到预览模式'"
+          :class="{ active: showPreview }"
+          :disabled="isSubmitting || isUploading"
+        >
           <i :class="showPreview ? 'ri-edit-line' : 'ri-eye-line'"></i>
         </button>
       </div>
       <div ref="buttonGroupRef" class="button-group">
-        <button class="submit-btn main-btn" @click="handleMainAction" :disabled="isSubmitting"
-          :aria-label="mainBtn.text">
+        <button
+          class="submit-btn main-btn"
+          @click="handleMainAction"
+          :disabled="isSubmitting"
+          :aria-label="mainBtn.text"
+        >
           <i :class="mainBtn.icon"></i>{{ mainBtn.text }}
         </button>
         <template v-if="!isLoggedIn">
-          <button class="submit-btn expand-btn" @click="toggleExpandedBtn" :disabled="isSubmitting" aria-label="更多选项">
+          <button
+            class="submit-btn expand-btn"
+            @click="toggleExpandedBtn"
+            :disabled="isSubmitting"
+            aria-label="更多选项"
+          >
             <i class="ri-more-2-fill"></i>
           </button>
           <transition name="slide-fade">
-            <button v-if="showExpandedBtn" class="submit-btn secondary-btn" @click="handleSecondaryAction"
-              :disabled="isSubmitting" :aria-label="secondaryBtn.text">
+            <button
+              v-if="showExpandedBtn"
+              class="submit-btn secondary-btn"
+              @click="handleSecondaryAction"
+              :disabled="isSubmitting"
+              :aria-label="secondaryBtn.text"
+            >
               <i :class="secondaryBtn.icon"></i>{{ secondaryBtn.text }}
             </button>
           </transition>
@@ -499,7 +593,6 @@ textarea {
   display: inline-flex;
 }
 
-
 .policy-input {
   input {
     padding-right: 40px;
@@ -526,7 +619,10 @@ textarea {
   align-items: center;
   justify-content: center;
   cursor: help;
-  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 
   i {
     font-size: 0.9rem;
@@ -555,7 +651,10 @@ textarea {
   opacity: 0;
   visibility: hidden;
   transform: translateY(-4px);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
   z-index: 20;
 
   &::before {
@@ -571,7 +670,7 @@ textarea {
     margin: 0;
   }
 
-  p+p {
+  p + p {
     margin-top: 6px;
   }
 }
@@ -724,7 +823,6 @@ textarea {
 }
 
 .fade-scale {
-
   &-enter-active,
   &-leave-active {
     transition: all 0.2s ease;
@@ -879,7 +977,6 @@ textarea {
 }
 
 .slide-fade {
-
   &-enter-active,
   &-leave-active {
     transition: all 0.2s;

@@ -97,10 +97,9 @@ const handleDelete = () => {
 const uploadPendingFile = async (): Promise<string | null> => {
   if (props.disabled || !pendingFile.value) return null
 
+  const loading = ElMessage.info({ message: '正在上传...', duration: 0 })
   try {
-    const loading = ElMessage.info({ message: '正在上传...', duration: 0 })
     const result = await uploadFile(pendingFile.value, props.uploadType)
-    loading.close()
 
     // 清理本地预览
     if (previewUrl.value) {
@@ -111,8 +110,10 @@ const uploadPendingFile = async (): Promise<string | null> => {
 
     // 更新值
     emit('update:modelValue', result.file_url)
+    loading.close()
     return result.file_url
   } catch (error: any) {
+    loading.close()
     ElMessage.error(error.message || '上传失败')
     throw error
   }

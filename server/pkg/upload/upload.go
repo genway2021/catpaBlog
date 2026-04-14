@@ -35,6 +35,7 @@ var AllowedFileTypes = []string{
 	"image/png",
 	"image/gif",
 	"image/webp",
+	"image/avif",
 	"image/svg+xml",
 	"image/bmp",
 	"image/tiff",

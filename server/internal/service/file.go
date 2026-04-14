@@ -180,6 +180,7 @@ func (s *FileService) UploadForWeb(req *upload.Request, host string) (*dto.FileU
 		"image/png":          true,
 		"image/gif":          true,
 		"image/webp":         true,
+		"image/avif":         true,
 		"application/pdf":    true,
 		"application/msword": true,
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true,

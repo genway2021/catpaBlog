@@ -319,23 +319,39 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     submitLoading.value = true
-    // 上传待处理的图片（头像和截图）
-    for (const [uploader, field] of [
-      [avatarUploaderRef.value, 'avatar'],
-      [screenshotUploaderRef.value, 'screenshot']
-    ] as const) {
-      if (!uploader || !(uploader.getPendingCount() > 0 ||
-        (formData.value[field] && formData.value[field].startsWith('blob:')))) continue;
 
-      try {
-        const uploadedUrl = await uploader.uploadPendingFile();
-        if (uploadedUrl) {
-          formData.value[field] = uploadedUrl;
-        }
-      } catch (error: any) {
-        submitLoading.value = false;
-        ElMessage.error(error.message || `${field === 'avatar' ? '头像' : '截图'}上传失败`);
-        return;
+    // 收集待上传的图片（并行上传）
+    const uploadPromises: Promise<void>[] = []
+    const uploadFields: Array<{ uploader: typeof avatarUploaderRef.value; field: 'avatar' | 'screenshot' }> = [
+      { uploader: avatarUploaderRef.value, field: 'avatar' },
+      { uploader: screenshotUploaderRef.value, field: 'screenshot' }
+    ]
+
+    for (const { uploader, field } of uploadFields) {
+      if (!uploader) continue
+      const hasPending = uploader.getPendingCount() > 0
+      const hasBlobUrl = formData.value[field]?.startsWith('blob:')
+      if (!hasPending && !hasBlobUrl) continue
+
+      uploadPromises.push(
+        uploader.uploadPendingFile()
+          .then(uploadedUrl => {
+            if (uploadedUrl) formData.value[field] = uploadedUrl
+          })
+          .catch((error: any) => {
+            ElMessage.error(error.message || `${field === 'avatar' ? '头像' : '截图'}上传失败`)
+          })
+      )
+    }
+
+    // 等待所有上传完成（使用 allSettled 确保即使部分失败也继续）
+    if (uploadPromises.length > 0) {
+      const results = await Promise.allSettled(uploadPromises)
+      const failedCount = results.filter(r => r.status === 'rejected').length
+      if (failedCount > 0) {
+        submitLoading.value = false
+        ElMessage.error(`${failedCount} 个文件上传失败，请重试`)
+        return
       }
     }
 

@@ -421,38 +421,61 @@ const handleSave = async () => {
 
   saving.value = true
   try {
-    // 先上传待上传的图片
-    // 处理基本配置的图片上传
+    const uploadPromises: Promise<void>[] = []
+
+    // 收集所有待上传的图片（并行上传）
     const basicUploaders = basicTabRef.value
     if (basicUploaders) {
       if (basicUploaders.authorAvatarUploaderRef?.getPendingCount()) {
-        const uploadedUrl = await basicUploaders.authorAvatarUploaderRef.uploadPendingFile()
-        if (uploadedUrl) basicForm.value.author_avatar = uploadedUrl
+        uploadPromises.push(
+          basicUploaders.authorAvatarUploaderRef.uploadPendingFile()
+            .then(url => { if (url) basicForm.value.author_avatar = url })
+        )
       }
       if (basicUploaders.authorPhotoUploaderRef?.getPendingCount()) {
-        const uploadedUrl = await basicUploaders.authorPhotoUploaderRef.uploadPendingFile()
-        if (uploadedUrl) basicForm.value.author_photo = uploadedUrl
+        uploadPromises.push(
+          basicUploaders.authorPhotoUploaderRef.uploadPendingFile()
+            .then(url => { if (url) basicForm.value.author_photo = url })
+        )
       }
     }
 
-    // 处理博客配置的图片上传
     const blogUploaders = blogTabRef.value
     if (blogUploaders) {
       if (blogUploaders.faviconUploaderRef?.getPendingCount()) {
-        const uploadedUrl = await blogUploaders.faviconUploaderRef.uploadPendingFile()
-        if (uploadedUrl) blogForm.value.favicon = uploadedUrl
+        uploadPromises.push(
+          blogUploaders.faviconUploaderRef.uploadPendingFile()
+            .then(url => { if (url) blogForm.value.favicon = url })
+        )
       }
       if (blogUploaders.backgroundUploaderRef?.getPendingCount()) {
-        const uploadedUrl = await blogUploaders.backgroundUploaderRef.uploadPendingFile()
-        if (uploadedUrl) blogForm.value.background_image = uploadedUrl
+        uploadPromises.push(
+          blogUploaders.backgroundUploaderRef.uploadPendingFile()
+            .then(url => { if (url) blogForm.value.background_image = url })
+        )
       }
       if (blogUploaders.screenshotUploaderRef?.getPendingCount()) {
-        const uploadedUrl = await blogUploaders.screenshotUploaderRef.uploadPendingFile()
-        if (uploadedUrl) blogForm.value.screenshot = uploadedUrl
+        uploadPromises.push(
+          blogUploaders.screenshotUploaderRef.uploadPendingFile()
+            .then(url => { if (url) blogForm.value.screenshot = url })
+        )
       }
       if (blogUploaders.aboutExhibitionUploaderRef?.getPendingCount()) {
-        const uploadedUrl = await blogUploaders.aboutExhibitionUploaderRef.uploadPendingFile()
-        if (uploadedUrl) blogForm.value.about_exhibition = uploadedUrl
+        uploadPromises.push(
+          blogUploaders.aboutExhibitionUploaderRef.uploadPendingFile()
+            .then(url => { if (url) blogForm.value.about_exhibition = url })
+        )
+      }
+    }
+
+    // 等待所有上传完成（使用 allSettled 确保即使部分失败也继续）
+    if (uploadPromises.length > 0) {
+      const results = await Promise.allSettled(uploadPromises)
+      const failedUploads = results.filter(r => r.status === 'rejected')
+      if (failedUploads.length > 0) {
+        saving.value = false
+        ElMessage.error(`${failedUploads.length} 个文件上传失败，请重试`)
+        return
       }
     }
 

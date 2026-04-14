@@ -25,11 +25,9 @@ export async function uploadFile(file: File, type = 'image'): Promise<UploadResp
       headers: { "Content-Type": "multipart/form-data" }
     });
   } catch (error: any) {
-    // 尝试从响应中提取详细错误信息
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw error;
+    const serverMessage = error.response?.data?.message
+    const errorMessage = serverMessage || error.message || '上传失败'
+    throw new Error(errorMessage)
   }
 }
 

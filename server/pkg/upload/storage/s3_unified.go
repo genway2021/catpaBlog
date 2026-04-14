@@ -247,6 +247,7 @@ func getContentType(filePath string) string {
 		".png":  "image/png",
 		".gif":  "image/gif",
 		".webp": "image/webp",
+		".avif": "image/avif",
 		".svg":  "image/svg+xml",
 		".mp4":  "video/mp4",
 		".webm": "video/webm",
