@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-
 	"flec_blog/config"
 	"flec_blog/pkg/upload/storage"
 )
@@ -65,15 +63,11 @@ func MustNewStorage(uploadCfg *config.UploadConfig) storage.Storage {
 // 系统初始化
 // ============================================
 
-// InitializeUploadSystem 初始化文件上传系统（从配置文件加载）
-func InitializeUploadSystem(globalCfg *config.Config, router *gin.Engine) *Manager {
-	// 1. 创建存储实例
+// InitializeUploadSystem 初始化文件上传系统
+func InitializeUploadSystem(globalCfg *config.Config) *Manager {
 	uploadStorage := MustNewStorage(&globalCfg.Upload)
 
-	// 2. 注册本地静态文件服务
-	router.Static("/uploads", "./uploads")
 	_ = storage.NewHelper(uploadStorage).CreateUploadDir("./uploads")
 
-	// 3. 创建并返回上传管理器
 	return NewManager(uploadStorage, NewValidator(), globalCfg)
 }

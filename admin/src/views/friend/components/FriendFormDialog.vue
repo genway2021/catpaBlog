@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import type { Friend, FriendType, CreateFriendRequest, UpdateFriendRequest } from '@/types/friend';
 import { createFriend, updateFriend, getFriendTypes } from '@/api/friend';
@@ -257,10 +257,14 @@ const resetFormData = () => {
   }, 0);
 };
 
-// 初始化加载友链类型
-onMounted(() => {
-  loadFriendTypes();
-});
+// 弹窗打开时加载友链类型（immediate 确保懒挂载组件首次打开时也能加载）
+watch(
+  visible,
+  val => {
+    if (val) loadFriendTypes();
+  },
+  { immediate: true }
+);
 
 // 监听编辑友链变化
 watch(

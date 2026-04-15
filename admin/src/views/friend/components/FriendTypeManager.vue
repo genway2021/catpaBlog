@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="visible" title="友链类型管理" width="550px" :align-center="true">
-    <el-table :data="list" style="margin: 20px 0" max-height="350">
+    <el-table v-loading="loading" :data="list" style="margin: 20px 0" max-height="350">
       <el-table-column prop="name" label="类型名称" min-width="60" />
       <el-table-column prop="sort" label="排序" width="60" align="center" />
       <el-table-column prop="is_visible" label="展示" width="100" align="center">
@@ -59,8 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
+import { ref, computed, watch } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getFriendTypes, createFriendType, updateFriendType, deleteFriendType } from '@/api/friend';
 import type { FriendType } from '@/types/friend';
 const props = defineProps<{ modelValue: boolean }>();
@@ -76,6 +76,7 @@ const visible = computed({
   set: val => emit('update:modelValue', val),
 });
 
+const loading = ref(false);
 const list = ref<FriendType[]>([]);
 
 const formVisible = ref(false);
@@ -87,21 +88,25 @@ const current = ref<Partial<FriendType>>({
   count: 0,
 });
 
-// 初始化加载数据
-onMounted(() => {
-  loadData();
-});
+// 弹窗打开时加载数据（immediate 确保懒挂载组件首次打开时也能加载）
+watch(
+  visible,
+  val => {
+    if (val) loadData();
+  },
+  { immediate: true }
+);
 
 // 加载友链类型列表
 async function loadData() {
-  const loading = ElLoading.service();
+  loading.value = true;
   try {
     const res = await getFriendTypes();
     list.value = res.list;
   } catch (err) {
     ElMessage.error('加载友链类型列表失败');
   } finally {
-    loading.close();
+    loading.value = false;
   }
 }
 
@@ -148,17 +153,15 @@ async function save() {
     return ElMessage.warning('请输入类型名称');
   }
 
-  const loading = ElLoading.service();
+  loading.value = true;
   try {
     if (current.value.id) {
-      // 编辑类型
       await updateFriendType(current.value.id, {
         name: current.value.name,
         sort: current.value.sort,
         is_visible: current.value.is_visible,
       });
     } else {
-      // 新增类型
       await createFriendType({
         name: current.value.name,
         sort: current.value.sort,
@@ -167,12 +170,12 @@ async function save() {
     }
     await loadData();
     formVisible.value = false;
-    emit('success'); // 通知父组件刷新
+    emit('success');
     ElMessage.success('保存成功');
   } catch (err) {
     ElMessage.error('保存失败');
   } finally {
-    loading.close();
+    loading.value = false;
   }
 }
 </script>

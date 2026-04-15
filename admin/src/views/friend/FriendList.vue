@@ -81,21 +81,21 @@
         <el-button type="danger" link size="small" @click="handleDelete(row.id)">删除</el-button>
       </template>
     </el-table-column>
-
-    <!-- 额外内容 -->
-    <template #extra>
-      <friend-form-dialog
-        v-model="dialogVisible"
-        :edit-friend="currentFriend"
-        @success="handleFriendSuccess"
-      />
-      <friend-type-manager
-        ref="typeManagerRef"
-        v-model="typeManagerVisible"
-        @success="fetchFriends"
-      />
-    </template>
   </common-list>
+
+  <!-- 弹窗组件：懒挂载，首次打开时才渲染 -->
+  <friend-form-dialog
+    v-if="formMounted"
+    v-model="dialogVisible"
+    :edit-friend="currentFriend"
+    @success="handleFriendSuccess"
+  />
+  <friend-type-manager
+    v-if="typeManagerMounted"
+    ref="typeManagerRef"
+    v-model="typeManagerVisible"
+    @success="fetchFriends"
+  />
 </template>
 
 <script setup lang="ts">
@@ -118,9 +118,11 @@ const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 });
 // 对话框相关
 const dialogVisible = ref(false);
 const currentFriend = ref<Friend | null>(null);
+const formMounted = ref(false);
 
 // 类型管理对话框
 const typeManagerVisible = ref(false);
+const typeManagerMounted = ref(false);
 const typeManagerRef = ref<InstanceType<typeof FriendTypeManager>>();
 
 const fetchFriends = async () => {
@@ -141,15 +143,18 @@ const fetchFriends = async () => {
 
 const handleCreate = () => {
   currentFriend.value = null;
+  formMounted.value = true;
   dialogVisible.value = true;
 };
 
 const handleEdit = (friend: Friend) => {
   currentFriend.value = friend;
+  formMounted.value = true;
   dialogVisible.value = true;
 };
 
 const handleTypeManage = () => {
+  typeManagerMounted.value = true;
   typeManagerVisible.value = true;
 };
 

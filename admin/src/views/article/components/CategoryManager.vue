@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="visible" title="分类管理" width="800px" :align-center="true">
-    <el-table :data="list" style="margin: 20px 0" max-height="350">
+    <el-table v-loading="loading" :data="list" style="margin: 20px 0" max-height="350">
       <el-table-column prop="name" label="分类名称" />
       <el-table-column prop="description" label="描述" show-overflow-tooltip />
       <el-table-column prop="count" label="文章数" width="100" align="center" />
@@ -42,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
+import { ref, computed, watch } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getCategories, createCategory, updateCategory, deleteCategory } from '@/api/category';
 import type { Category } from '@/types/category';
 const props = defineProps<{ modelValue: boolean }>();
@@ -54,6 +54,7 @@ const visible = computed({
   set: val => emit('update:modelValue', val),
 });
 
+const loading = ref(false);
 const list = ref<Category[]>([]);
 
 const formVisible = ref(false);
@@ -64,21 +65,25 @@ const current = ref<Partial<Category>>({
   sort: 0,
 });
 
-// 初始化加载数据
-onMounted(() => {
-  loadData();
-});
+// 弹窗打开时加载数据（immediate 确保懒挂载组件首次打开时也能加载）
+watch(
+  visible,
+  val => {
+    if (val) loadData();
+  },
+  { immediate: true }
+);
 
 // 加载分类列表
 async function loadData() {
-  const loading = ElLoading.service();
+  loading.value = true;
   try {
     const res = await getCategories();
     list.value = res.list;
   } catch (err) {
     ElMessage.error('加载分类列表失败');
   } finally {
-    loading.close();
+    loading.value = false;
   }
 }
 
@@ -106,7 +111,7 @@ async function save() {
     return ElMessage.warning('请输入分类名称');
   }
 
-  const loading = ElLoading.service();
+  loading.value = true;
   try {
     if (current.value.id) {
       await updateCategory(current.value.id, current.value);
@@ -119,7 +124,7 @@ async function save() {
   } catch (err) {
     ElMessage.error('保存失败');
   } finally {
-    loading.close();
+    loading.value = false;
   }
 }
 </script>

@@ -47,13 +47,16 @@ func InitRouter(db *database.Database, conf *config.Config) *gin.Engine {
 	settingRepo := repository.NewSettingRepository(db.DB)
 
 	// 初始化上传系统
-	uploadManager := upload.InitializeUploadSystem(conf, r)
+	uploadManager := upload.InitializeUploadSystem(conf)
 
 	// 使用中间件
 	r.Use(middleware.CORS(conf))              // CORS跨域
 	r.Use(middleware.Logger())                // 日志记录
 	r.Use(middleware.RateLimit(500, 1, "ip")) // 全局IP限流: 500次/分钟
 	r.Use(middleware.Recovery())              // 错误恢复
+
+	// 注册本地静态文件服务
+	r.Static("/uploads", "./uploads")
 
 	// 根路径欢迎页面
 	r.GET("/", func(c *gin.Context) { c.String(200, "Flec-Server 运行成功") })

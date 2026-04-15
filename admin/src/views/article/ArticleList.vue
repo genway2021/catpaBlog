@@ -14,14 +14,8 @@
   >
     <!-- 额外按钮 -->
     <template #toolbar-after>
-      <el-button @click="categoryDialogVisible = true"> 分类管理 </el-button>
-      <el-button @click="tagDialogVisible = true"> 标签管理 </el-button>
-    </template>
-
-    <!-- 额外组件 -->
-    <template #extra>
-      <category-manager v-model="categoryDialogVisible" />
-      <tag-manager v-model="tagDialogVisible" />
+      <el-button @click="openCategoryManager"> 分类管理 </el-button>
+      <el-button @click="openTagManager"> 标签管理 </el-button>
     </template>
 
     <!-- 表格列 - 直接使用 el-table-column -->
@@ -131,6 +125,10 @@
       </template>
     </el-table-column>
   </common-list>
+
+  <!-- 弹窗组件：懒挂载，首次打开时才渲染 -->
+  <category-manager v-if="categoryMounted" v-model="categoryDialogVisible" />
+  <tag-manager v-if="tagMounted" v-model="tagDialogVisible" />
 
   <!-- 导出弹窗 -->
   <el-dialog
@@ -246,9 +244,21 @@ const router = useRouter();
 const loading = ref(false);
 const categoryDialogVisible = ref(false);
 const tagDialogVisible = ref(false);
+const categoryMounted = ref(false);
+const tagMounted = ref(false);
 const articleList = ref<Article[]>([]);
 const total = ref(0);
 const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 });
+
+const openCategoryManager = () => {
+  categoryMounted.value = true;
+  categoryDialogVisible.value = true;
+};
+
+const openTagManager = () => {
+  tagMounted.value = true;
+  tagDialogVisible.value = true;
+};
 
 const fetchArticles = async () => {
   loading.value = true;

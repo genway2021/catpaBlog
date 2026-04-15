@@ -224,18 +224,6 @@
       </template>
       <div class="quick-access-content">
         <div class="quick-links">
-          <div class="link-item" @click="openLink('https://talen.top')">
-            <span class="link-text">主页</span>
-            <el-icon class="link-icon">
-              <Right />
-            </el-icon>
-          </div>
-          <div class="link-item" @click="openLink('https://blog.talen.top')">
-            <span class="link-text">博客</span>
-            <el-icon class="link-icon">
-              <Right />
-            </el-icon>
-          </div>
           <div class="link-item" @click="openLink('https://github.com/talen8')">
             <span class="link-text">GitHub</span>
             <el-icon class="link-icon">
@@ -247,6 +235,18 @@
             @click="openLink('https://ccnlf8xcz6k3.feishu.cn/wiki/space/7618178485001046989')"
           >
             <span class="link-text">文档</span>
+            <el-icon class="link-icon">
+              <Right />
+            </el-icon>
+          </div>
+          <div class="link-item" @click="openLink('https://qm.qq.com/q/YDynuTZq4o')">
+            <span class="link-text">社群</span>
+            <el-icon class="link-icon">
+              <Right />
+            </el-icon>
+          </div>
+          <div class="link-item" @click="openLink('https://blog.talen.top')">
+            <span class="link-text">博客</span>
             <el-icon class="link-icon">
               <Right />
             </el-icon>
