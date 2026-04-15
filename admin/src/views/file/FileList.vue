@@ -1,23 +1,41 @@
 <template>
-  <common-list title="文件管理" :data="fileList" :loading="loading" :total="total" :show-create="false"
-    v-model:page="query.page" v-model:page-size="query.page_size" @refresh="loadList" @update:page="loadList"
-    @update:pageSize="loadList">
+  <common-list
+    title="文件管理"
+    :data="fileList"
+    :loading="loading"
+    :total="total"
+    :show-create="false"
+    v-model:page="query.page"
+    v-model:page-size="query.page_size"
+    @refresh="loadList"
+    @update:page="loadList"
+    @update:pageSize="loadList"
+  >
     <!-- 表格列 -->
     <el-table-column label="预览" width="80" align="center">
       <template #default="{ row }">
-        <el-image v-if="isImage(row)" :src="row.file_url" fit="cover"
-          style="width: 50px; height: 50px; border-radius: 4px" />
+        <el-image
+          v-if="isImage(row)"
+          :src="row.file_url"
+          fit="cover"
+          style="width: 50px; height: 50px; border-radius: 4px"
+        />
       </template>
     </el-table-column>
 
     <el-table-column label="文件名" min-width="180">
       <template #default="{ row }">
-        <span style="margin-right: 8px;font-weight: 500">{{ row.file_name }}</span>
+        <span style="margin-right: 8px; font-weight: 500">{{ row.file_name }}</span>
         <span style="font-size: 12px; color: #909399">{{ formatFileSize(row.file_size) }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column prop="original_name" label="原始文件名" min-width="200" show-overflow-tooltip />
+    <el-table-column
+      prop="original_name"
+      label="原始文件名"
+      min-width="200"
+      show-overflow-tooltip
+    />
 
     <el-table-column prop="file_type" label="类型" width="100" align="center" />
 
@@ -47,69 +65,71 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import CommonList from '@/components/common/CommonList.vue'
-import { getFileList, deleteFile } from '@/api/file'
-import type { FileInfo, FileListQuery } from '@/types/file'
-import { formatDateTime } from '@/utils/date'
+import { ref, reactive, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import CommonList from '@/components/common/CommonList.vue';
+import { getFileList, deleteFile } from '@/api/file';
+import type { FileInfo, FileListQuery } from '@/types/file';
+import { formatDateTime } from '@/utils/date';
 
-const query = reactive<FileListQuery>({ page: 1, page_size: 20 })
-const fileList = ref<FileInfo[]>([])
-const total = ref(0)
-const loading = ref(false)
+const query = reactive<FileListQuery>({ page: 1, page_size: 20 });
+const fileList = ref<FileInfo[]>([]);
+const total = ref(0);
+const loading = ref(false);
 
 const loadList = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const [data] = await Promise.all([
       getFileList(query),
-      new Promise(resolve => setTimeout(resolve, 300))
-    ])
-    fileList.value = data.list
-    total.value = data.total
+      new Promise(resolve => setTimeout(resolve, 300)),
+    ]);
+    fileList.value = data.list;
+    total.value = data.total;
   } catch {
-    ElMessage.error('加载失败')
+    ElMessage.error('加载失败');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const copyUrl = async (file: FileInfo) => {
   try {
-    await navigator.clipboard.writeText(file.file_url)
-    ElMessage.success('已复制')
+    await navigator.clipboard.writeText(file.file_url);
+    ElMessage.success('已复制');
   } catch {
-    ElMessage.error('复制失败')
+    ElMessage.error('复制失败');
   }
-}
+};
 
 const handleDelete = async (id: number) => {
   try {
-    await ElMessageBox.confirm('确定要删除这个文件吗？', '提示', { type: 'warning' })
-    await deleteFile(id)
-    ElMessage.success('删除成功')
-    loadList()
+    await ElMessageBox.confirm('确定要删除这个文件吗？', '提示', {
+      type: 'warning',
+    });
+    await deleteFile(id);
+    ElMessage.success('删除成功');
+    loadList();
   } catch (error) {
-    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message)
+    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message);
   }
-}
+};
 
-const isImage = (file: FileInfo) => file.file_type?.startsWith('image/')
+const isImage = (file: FileInfo) => file.file_type?.startsWith('image/');
 
 const formatFileSize = (size: number) => {
-  if (size < 1024) return size + ' B'
-  if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB'
-  return (size / (1024 * 1024)).toFixed(1) + ' MB'
-}
+  if (size < 1024) return size + ' B';
+  if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
+  return (size / (1024 * 1024)).toFixed(1) + ' MB';
+};
 
 const getStatusTagType = (status: number) => {
-  return status === 1 ? 'success' : 'info'
-}
+  return status === 1 ? 'success' : 'info';
+};
 
 const getStatusText = (status: number) => {
-  return status === 1 ? '使用中' : '未使用'
-}
+  return status === 1 ? '使用中' : '未使用';
+};
 
-onMounted(loadList)
+onMounted(loadList);
 </script>

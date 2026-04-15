@@ -21,6 +21,17 @@ func NewToolsController() *ToolsController {
 }
 
 // ParseVideo 解析视频URL
+//
+//	@Summary		解析视频URL
+//	@Description	解析短视频平台链接，提取视频信息（支持哔哩哔哩、Youtube等）
+//	@Tags			工具
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body		object{url=string}	true	"视频URL"
+//	@Success		200		{object}	response.Response{data=videoparser.VideoInfo}
+//	@Failure		400		{object}	response.Response
+//	@Router			/api/v1/admin/tools/parse-video [post]
 func (c *ToolsController) ParseVideo(ctx *gin.Context) {
 	var req struct {
 		URL string `json:"url" binding:"required"`
@@ -45,6 +56,17 @@ func (c *ToolsController) ParseVideo(ctx *gin.Context) {
 }
 
 // FetchLinkMetadata 获取链接元数据
+//
+//	@Summary		获取链接元数据
+//	@Description	解析URL并提取网页元数据（标题、描述、图片等）
+//	@Tags			工具
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body		object{url=string}	true	"网页URL"
+//	@Success		200		{object}	response.Response{data=linkparser.Metadata}
+//	@Failure		400		{object}	response.Response
+//	@Router			/api/v1/admin/tools/fetch-linkmeta [post]
 func (c *ToolsController) FetchLinkMetadata(ctx *gin.Context) {
 	var req struct {
 		URL string `json:"url" binding:"required"`
@@ -64,6 +86,17 @@ func (c *ToolsController) FetchLinkMetadata(ctx *gin.Context) {
 }
 
 // DownloadImage 下载图片
+//
+//	@Summary		下载图片
+//	@Description	从远程URL下载图片并返回图片数据
+//	@Tags			工具
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body		object{url=string}	true	"图片URL"
+//	@Success		200		{object}	response.Response{data=object{content_type=string,content_length=int,data=[]byte}}
+//	@Failure		400		{object}	response.Response
+//	@Router			/api/v1/admin/tools/download-image [post]
 func (c *ToolsController) DownloadImage(ctx *gin.Context) {
 	var req struct {
 		URL string `json:"url" binding:"required"`

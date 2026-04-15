@@ -262,7 +262,6 @@ func CommentManageInputSchema() *jsonschema.Schema {
 	}
 }
 
-
 // ============ 转换函数============
 
 func convertCommentTarget(target struct {

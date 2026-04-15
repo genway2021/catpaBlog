@@ -3,7 +3,7 @@
 
 // 亮色主题（默认）
 :root,
-[data-theme="light"] {
+[data-theme='light'] {
   // 文本颜色
   --prose-text: #4c4948;
   --prose-heading: #2c3e50;
@@ -28,11 +28,7 @@
   --prose-codeblock-line-border: #d1d5da;
 
   // 引用块颜色
-  --prose-quote-bg: linear-gradient(
-    to right,
-    rgba(73, 177, 245, 0.05),
-    transparent
-  );
+  --prose-quote-bg: linear-gradient(to right, rgba(73, 177, 245, 0.05), transparent);
   --prose-quote-border: #49b1f5;
   --prose-quote-text: #5a6c7d;
 
@@ -84,7 +80,7 @@
 }
 
 // 暗色主题
-[data-theme="dark"] {
+[data-theme='dark'] {
   // 文本颜色
   --prose-text: #ffffffb3;
   --prose-heading: #e0e0e0;
@@ -109,11 +105,7 @@
   --prose-codeblock-line-border: #444;
 
   // 引用块颜色
-  --prose-quote-bg: linear-gradient(
-    to right,
-    rgba(73, 177, 245, 0.08),
-    transparent
-  );
+  --prose-quote-bg: linear-gradient(to right, rgba(73, 177, 245, 0.08), transparent);
   --prose-quote-border: #49b1f5;
   --prose-quote-text: #b8b8b8;
 
@@ -167,8 +159,14 @@
 // ========== Markdown 内容排版样式 ==========
 .markdown-content {
   // ===== 基础设置 =====
-  font-family: "LXGWWenKaiLite", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Helvetica Neue", sans-serif;
+  font-family:
+    'LXGWWenKaiLite',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    sans-serif;
   font-size: 1rem;
   line-height: 1.8;
   color: var(--prose-text);
@@ -258,8 +256,8 @@
     }
 
     // 外部链接图标
-    &[target="_blank"]::after {
-      content: "↗";
+    &[target='_blank']::after {
+      content: '↗';
       margin-left: 0.2em;
       font-size: 0.8em;
       opacity: 0.6;
@@ -311,13 +309,13 @@
 
     // 任务列表
     &.task-list-item,
-    &:has(> input[type="checkbox"]) {
+    &:has(> input[type='checkbox']) {
       list-style-type: none;
       margin-left: -1.5em;
     }
 
     // 任务列表复选框样式
-    input[type="checkbox"] {
+    input[type='checkbox'] {
       margin-right: 0.5em;
       pointer-events: none;
     }
@@ -368,7 +366,7 @@
       font-style: italic;
 
       &::before {
-        content: "—— ";
+        content: '—— ';
       }
     }
   }
@@ -382,7 +380,7 @@
     background-color: var(--prose-code-bg);
     border: 1px solid var(--prose-code-border);
     border-radius: 4px;
-    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     color: var(--prose-code-text);
     font-weight: 500;
   }
@@ -417,7 +415,9 @@
           font-size: 24px;
           font-style: normal;
           color: var(--prose-codeblock-lang);
-          transition: color 0.2s ease, transform 0.3s ease;
+          transition:
+            color 0.2s ease,
+            transform 0.3s ease;
         }
 
         &:hover i {
@@ -473,7 +473,7 @@
         color: var(--prose-codeblock-text);
         line-height: 1.45;
         font-size: 0.875em;
-        font-family: "Consolas", "Monaco", "Courier New", monospace;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 
         .line-number {
           display: inline-block;
@@ -559,7 +559,7 @@
 
     // 中间装饰 - 三段（中间方块，两边长条）
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       left: 50%;
       top: 50%;
@@ -571,7 +571,7 @@
     }
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       left: 50%;
       top: 50%;
@@ -579,8 +579,10 @@
       width: 20px;
       height: 2px;
       background: var(--prose-hr-dot);
-      box-shadow: -32px 0 0 0 var(--prose-hr-dot),
-        32px 0 0 0 var(--prose-hr-dot), 0 0 0 3px var(--prose-hr-shadow),
+      box-shadow:
+        -32px 0 0 0 var(--prose-hr-dot),
+        32px 0 0 0 var(--prose-hr-dot),
+        0 0 0 3px var(--prose-hr-shadow),
         -32px 0 0 3px var(--prose-hr-shadow),
         32px 0 0 3px var(--prose-hr-shadow);
     }
@@ -651,11 +653,7 @@
 
   // 标记/高亮
   mark {
-    background: linear-gradient(
-      to bottom,
-      transparent 50%,
-      var(--prose-mark-bg) 50%
-    );
+    background: linear-gradient(to bottom, transparent 50%, var(--prose-mark-bg) 50%);
     padding: 0.1em 0.2em;
     border-radius: 2px;
     color: inherit;
@@ -683,11 +681,12 @@
     display: inline-block;
     padding: 0.2em 0.5em;
     font-size: 0.875em;
-    font-family: "Consolas", "Monaco", monospace;
+    font-family: 'Consolas', 'Monaco', monospace;
     background: var(--prose-kbd-bg);
     border: 1px solid var(--prose-kbd-border);
     border-radius: 4px;
-    box-shadow: 0 2px 0 var(--prose-kbd-shadow),
+    box-shadow:
+      0 2px 0 var(--prose-kbd-shadow),
       inset 0 1px 0 var(--prose-kbd-inner-shadow);
     color: var(--prose-kbd-text);
     white-space: nowrap;

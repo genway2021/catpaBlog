@@ -3,7 +3,12 @@
     <el-divider content-position="left">基础配置</el-divider>
 
     <el-form-item label="存储类型">
-      <el-select v-model="form.storage_type" placeholder="选择存储类型" style="width: 220px" :disabled="loading">
+      <el-select
+        v-model="form.storage_type"
+        placeholder="选择存储类型"
+        style="width: 220px"
+        :disabled="loading"
+      >
         <el-option label="本地存储" value="local" />
         <el-option label="亚马逊 S3" value="s3" />
         <el-option label="阿里云 OSS" value="oss" />
@@ -20,184 +25,225 @@
     </el-form-item>
 
     <el-form-item label="文件命名">
-      <el-input v-model="form.path_pattern" placeholder="{timestamp}_{random}{ext}" :disabled="loading" />
+      <el-input
+        v-model="form.path_pattern"
+        placeholder="{timestamp}_{random}{ext}"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <template v-if="form.storage_type !== 'local'">
       <el-form-item :label="accessLabel">
-        <el-input v-model="form.access_key" :placeholder="accessPlaceholder" clearable :disabled="loading" />
+        <el-input
+          v-model="form.access_key"
+          :placeholder="accessPlaceholder"
+          clearable
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item :label="secretLabel">
-        <el-input v-model="form.secret_key" type="password" show-password :placeholder="secretPlaceholder" clearable
-          :disabled="loading" autocomplete="new-password" />
+        <el-input
+          v-model="form.secret_key"
+          type="password"
+          show-password
+          :placeholder="secretPlaceholder"
+          clearable
+          :disabled="loading"
+          autocomplete="new-password"
+        />
       </el-form-item>
 
       <el-form-item v-if="showRegion" label="地域">
-        <el-input v-model="form.region" :placeholder="regionPlaceholder" clearable :disabled="loading" />
+        <el-input
+          v-model="form.region"
+          :placeholder="regionPlaceholder"
+          clearable
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item label="存储桶">
-        <el-input v-model="form.bucket" :placeholder="bucketPlaceholder" clearable :disabled="loading" />
+        <el-input
+          v-model="form.bucket"
+          :placeholder="bucketPlaceholder"
+          clearable
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item v-if="showEndpoint" label="服务端点">
-        <el-input v-model="form.endpoint" :placeholder="endpointPlaceholder" clearable :disabled="loading" />
+        <el-input
+          v-model="form.endpoint"
+          :placeholder="endpointPlaceholder"
+          clearable
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item label="自定义域名">
-        <el-input v-model="form.domain" :placeholder="domainPlaceholder" clearable :disabled="loading" />
+        <el-input
+          v-model="form.domain"
+          :placeholder="domainPlaceholder"
+          clearable
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item v-if="showUseSSL" label="启用 HTTPS">
-        <el-switch v-model="form.use_ssl" :active-value="true" :inactive-value="false" :disabled="loading" />
+        <el-switch
+          v-model="form.use_ssl"
+          :active-value="true"
+          :inactive-value="false"
+          :disabled="loading"
+        />
       </el-form-item>
     </template>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 export interface UploadForm {
-  storage_type: string
-  max_file_size: number
-  path_pattern: string
-  access_key: string
-  secret_key: string
-  region: string
-  bucket: string
-  endpoint: string
-  domain: string
-  use_ssl: boolean
+  storage_type: string;
+  max_file_size: number;
+  path_pattern: string;
+  access_key: string;
+  secret_key: string;
+  region: string;
+  bucket: string;
+  endpoint: string;
+  domain: string;
+  use_ssl: boolean;
 }
 
-const form = defineModel<UploadForm>('form', { required: true })
+const form = defineModel<UploadForm>('form', { required: true });
 
 defineProps<{
-  loading?: boolean
-}>()
+  loading?: boolean;
+}>();
 
 const accessLabel = computed(() => {
   switch (form.value.storage_type) {
     case 'cos':
-      return 'SecretId'
+      return 'SecretId';
     case 'oss':
-      return 'AccessKeyId'
+      return 'AccessKeyId';
     case 'kodo':
-      return 'AccessKey'
+      return 'AccessKey';
     case 'r2':
     case 'minio':
-      return 'Access Key'
+      return 'Access Key';
     default:
-      return 'Access Key'
+      return 'Access Key';
   }
-})
+});
 
 const secretLabel = computed(() => {
   switch (form.value.storage_type) {
     case 'cos':
-      return 'SecretKey'
+      return 'SecretKey';
     case 'oss':
-      return 'AccessKeySecret'
+      return 'AccessKeySecret';
     case 'kodo':
-      return 'SecretKey'
+      return 'SecretKey';
     case 'r2':
     case 'minio':
-      return 'Secret Key'
+      return 'Secret Key';
     default:
-      return 'Secret Key'
+      return 'Secret Key';
   }
-})
+});
 
 const accessPlaceholder = computed(() => {
   switch (form.value.storage_type) {
     case 'cos':
-      return '例如 AKIDxxxxxxxxxxxxxxxxxxxx'
+      return '例如 AKIDxxxxxxxxxxxxxxxxxxxx';
     case 'oss':
-      return '例如 LTAIxxxxxxxxxxxxxxxx'
+      return '例如 LTAIxxxxxxxxxxxxxxxx';
     default:
-      return ''
+      return '';
   }
-})
+});
 
 const secretPlaceholder = computed(() => {
   switch (form.value.storage_type) {
     case 'cos':
-      return 'COS 的 SecretKey'
+      return 'COS 的 SecretKey';
     case 'oss':
-      return 'OSS 的 AccessKeySecret'
+      return 'OSS 的 AccessKeySecret';
     default:
-      return ''
+      return '';
   }
-})
+});
 
 const regionPlaceholder = computed(() => {
   switch (form.value.storage_type) {
     case 's3':
-      return '例如 us-east-1, ap-southeast-1'
+      return '例如 us-east-1, ap-southeast-1';
     case 'cos':
-      return '例如 ap-guangzhou, ap-beijing'
+      return '例如 ap-guangzhou, ap-beijing';
     case 'oss':
-      return '例如 oss-cn-hangzhou, oss-cn-beijing'
+      return '例如 oss-cn-hangzhou, oss-cn-beijing';
     case 'kodo':
-      return '例如 cn-east-1, cn-north-1, cn-south-1'
+      return '例如 cn-east-1, cn-north-1, cn-south-1';
     case 'minio':
-      return '例如 us-east-1, cn-east-1'
+      return '例如 us-east-1, cn-east-1';
     default:
-      return ''
+      return '';
   }
-})
+});
 
 const endpointPlaceholder = computed(() => {
   switch (form.value.storage_type) {
     case 's3':
-      return '可选，例如 s3.us-east-1.amazonaws.com'
+      return '可选，例如 s3.us-east-1.amazonaws.com';
     case 'r2':
-      return '例如 <account-id>.r2.cloudflarestorage.com'
+      return '例如 <account-id>.r2.cloudflarestorage.com';
     case 'minio':
-      return '例如 localhost:9000 或 minio.example.com'
+      return '例如 localhost:9000 或 minio.example.com';
     default:
-      return ''
+      return '';
   }
-})
+});
 
 const showRegion = computed(() => {
-  const type = form.value.storage_type
-  return type === 's3' || type === 'cos' || type === 'oss' || type === 'kodo' || type === 'minio'
-})
+  const type = form.value.storage_type;
+  return type === 's3' || type === 'cos' || type === 'oss' || type === 'kodo' || type === 'minio';
+});
 
 const showEndpoint = computed(() => {
-  const type = form.value.storage_type
-  return type === 's3' || type === 'r2' || type === 'minio'
-})
+  const type = form.value.storage_type;
+  return type === 's3' || type === 'r2' || type === 'minio';
+});
 
 const showUseSSL = computed(() => {
-  const type = form.value.storage_type
-  return type === 'r2' || type === 'minio'
-})
+  const type = form.value.storage_type;
+  return type === 'r2' || type === 'minio';
+});
 
 const bucketPlaceholder = computed(() => {
   switch (form.value.storage_type) {
     case 'cos':
-      return '例如 my-bucket-1234567890'
+      return '例如 my-bucket-1234567890';
     default:
-      return '例如 my-bucket'
+      return '例如 my-bucket';
   }
-})
+});
 
 const domainPlaceholder = computed(() => {
   switch (form.value.storage_type) {
     case 'kodo':
-      return '必需，例如 https://cdn.example.com (七牛云CDN域名)'
+      return '必需，例如 https://cdn.example.com (七牛云CDN域名)';
     case 'cos':
-      return '可选，例如 https://cdn.example.com (腾讯云CDN域名)'
+      return '可选，例如 https://cdn.example.com (腾讯云CDN域名)';
     case 'oss':
-      return '可选，例如 https://cdn.example.com (阿里云CDN域名)'
+      return '可选，例如 https://cdn.example.com (阿里云CDN域名)';
     default:
-      return '可选，例如 https://cdn.example.com'
+      return '可选，例如 https://cdn.example.com';
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>

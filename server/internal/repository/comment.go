@@ -128,7 +128,6 @@ func (r *CommentRepository) Get(ctx context.Context, id uint) (*model.Comment, e
 	return &comment, nil
 }
 
-
 // ExistsByContentURL 检查是否有评论内容引用该文件（包含软删除评论，便于恢复后仍可展示）
 func (r *CommentRepository) ExistsByContentURL(url string) (bool, error) {
 	var count int64

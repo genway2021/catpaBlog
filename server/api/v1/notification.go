@@ -22,10 +22,10 @@ func NewNotificationController(service *service.NotificationService) *Notificati
 
 // ============ 前台用户通知接口 ============
 
-// ListForWeb 获取前台用户通知列表
+// ListForWeb 获取用户通知列表
 //
-//	@Summary		获取前台用户通知列表
-//	@Description	获取当前用户的通知列表（仅评论回复、全站通知等），包含未读数量
+//	@Summary		获取用户通知列表
+//	@Description	获取当前用户的通知列表（评论回复、全站通知等），包含未读数量
 //	@Tags			通知
 //	@Accept			json
 //	@Produce		json
@@ -59,7 +59,7 @@ func (h *NotificationController) ListForWeb(c *gin.Context) {
 //
 //	@Summary		标记通知为已读
 //	@Description	将指定通知标记为已读状态
-//	@Tags			通知管理
+//	@Tags			通知
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
@@ -90,7 +90,7 @@ func (h *NotificationController) MarkAsRead(c *gin.Context) {
 //
 //	@Summary		标记所有通知为已读
 //	@Description	将所有通知标记为已读状态
-//	@Tags			通知管理
+//	@Tags			通知
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
@@ -112,10 +112,10 @@ func (h *NotificationController) MarkAllAsRead(c *gin.Context) {
 
 // ============ 后台管理通知接口 ============
 
-// List 获取后台管理员通知列表
+// List 获取通知列表
 //
-//	@Summary		获取后台管理员通知列表
-//	@Description	获取管理员的通知列表（评论通知、问题反馈、友链申请等），包含未读数量
+//	@Summary		获取通知列表
+//	@Description	获取管理员的通知列表（评论通知、问题反馈、友链申请、异常友链等），包含未读数量
 //	@Tags			通知管理
 //	@Accept			json
 //	@Produce		json

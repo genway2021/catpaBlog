@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-const { basicConfig, blogConfig } = useSysConfig()
-const startYear = 2024
-const copyrightYear = ref(`${startYear}`)
+const { basicConfig, blogConfig } = useSysConfig();
+const startYear = 2024;
+const copyrightYear = ref(`${startYear}`);
 
 onMounted(() => {
-  const currentYear = new Date().getFullYear()
-  copyrightYear.value = startYear === currentYear
-    ? `${currentYear}`
-    : `${startYear} - ${currentYear}`
-})
+  const currentYear = new Date().getFullYear();
+  copyrightYear.value =
+    startYear === currentYear ? `${currentYear}` : `${startYear} - ${currentYear}`;
+});
 
 /**
  * 解析 JSON 字符串
@@ -16,24 +15,23 @@ onMounted(() => {
  * @param fallback - 解析失败时的默认值
  * @returns 解析后的数据
  */
-const parseJSON = <T = any>(jsonStr: string | undefined, fallback: T): T => {
+const parseJSON = <T = any,>(jsonStr: string | undefined, fallback: T): T => {
   try {
-    return jsonStr ? JSON.parse(jsonStr) : fallback
+    return jsonStr ? JSON.parse(jsonStr) : fallback;
   } catch {
-    return fallback
+    return fallback;
   }
-}
+};
 
 /**
  * 页脚右侧链接列表
  * 从系统配置中读取 footer_links 字段
  */
 const footerLinks = computed(() => {
-  return parseJSON<Array<{ name: string; url: string }>>(
-    blogConfig.value.footer_links,
-    []
-  ).filter(item => item.name && item.url)
-})
+  return parseJSON<Array<{ name: string; url: string }>>(blogConfig.value.footer_links, []).filter(
+    item => item.name && item.url
+  );
+});
 
 /**
  * 判断链接是否为外部链接
@@ -42,8 +40,8 @@ const footerLinks = computed(() => {
  * @returns 是否为外部链接
  */
 const isExternalLink = (url: string) => {
-  return !url.startsWith('/')
-}
+  return !url.startsWith('/');
+};
 </script>
 
 <template>
@@ -51,24 +49,44 @@ const isExternalLink = (url: string) => {
     <div class="column-left">
       <div class="copyright">
         <span>©{{ copyrightYear }} By</span>
-        <a :href="basicConfig.home_url || '#'" target="_blank" :aria-label="`作者 ${basicConfig.author}`"
-          rel="noopener noreferrer">{{
-            basicConfig.author }}</a>
+        <a
+          :href="basicConfig.home_url || '#'"
+          target="_blank"
+          :aria-label="`作者 ${basicConfig.author}`"
+          rel="noopener noreferrer"
+          >{{ basicConfig.author }}</a
+        >
       </div>
       <div v-if="basicConfig.icp || basicConfig.police_record" class="beian">
-        <a v-if="basicConfig.icp" href="https://beian.miit.gov.cn/" target="_blank"
-          :aria-label="`${basicConfig.icp} 备案信息`" rel="noopener noreferrer">{{
-            basicConfig.icp }}</a>
-        <a v-if="basicConfig.police_record" href="https://beian.mps.gov.cn/" target="_blank"
-          :aria-label="`${basicConfig.police_record} 公安备案信息`" rel="noopener noreferrer">{{
-            basicConfig.police_record }}</a>
+        <a
+          v-if="basicConfig.icp"
+          href="https://beian.miit.gov.cn/"
+          target="_blank"
+          :aria-label="`${basicConfig.icp} 备案信息`"
+          rel="noopener noreferrer"
+          >{{ basicConfig.icp }}</a
+        >
+        <a
+          v-if="basicConfig.police_record"
+          href="https://beian.mps.gov.cn/"
+          target="_blank"
+          :aria-label="`${basicConfig.police_record} 公安备案信息`"
+          rel="noopener noreferrer"
+          >{{ basicConfig.police_record }}</a
+        >
       </div>
     </div>
     <div class="column-right">
       <!-- 可配置的页脚链接 -->
-      <a v-for="link in footerLinks" :key="link.name" class="links" :href="link.url"
+      <a
+        v-for="link in footerLinks"
+        :key="link.name"
+        class="links"
+        :href="link.url"
         :target="isExternalLink(link.url) ? '_blank' : '_self'"
-        :rel="isExternalLink(link.url) ? 'noopener noreferrer' : undefined" :aria-label="link.name">
+        :rel="isExternalLink(link.url) ? 'noopener noreferrer' : undefined"
+        :aria-label="link.name"
+      >
         {{ link.name }}
       </a>
     </div>
@@ -157,7 +175,7 @@ const isExternalLink = (url: string) => {
 
       &:hover {
         color: var(--flec-footer-font-hover);
-        background: var(--flec-footer-font-bg-hover)
+        background: var(--flec-footer-font-bg-hover);
       }
     }
   }

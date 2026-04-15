@@ -53,10 +53,10 @@ func (c *MomentController) ListForWeb(ctx *gin.Context) {
 
 // ============ 后台管理接口 ============
 
-// List 获取动态列表（管理）
+// List 获取动态列表
 //
-//	@Summary		动态列表（管理）
-//	@Description	获取所有动态用于管理
+//	@Summary		动态列表
+//	@Description	获取所有动态
 //	@Tags			动态管理
 //	@Accept			json
 //	@Produce		json
@@ -83,10 +83,10 @@ func (c *MomentController) List(ctx *gin.Context) {
 	response.PageSuccess(ctx, moments, total, req.Page, req.PageSize)
 }
 
-// Get 获取动态详情（管理）
+// Get 获取动态详情
 //
-//	@Summary		动态详情（管理）
-//	@Description	通过 ID 获取动态详情
+//	@Summary		动态详情
+//	@Description	获取动态详细信息
 //	@Tags			动态管理
 //	@Accept			json
 //	@Produce		json
@@ -185,7 +185,7 @@ func (c *MomentController) Update(ctx *gin.Context) {
 // Delete 删除动态
 //
 //	@Summary		删除动态
-//	@Description	删除动态
+//	@Description	硬删除动态，不可恢复
 //	@Tags			动态管理
 //	@Accept			json
 //	@Produce		json

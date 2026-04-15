@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { getCategoryBySlug } from "@/composables/api/category";
-import { getArticlesForWeb } from "@/composables/api/article";
-import type { Category } from "@@/types/category";
-import type { Article } from "@@/types/article";
-definePageMeta({})
+import { getCategoryBySlug } from '@/composables/api/category';
+import { getArticlesForWeb } from '@/composables/api/article';
+import type { Category } from '@@/types/category';
+import type { Article } from '@@/types/article';
+definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();
@@ -16,15 +16,15 @@ const pageSize = ref(10);
 // 使用SSR获取分类详情和文章列表
 const { data: initialData } = await useAsyncData(`category-${route.params.slug}`, async () => {
   const slug = route.params.slug as string;
-  
+
   try {
     const [categoryData, articlesData] = await Promise.all([
       getCategoryBySlug(slug),
       getArticlesForWeb({
         category: slug,
         page: 1,
-        page_size: pageSize.value
-      })
+        page_size: pageSize.value,
+      }),
     ]);
     return { category: categoryData, articles: articlesData.list, total: articlesData.total };
   } catch (error: any) {
@@ -33,25 +33,28 @@ const { data: initialData } = await useAsyncData(`category-${route.params.slug}`
     }
     return null;
   }
-})
+});
 
 // 初始化数据
 if (initialData.value) {
-  category.value = initialData.value.category
-  articles.value = initialData.value.articles
-  total.value = initialData.value.total
-  currentPage.value = 1
+  category.value = initialData.value.category;
+  articles.value = initialData.value.articles;
+  total.value = initialData.value.total;
+  currentPage.value = 1;
 }
 
 // 动态页面标题
 useHead({
-  title: () => category.value ? `分类:${category.value.name}` : undefined
-})
+  title: () => (category.value ? `分类:${category.value.name}` : undefined),
+});
 
 useSeoMeta({
-  title: () => category.value ? `分类 - ${category.value.name}` : '分类',
-  description: () => category.value ? `浏览 ${category.value.name} 分类下的 ${total.value} 篇文章，探索更多相关内容` : '浏览分类下的文章'
-})
+  title: () => (category.value ? `分类 - ${category.value.name}` : '分类'),
+  description: () =>
+    category.value
+      ? `浏览 ${category.value.name} 分类下的 ${total.value} 篇文章，探索更多相关内容`
+      : '浏览分类下的文章',
+});
 
 const fetchData = async (page = 1) => {
   const slug = route.params.slug as string;
@@ -61,7 +64,7 @@ const fetchData = async (page = 1) => {
     const articlesData = await getArticlesForWeb({
       category: slug,
       page,
-      page_size: pageSize.value
+      page_size: pageSize.value,
     });
     articles.value = articlesData.list;
     total.value = articlesData.total;
@@ -81,20 +84,32 @@ const handlePageChange = (page: number) => {
 };
 
 // 监听路由参数变化
-watch(() => route.params.slug, () => {
-  currentPage.value = 1;
-  fetchData(1);
-});
-
+watch(
+  () => route.params.slug,
+  () => {
+    currentPage.value = 1;
+    fetchData(1);
+  }
+);
 </script>
 
 <template>
   <div id="page">
-    <FeaturesArchiveArticleList v-if="category" :articles="articles" :title="`分类 - ${category.name}`" :total="total" />
+    <FeaturesArchiveArticleList
+      v-if="category"
+      :articles="articles"
+      :title="`分类 - ${category.name}`"
+      :total="total"
+    />
 
     <!-- 分页 -->
-    <UiPagination v-if="category && total > pageSize" :total="total" :current-page="currentPage" :page-size="pageSize"
-      @change="handlePageChange" />
+    <UiPagination
+      v-if="category && total > pageSize"
+      :total="total"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      @change="handlePageChange"
+    />
   </div>
 </template>
 

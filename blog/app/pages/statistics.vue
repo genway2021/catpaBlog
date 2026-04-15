@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { SiteStats } from '@@/types/stats'
-import { getSiteStats } from '@/composables/api/stats'
+import type { SiteStats } from '@@/types/stats';
+import { getSiteStats } from '@/composables/api/stats';
 
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '统计',
-  description: '公开展示本站的文章、评论、友链、分类、标签、动态与访问情况等统计数据'
-})
+  description: '公开展示本站的文章、评论、友链、分类、标签、动态与访问情况等统计数据',
+});
 
-const { blogConfig } = useSysConfig()
+const { blogConfig } = useSysConfig();
 
 const emptyStats: SiteStats = {
   total_words: '0',
@@ -28,37 +28,37 @@ const emptyStats: SiteStats = {
   today_pageviews: 0,
   yesterday_visitors: 0,
   yesterday_pageviews: 0,
-  month_pageviews: 0
-}
+  month_pageviews: 0,
+};
 
 const { data } = await useAsyncData('site-stats-page', async () => {
   try {
-    return await getSiteStats()
+    return await getSiteStats();
   } catch (error) {
-    console.error('获取站点统计数据失败:', error)
-    return emptyStats
+    console.error('获取站点统计数据失败:', error);
+    return emptyStats;
   }
-})
+});
 
 const stats = computed<SiteStats>(() => ({
   ...emptyStats,
-  ...(data.value ?? {})
-}))
+  ...(data.value ?? {}),
+}));
 
-const establishedDate = computed(() => blogConfig.value.established || '2024-01-01')
+const establishedDate = computed(() => blogConfig.value.established || '2024-01-01');
 
 const runningDays = computed(() => {
-  const startDate = new Date(establishedDate.value).getTime()
-  return Math.max(0, Math.floor((Date.now() - startDate) / 86400000))
-})
+  const startDate = new Date(establishedDate.value).getTime();
+  return Math.max(0, Math.floor((Date.now() - startDate) / 86400000));
+});
 
 const formatNumber = (value: string | number) => {
-  if (typeof value === 'string') return value
-  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
-  if (value >= 10000) return `${(value / 10000).toFixed(1)}w`
-  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`
-  return `${value}`
-}
+  if (typeof value === 'string') return value;
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 10000) return `${(value / 10000).toFixed(1)}w`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+  return `${value}`;
+};
 
 const overviewCards = computed(() => [
   {
@@ -66,92 +66,92 @@ const overviewCards = computed(() => [
     label: '字数',
     value: stats.value.total_words,
     icon: 'ri-file-text-line',
-    hint: '已发布文章全文累计'
+    hint: '已发布文章全文累计',
   },
   {
     key: 'pageviews',
     label: '浏览',
     value: stats.value.total_page_views,
     icon: 'ri-bar-chart-box-line',
-    hint: '累计页面浏览次数'
+    hint: '累计页面浏览次数',
   },
   {
     key: 'visitors',
     label: '访客',
     value: stats.value.total_visitors,
     icon: 'ri-user-line',
-    hint: '累计独立访客数量'
+    hint: '累计独立访客数量',
   },
   {
     key: 'articles',
     label: '文章',
     value: stats.value.total_articles,
     icon: 'ri-article-line',
-    hint: '已发布内容总量'
+    hint: '已发布内容总量',
   },
   {
     key: 'categories',
     label: '分类',
     value: stats.value.total_categories,
     icon: 'ri-folder-2-line',
-    hint: '已有内容的分类数量'
+    hint: '已有内容的分类数量',
   },
   {
     key: 'tags',
     label: '标签',
     value: stats.value.total_tags,
     icon: 'ri-price-tag-3-line',
-    hint: '可浏览标签总数'
+    hint: '可浏览标签总数',
   },
   {
     key: 'moments',
     label: '动态',
     value: stats.value.total_moments,
     icon: 'ri-quill-pen-line',
-    hint: '公开动态记录数量'
+    hint: '公开动态记录数量',
   },
   {
     key: 'friends',
     label: '友链',
     value: stats.value.total_friends,
     icon: 'ri-links-line',
-    hint: '有效站点链接数量'
+    hint: '有效站点链接数量',
   },
   {
     key: 'comments',
     label: '评论',
     value: stats.value.total_comments,
     icon: 'ri-message-3-line',
-    hint: '公开可见评论数量'
-  }
-])
+    hint: '公开可见评论数量',
+  },
+]);
 
 const visitCards = computed(() => [
   {
     label: '今日访客',
-    value: stats.value.today_visitors
+    value: stats.value.today_visitors,
   },
   {
     label: '今日浏览',
-    value: stats.value.today_pageviews
+    value: stats.value.today_pageviews,
   },
   {
     label: '当前在线',
-    value: stats.value.online_users
+    value: stats.value.online_users,
   },
   {
     label: '昨日访客',
-    value: stats.value.yesterday_visitors
+    value: stats.value.yesterday_visitors,
   },
   {
     label: '昨日浏览',
-    value: stats.value.yesterday_pageviews
+    value: stats.value.yesterday_pageviews,
   },
   {
     label: '本月浏览',
-    value: stats.value.month_pageviews
-  }
-])
+    value: stats.value.month_pageviews,
+  },
+]);
 </script>
 
 <template>
@@ -159,7 +159,6 @@ const visitCards = computed(() => [
     <h1 class="page-title">统计</h1>
 
     <section id="overview" class="content-section">
-
       <div class="overview-grid">
         <article v-for="item in overviewCards" :key="item.key" class="stat-card">
           <div class="stat-card__icon">
@@ -270,7 +269,8 @@ const visitCards = computed(() => [
   .panel-block {
     padding: 24px;
     border-radius: 22px;
-    background: linear-gradient(180deg, rgba(73, 177, 245, 0.08), transparent 120px), var(--flec-card-bg);
+    background:
+      linear-gradient(180deg, rgba(73, 177, 245, 0.08), transparent 120px), var(--flec-card-bg);
     border: 1px solid var(--flec-border-color);
   }
 
@@ -282,7 +282,6 @@ const visitCards = computed(() => [
       font-size: 1.5rem;
       font-weight: 700;
     }
-
   }
 
   .overview-grid {
@@ -332,7 +331,6 @@ const visitCards = computed(() => [
     line-height: 1.1;
   }
 
-
   .traffic-list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -381,7 +379,6 @@ const visitCards = computed(() => [
     .overview-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
   }
 }
 

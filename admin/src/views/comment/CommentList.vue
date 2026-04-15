@@ -1,8 +1,16 @@
 <template>
-  <common-list title="评论管理" :data="commentList" :loading="loading" :total="total" :show-create="false"
-    v-model:page="queryParams.page" v-model:page-size="queryParams.page_size" @refresh="fetchComments"
-    @update:page="fetchComments" @update:pageSize="fetchComments">
-
+  <common-list
+    title="评论管理"
+    :data="commentList"
+    :loading="loading"
+    :total="total"
+    :show-create="false"
+    v-model:page="queryParams.page"
+    v-model:page-size="queryParams.page_size"
+    @refresh="fetchComments"
+    @update:page="fetchComments"
+    @update:pageSize="fetchComments"
+  >
     <!-- 表格列 -->
     <el-table-column label="用户信息" width="180" align="center">
       <template #default="{ row }">
@@ -13,10 +21,27 @@
             </el-icon>
           </el-avatar>
           <div style="flex: 1; min-width: 0; overflow: hidden; text-align: left">
-            <div style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{
-              row.user.nickname }}</div>
-            <div style="font-size: 12px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{
-              row.user.email }}</div>
+            <div
+              style="
+                font-weight: 500;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              "
+            >
+              {{ row.user.nickname }}
+            </div>
+            <div
+              style="
+                font-size: 12px;
+                color: #999;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              "
+            >
+              {{ row.user.email }}
+            </div>
           </div>
         </div>
       </template>
@@ -39,7 +64,15 @@
             {{ getTargetTypeText(row.target.type) }}
           </el-tag>
           <el-tooltip :content="row.target.title" placement="top">
-            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; flex: 1">
+            <div
+              style="
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 12px;
+                flex: 1;
+              "
+            >
               {{ row.target.title }}
             </div>
           </el-tooltip>
@@ -55,17 +88,36 @@
 
     <el-table-column label="状态" width="100" align="center">
       <template #default="{ row }">
-        <el-switch v-model="row.status" :active-value="1" :inactive-value="0" inline-prompt active-text="显示"
-          inactive-text="隐藏" @change="handleStatusChange(row)" />
+        <el-switch
+          v-model="row.status"
+          :active-value="1"
+          :inactive-value="0"
+          inline-prompt
+          active-text="显示"
+          inactive-text="隐藏"
+          @change="handleStatusChange(row)"
+        />
       </template>
     </el-table-column>
 
     <el-table-column label="操作" width="220" align="center" fixed="right">
       <template #default="{ row }">
-        <el-button v-if="!row.deleted_at" type="primary" link size="small" @click="openReplyDialog(row)">
+        <el-button
+          v-if="!row.deleted_at"
+          type="primary"
+          link
+          size="small"
+          @click="openReplyDialog(row)"
+        >
           回复
         </el-button>
-        <el-button v-if="row.deleted_at" type="success" link size="small" @click="handleRestore(row.id)">
+        <el-button
+          v-if="row.deleted_at"
+          type="success"
+          link
+          size="small"
+          @click="handleRestore(row.id)"
+        >
           恢复
         </el-button>
         <el-button v-else type="danger" link size="small" @click="handleDelete(row.id)">
@@ -92,13 +144,22 @@
         <span class="value">{{ formatDateTime(replyingComment.created_at) }}</span>
       </div>
       <el-divider style="margin: 12px 0" />
-      <div class="reply-to">回复 <span class="nickname">{{ replyingComment.user.nickname }}</span>：</div>
+      <div class="reply-to">
+        回复 <span class="nickname">{{ replyingComment.user.nickname }}</span
+        >：
+      </div>
       <div class="original-content">{{ replyingComment.content }}</div>
     </div>
     <el-form :model="replyForm" label-width="80px" style="margin-top: 16px">
       <el-form-item label="回复内容">
-        <el-input v-model="replyForm.content" type="textarea" :rows="4" placeholder="请输入回复内容..." show-word-limit
-          maxlength="500" />
+        <el-input
+          v-model="replyForm.content"
+          type="textarea"
+          :rows="4"
+          placeholder="请输入回复内容..."
+          show-word-limit
+          maxlength="500"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -109,128 +170,138 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { User } from '@element-plus/icons-vue'
-import CommonList from '@/components/common/CommonList.vue'
-import type { Comment } from '@/types/comment'
-import type { PaginationQuery } from '@/types/request'
-import { getComments, deleteComment, restoreComment, toggleCommentStatus, createComment } from '@/api/comment'
-import { formatDateTime } from '@/utils/date'
+import { ref, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { User } from '@element-plus/icons-vue';
+import CommonList from '@/components/common/CommonList.vue';
+import type { Comment } from '@/types/comment';
+import type { PaginationQuery } from '@/types/request';
+import {
+  getComments,
+  deleteComment,
+  restoreComment,
+  toggleCommentStatus,
+  createComment,
+} from '@/api/comment';
+import { formatDateTime } from '@/utils/date';
 
-const loading = ref(false)
-const commentList = ref<Comment[]>([])
-const total = ref(0)
-const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 })
+const loading = ref(false);
+const commentList = ref<Comment[]>([]);
+const total = ref(0);
+const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 });
 
 // 回复相关状态
-const replyDialogVisible = ref(false)
-const replying = ref(false)
-const replyingComment = ref<Comment | null>(null)
+const replyDialogVisible = ref(false);
+const replying = ref(false);
+const replyingComment = ref<Comment | null>(null);
 const replyForm = ref({
-  content: ''
-})
+  content: '',
+});
 
 const fetchComments = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const [result] = await Promise.all([
       getComments(queryParams.value),
-      new Promise(resolve => setTimeout(resolve, 300))
-    ])
-    commentList.value = result.list
-    total.value = result.total
+      new Promise(resolve => setTimeout(resolve, 300)),
+    ]);
+    commentList.value = result.list;
+    total.value = result.total;
   } catch {
-    ElMessage.error('获取评论列表失败')
+    ElMessage.error('获取评论列表失败');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handleStatusChange = async (comment: Comment) => {
-  const statusText = comment.status === 1 ? '显示' : '隐藏'
+  const statusText = comment.status === 1 ? '显示' : '隐藏';
   try {
-    await toggleCommentStatus(comment.id)
-    ElMessage.success(`已设置为${statusText}`)
+    await toggleCommentStatus(comment.id);
+    ElMessage.success(`已设置为${statusText}`);
   } catch (error) {
-    comment.status = comment.status === 1 ? 0 : 1
+    comment.status = comment.status === 1 ? 0 : 1;
     if (error instanceof Error) {
-      ElMessage.error(error.message)
+      ElMessage.error(error.message);
     } else {
-      ElMessage.error('状态切换失败')
+      ElMessage.error('状态切换失败');
     }
   }
-}
+};
 
 const handleDelete = async (id: number) => {
   try {
-    await ElMessageBox.confirm('确定要删除这条评论吗？', '提示', { type: 'warning' })
-    await deleteComment(id)
-    ElMessage.success('删除成功')
-    fetchComments()
+    await ElMessageBox.confirm('确定要删除这条评论吗？', '提示', {
+      type: 'warning',
+    });
+    await deleteComment(id);
+    ElMessage.success('删除成功');
+    fetchComments();
   } catch (error) {
-    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message)
+    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message);
   }
-}
+};
 
 const handleRestore = async (id: number) => {
   try {
-    await ElMessageBox.confirm('确定要恢复这条评论吗？', '提示', { type: 'info' })
-    await restoreComment(id)
-    ElMessage.success('恢复成功')
-    fetchComments()
+    await ElMessageBox.confirm('确定要恢复这条评论吗？', '提示', {
+      type: 'info',
+    });
+    await restoreComment(id);
+    ElMessage.success('恢复成功');
+    fetchComments();
   } catch (error) {
-    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message)
+    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message);
   }
-}
+};
 
 const openReplyDialog = (comment: Comment) => {
-  replyingComment.value = comment
-  replyForm.value.content = ''
-  replyDialogVisible.value = true
-}
+  replyingComment.value = comment;
+  replyForm.value.content = '';
+  replyDialogVisible.value = true;
+};
 
 const handleReply = async () => {
   if (!replyForm.value.content.trim()) {
-    ElMessage.warning('请输入回复内容')
-    return
+    ElMessage.warning('请输入回复内容');
+    return;
   }
   if (!replyingComment.value) {
-    ElMessage.error('评论信息错误')
-    return
+    ElMessage.error('评论信息错误');
+    return;
   }
 
-  replying.value = true
+  replying.value = true;
   try {
     await createComment({
       content: replyForm.value.content,
       target_type: replyingComment.value.target.type,
       target_key: replyingComment.value.target.key,
-      parent_id: replyingComment.value.id
-    })
-    ElMessage.success('回复成功')
-    replyDialogVisible.value = false
-    fetchComments()
+      parent_id: replyingComment.value.id,
+    });
+    ElMessage.success('回复成功');
+    replyDialogVisible.value = false;
+    fetchComments();
   } catch (error) {
     if (error instanceof Error) {
-      ElMessage.error(error.message)
+      ElMessage.error(error.message);
     } else {
-      ElMessage.error('回复失败')
+      ElMessage.error('回复失败');
     }
   } finally {
-    replying.value = false
+    replying.value = false;
   }
-}
+};
 
 // 获取目标类型显示文本
 const getTargetTypeText = (type: string) => {
   const typeMap: Record<string, string> = {
-    page: '页面'
-  }
-  return typeMap[type] || type
-}
+    page: '页面',
+  };
+  return typeMap[type] || type;
+};
 
-onMounted(fetchComments)
+onMounted(fetchComments);
 </script>
 
 <style scoped lang="scss">

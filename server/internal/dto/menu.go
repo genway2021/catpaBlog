@@ -3,23 +3,23 @@ package dto
 // MenuCreateRequest 创建菜单请求
 type MenuCreateRequest struct {
 	Type      string `json:"type" binding:"required,oneof=aggregate navigation footer"` // 菜单类型
-	ParentID  *uint  `json:"parent_id"`                                                      // 父菜单ID，NULL表示主菜单
-	Title     string `json:"title" binding:"required,min=1,max=100"`                         // 菜单标题
-	URL       string `json:"url" binding:"max=500"`                                          // 链接地址（主菜单可为空）
-	Icon      string `json:"icon" binding:"max=500"`                                         // 图标
-	Sort      int    `json:"sort" binding:"min=1,max=10"`                                    // 排序，范围1-10
-	IsEnabled bool   `json:"is_enabled"`                                                     // 是否启用
+	ParentID  *uint  `json:"parent_id"`                                                 // 父菜单ID，NULL表示主菜单
+	Title     string `json:"title" binding:"required,min=1,max=100"`                    // 菜单标题
+	URL       string `json:"url" binding:"max=500"`                                     // 链接地址（主菜单可为空）
+	Icon      string `json:"icon" binding:"max=500"`                                    // 图标
+	Sort      int    `json:"sort" binding:"min=1,max=10"`                               // 排序，范围1-10
+	IsEnabled bool   `json:"is_enabled"`                                                // 是否启用
 }
 
 // MenuUpdateRequest 更新菜单请求
 type MenuUpdateRequest struct {
-	Type      string `json:"type" binding:"required,oneof=aggregate navigation footer"`      // 菜单类型
-	ParentID  *uint  `json:"parent_id"`                                                      // 父菜单ID
-	Title     string `json:"title" binding:"required,min=1,max=100"`                         // 菜单标题
-	URL       string `json:"url" binding:"max=500"`                                          // 链接地址
-	Icon      string `json:"icon" binding:"max=500"`                                         // 图标
-	Sort      int    `json:"sort" binding:"min=1,max=10"`                                    // 排序
-	IsEnabled bool   `json:"is_enabled"`                                                     // 是否启用
+	Type      string `json:"type" binding:"required,oneof=aggregate navigation footer"` // 菜单类型
+	ParentID  *uint  `json:"parent_id"`                                                 // 父菜单ID
+	Title     string `json:"title" binding:"required,min=1,max=100"`                    // 菜单标题
+	URL       string `json:"url" binding:"max=500"`                                     // 链接地址
+	Icon      string `json:"icon" binding:"max=500"`                                    // 图标
+	Sort      int    `json:"sort" binding:"min=1,max=10"`                               // 排序
+	IsEnabled bool   `json:"is_enabled"`                                                // 是否启用
 }
 
 // MenuTreeQueryRequest 查询菜单树请求

@@ -70,7 +70,7 @@ func OptionalAuth(userService *service.UserService) gin.HandlerFunc {
 
 		// 检查 Bearer token 格式
 		parts := strings.SplitN(authHeader, " ", 2)
-		if !(len(parts) == 2 && parts[0] == "Bearer") {
+		if len(parts) != 2 || parts[0] != "Bearer" {
 			// token 格式无效，继续执行（作为游客）
 			c.Next()
 			return

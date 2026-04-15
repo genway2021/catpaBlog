@@ -1,84 +1,89 @@
 <script lang="ts" setup>
-import type { Moment } from '@@/types/moment'
-import { getMoments } from '@/composables/api/moment'
+import type { Moment } from '@@/types/moment';
+import { getMoments } from '@/composables/api/moment';
 
 // 获取动态数据（支持 SSR）
 const { data: moments } = await useAsyncData('moments-widget', async () => {
   try {
-    const { list } = await getMoments({ page: 1, page_size: 10 })
-    return list
+    const { list } = await getMoments({ page: 1, page_size: 10 });
+    return list;
   } catch (error) {
-    console.error('获取动态列表失败:', error)
-    return []
+    console.error('获取动态列表失败:', error);
+    return [];
   }
-})
+});
 
 // 当前显示的动态索引
-const currentIndex = ref(0)
+const currentIndex = ref(0);
 
 // 当前显示的动态
-const currentMoment = computed(() => moments.value?.[currentIndex.value])
+const currentMoment = computed(() => moments.value?.[currentIndex.value]);
 
 // 获取动态包含的内容类型
 const getContentTypes = (moment: Moment) => {
-  const types: string[] = []
+  const types: string[] = [];
   if (moment.content.images && moment.content.images.length > 0) {
-    types.push('image')
+    types.push('image');
   }
   if (moment.content.video) {
-    types.push('video')
+    types.push('video');
   }
   if (moment.content.link) {
-    types.push('link')
+    types.push('link');
   }
   if (moment.content.music) {
-    types.push('music')
+    types.push('music');
   }
-  return types
-}
+  return types;
+};
 
 // 下一条
 const nextMoment = () => {
-  currentIndex.value = (currentIndex.value + 1) % moments.value!.length
-}
+  currentIndex.value = (currentIndex.value + 1) % moments.value!.length;
+};
 
 // 自动轮播
-let timer: number | null = null
+let timer: number | null = null;
 
 const startAutoPlay = () => {
-  stopAutoPlay()
-  timer = window.setInterval(nextMoment, 3000)
-}
+  stopAutoPlay();
+  timer = window.setInterval(nextMoment, 3000);
+};
 
 const stopAutoPlay = () => {
   if (timer) {
-    clearInterval(timer)
-    timer = null
+    clearInterval(timer);
+    timer = null;
   }
-}
+};
 
 // 初始化
 onMounted(() => {
   if (moments.value && moments.value.length > 1) {
-    startAutoPlay()
+    startAutoPlay();
   }
-})
+});
 
 onUnmounted(() => {
-  stopAutoPlay()
-})
+  stopAutoPlay();
+});
 
 // 鼠标悬停停止轮播
-const onMouseEnter = stopAutoPlay
+const onMouseEnter = stopAutoPlay;
 const onMouseLeave = () => {
   if (moments.value && moments.value.length > 1) {
-    startAutoPlay()
+    startAutoPlay();
   }
-}
+};
 </script>
 
 <template>
-  <div v-if="moments?.length" class="moment-widget" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
+  <div
+    v-if="moments?.length"
+    class="moment-widget"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
+  >
     <NuxtLink to="/moment" class="moment-container">
       <!-- 左侧图标 -->
       <div class="widget-icon">

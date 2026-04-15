@@ -1,38 +1,38 @@
 <script lang="ts" setup>
-import mediumZoom from 'medium-zoom'
-import type { Moment } from '@@/types/moment'
-import { getMoments } from '@/composables/api/moment'
+import mediumZoom from 'medium-zoom';
+import type { Moment } from '@@/types/moment';
+import { getMoments } from '@/composables/api/moment';
 
-const { basicConfig, blogConfig } = useSysConfig()
-const avatarUrl = computed(() => basicConfig.value.author_avatar || '/avatar.webp')
+const { basicConfig, blogConfig } = useSysConfig();
+const avatarUrl = computed(() => basicConfig.value.author_avatar || '/avatar.webp');
 const momentsPageSize = computed(() => {
-  const configSize = parseInt(blogConfig.value['moments_size'] || '30')
-  return configSize > 0 ? configSize : 30
-})
+  const configSize = parseInt(blogConfig.value['moments_size'] || '30');
+  return configSize > 0 ? configSize : 30;
+});
 
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '动态',
-  description: '查看我的最新动态，分享生活点滴和即时想法'
-})
+  description: '查看我的最新动态，分享生活点滴和即时想法',
+});
 
-const { moments } = useMoments()
+const { moments } = useMoments();
 
 // 使用SSR获取动态列表
 const { data: initialData } = await useAsyncData('moments-list', async () => {
   const response = await getMoments({
     page: 1,
-    page_size: momentsPageSize.value
-  })
-  return response
-})
+    page_size: momentsPageSize.value,
+  });
+  return response;
+});
 
 // 初始化数据
 if (initialData.value) {
-  moments.value = initialData.value.list
+  moments.value = initialData.value.list;
 }
 
 const { waterfall, isLayoutReady } = useWaterfall({
@@ -41,68 +41,71 @@ const { waterfall, isLayoutReady } = useWaterfall({
   gap: 15,
   debounceDelay: 150,
   waitForImages: true,
-  breakpoints: { mobile: 768, tablet: 1200 }
-})
+  breakpoints: { mobile: 768, tablet: 1200 },
+});
 
 // 图片缩放实例
-let zoom: ReturnType<typeof mediumZoom> | null = null
+let zoom: ReturnType<typeof mediumZoom> | null = null;
 
 // 初始化图片缩放
 const initZoom = () => {
-  const contentEl = document.querySelector('#moment-list')
-  if (!contentEl) return
+  const contentEl = document.querySelector('#moment-list');
+  if (!contentEl) return;
 
-  const images = contentEl.querySelectorAll('.moment-images img')
-  if (images.length === 0) return
+  const images = contentEl.querySelectorAll('.moment-images img');
+  if (images.length === 0) return;
 
   // 如果已有实例，先销毁
   if (zoom) {
-    zoom.detach()
+    zoom.detach();
   }
 
   // 初始化新的缩放实例
   zoom = mediumZoom(images, {
     margin: 24,
     background: 'rgba(0, 0, 0, 0.9)',
-    scrollOffset: 48
-  })
-}
+    scrollOffset: 48,
+  });
+};
 
 onMounted(async () => {
-  await nextTick()
-  await waterfall()
-  initZoom()
-})
+  await nextTick();
+  await waterfall();
+  initZoom();
+});
 
-watch(() => moments.value.length, async () => {
-  await nextTick()
-  await waterfall()
-  initZoom()
-})
+watch(
+  () => moments.value.length,
+  async () => {
+    await nextTick();
+    await waterfall();
+    initZoom();
+  }
+);
 
 // 组件卸载时清理
 onUnmounted(() => {
   if (zoom) {
-    zoom.detach()
-    zoom = null
+    zoom.detach();
+    zoom = null;
   }
-})
+});
 
 const getMomentContentType = (moment: Moment) => {
-  if (moment.content.images?.length) return '图片动态'
-  if (moment.content.video) return '视频动态'
-  if (moment.content.music) return '音乐动态'
-  if (moment.content.link) return '链接分享'
-  return '动态'
-}
+  if (moment.content.images?.length) return '图片动态';
+  if (moment.content.video) return '视频动态';
+  if (moment.content.music) return '音乐动态';
+  if (moment.content.link) return '链接分享';
+  return '动态';
+};
 
 const handleCommentClick = (moment: Moment) => {
-  const text = moment.content.text
+  const text = moment.content.text;
   const quote = text
     ? `> ${text.length > 100 ? text.substring(0, 100) + '...' : text}\n\n`
-    : `> [${getMomentContentType(moment)}]\n\n`
-  fillComment(quote)
-}
+    : `> [${getMomentContentType(moment)}]\n\n`;
+  fillComment(quote);
+};
 </script>
 
 <template>
@@ -115,7 +118,12 @@ const handleCommentClick = (moment: Moment) => {
     </div>
 
     <div v-else id="moment-list" class="moment-list">
-      <div v-for="moment in moments" :key="moment.id" class="moment-item" :class="{ 'layout-ready': isLayoutReady }">
+      <div
+        v-for="moment in moments"
+        :key="moment.id"
+        class="moment-item"
+        :class="{ 'layout-ready': isLayoutReady }"
+      >
         <!-- 上部分：头像、作者、时间 -->
         <div class="moment-header">
           <div class="moment-avatar">
@@ -135,11 +143,21 @@ const handleCommentClick = (moment: Moment) => {
           </div>
 
           <!-- 图片内容 -->
-          <div v-if="moment.content.images?.length" class="moment-images"
-            :class="`images-${Math.min(moment.content.images.length, 6)}`">
-            <div v-for="(image, index) in moment.content.images.slice(0, 6)" :key="index" class="image-item">
+          <div
+            v-if="moment.content.images?.length"
+            class="moment-images"
+            :class="`images-${Math.min(moment.content.images.length, 6)}`"
+          >
+            <div
+              v-for="(image, index) in moment.content.images.slice(0, 6)"
+              :key="index"
+              class="image-item"
+            >
               <NuxtImg :src="image" :alt="`图片 ${index + 1}`" loading="lazy" />
-              <div v-if="index === 5 && moment.content.images.length > 6" class="more-images-overlay">
+              <div
+                v-if="index === 5 && moment.content.images.length > 6"
+                class="more-images-overlay"
+              >
                 <i class="ri-image-line"></i>
                 <span>+{{ moment.content.images.length - 6 }}</span>
               </div>
@@ -148,17 +166,37 @@ const handleCommentClick = (moment: Moment) => {
 
           <!-- 视频内容 -->
           <div v-if="moment.content.video" class="moment-video">
-            <video v-if="!moment.content.video.platform || moment.content.video.platform === 'local'"
-              :src="moment.content.video.url" controls preload="metadata"></video>
+            <video
+              v-if="!moment.content.video.platform || moment.content.video.platform === 'local'"
+              :src="moment.content.video.url"
+              controls
+              preload="metadata"
+            ></video>
 
-            <iframe v-else-if="moment.content.video.platform === 'bilibili'"
-              :src="`//player.bilibili.com/player.html?bvid=${moment.content.video.video_id}&autoplay=0`" scrolling="no"
-              border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+            <iframe
+              v-else-if="moment.content.video.platform === 'bilibili'"
+              :src="`//player.bilibili.com/player.html?bvid=${moment.content.video.video_id}&autoplay=0`"
+              scrolling="no"
+              border="0"
+              frameborder="no"
+              framespacing="0"
+              allowfullscreen="true"
+            ></iframe>
 
-            <iframe v-else-if="moment.content.video.platform === 'youtube'"
-              :src="`https://www.youtube.com/embed/${moment.content.video.video_id}`" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen></iframe>
+            <iframe
+              v-else-if="moment.content.video.platform === 'youtube'"
+              :src="`https://www.youtube.com/embed/${moment.content.video.video_id}`"
+              frameborder="0"
+              allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+              "
+              allowfullscreen
+            ></iframe>
           </div>
 
           <!-- 音乐内容 -->
@@ -167,10 +205,20 @@ const handleCommentClick = (moment: Moment) => {
           </div>
 
           <!-- 链接内容 -->
-          <a v-if="moment.content.link" :href="moment.content.link.url" target="_blank" rel="noopener noreferrer"
-            class="moment-link">
-            <NuxtImg v-if="moment.content.link.favicon" :src="moment.content.link.favicon" alt="favicon" loading="lazy"
-              class="link-favicon" />
+          <a
+            v-if="moment.content.link"
+            :href="moment.content.link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="moment-link"
+          >
+            <NuxtImg
+              v-if="moment.content.link.favicon"
+              :src="moment.content.link.favicon"
+              alt="favicon"
+              loading="lazy"
+              class="link-favicon"
+            />
             <div class="link-info">
               <div class="link-title">{{ moment.content.link.title }}</div>
               <div class="link-url">{{ moment.content.link.url }}</div>
@@ -372,7 +420,7 @@ const handleCommentClick = (moment: Moment) => {
           grid-column: span 3;
         }
 
-        .image-item:nth-child(n+3) {
+        .image-item:nth-child(n + 3) {
           grid-column: span 2;
         }
       }
@@ -682,7 +730,7 @@ const handleCommentClick = (moment: Moment) => {
             grid-column: span 2;
           }
 
-          .image-item:nth-child(n+3) {
+          .image-item:nth-child(n + 3) {
             grid-column: span 1;
           }
         }

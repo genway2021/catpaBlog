@@ -1,79 +1,79 @@
 <script lang="ts" setup>
-const { blogConfig } = useSysConfig()
-const displayText = ref('')
-const typingSpeed = 150 // 打字速度（毫秒）
-const deletingSpeed = 80 // 删除速度（毫秒）
-const pauseTime = 2000 // 暂停时间（毫秒）
-let typingTimer: number | null = null
+const { blogConfig } = useSysConfig();
+const displayText = ref('');
+const typingSpeed = 150; // 打字速度（毫秒）
+const deletingSpeed = 80; // 删除速度（毫秒）
+const pauseTime = 2000; // 暂停时间（毫秒）
+let typingTimer: number | null = null;
 
 // 获取打字机文本列表
 const getTypingTexts = (): string[] => {
   try {
-    const parsed = JSON.parse(blogConfig.value.typing_texts || '[]')
-    return Array.isArray(parsed) ? parsed : []
+    const parsed = JSON.parse(blogConfig.value.typing_texts || '[]');
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return []
+    return [];
   }
-}
+};
 
 const scrollToContent = () => {
   window.scrollTo({
     top: window.innerHeight - 64,
-    behavior: 'smooth'
-  })
-}
+    behavior: 'smooth',
+  });
+};
 
 const typeWriter = () => {
-  const texts = getTypingTexts()
-  if (texts.length === 0) return
+  const texts = getTypingTexts();
+  if (texts.length === 0) return;
 
-  let textIndex = 0 // 当前显示的文本索引
-  let charIndex = 0 // 当前字符索引
-  let isDeleting = false
+  let textIndex = 0; // 当前显示的文本索引
+  let charIndex = 0; // 当前字符索引
+  let isDeleting = false;
 
   const animate = () => {
-    const currentText = texts[textIndex]
-    if (!currentText) return
+    const currentText = texts[textIndex];
+    if (!currentText) return;
 
     if (!isDeleting) {
       // 打字阶段
       if (charIndex < currentText.length) {
-        displayText.value += currentText.charAt(charIndex)
-        charIndex++
-        typingTimer = window.setTimeout(animate, typingSpeed)
+        displayText.value += currentText.charAt(charIndex);
+        charIndex++;
+        typingTimer = window.setTimeout(animate, typingSpeed);
       } else {
         // 打完后停留一会再删除
-        isDeleting = true
-        typingTimer = window.setTimeout(animate, pauseTime)
+        isDeleting = true;
+        typingTimer = window.setTimeout(animate, pauseTime);
       }
     } else {
       // 删除阶段
       if (charIndex > 0) {
-        displayText.value = currentText.substring(0, charIndex - 1)
-        charIndex--
-        typingTimer = window.setTimeout(animate, deletingSpeed)
+        displayText.value = currentText.substring(0, charIndex - 1);
+        charIndex--;
+        typingTimer = window.setTimeout(animate, deletingSpeed);
       } else {
         // 删除完成，切换到下一条文本
-        isDeleting = false
-        textIndex = (textIndex + 1) % texts.length // 循环到下一条
-        typingTimer = window.setTimeout(animate, typingSpeed)
+        isDeleting = false;
+        textIndex = (textIndex + 1) % texts.length; // 循环到下一条
+        typingTimer = window.setTimeout(animate, typingSpeed);
       }
     }
-  }
+  };
 
-  animate()
-}
+  animate();
+};
 
 onMounted(() => {
   // 延迟一点开始打字效果
-  setTimeout(typeWriter, 500)
-})
+  setTimeout(typeWriter, 500);
+});
 
 onUnmounted(() => {
   if (typingTimer) {
-    clearTimeout(typingTimer)
+    clearTimeout(typingTimer);
   }
-})
+});
 </script>
 
 <template>
@@ -157,7 +157,6 @@ onUnmounted(() => {
 }
 
 @keyframes blink {
-
   0%,
   49% {
     opacity: 1;

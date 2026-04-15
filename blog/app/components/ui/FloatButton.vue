@@ -14,18 +14,33 @@
       </div>
 
       <!-- 目录按钮（仅移动端文章页显示） -->
-      <div v-if="isArticlePage && isMobile" class="float-button" @click="showMobileToc = true" title="目录">
+      <div
+        v-if="isArticlePage && isMobile"
+        class="float-button"
+        @click="showMobileToc = true"
+        title="目录"
+      >
         <i class="ri-list-unordered"></i>
       </div>
 
       <!-- 跳转到评论区按钮（仅文章页显示） -->
-      <div v-if="isArticlePage" class="float-button" @click="scrollToElement('.comment-input')" title="跳转评论区">
+      <div
+        v-if="isArticlePage"
+        class="float-button"
+        @click="scrollToElement('.comment-input')"
+        title="跳转评论区"
+      >
         <i class="ri-message-3-line"></i>
       </div>
 
       <!-- 回到顶部按钮 -->
-      <div class="float-button scroll-to-top" @click="scrollToTop" @mouseenter="isHovering = true"
-        @mouseleave="isHovering = false" title="回到顶部">
+      <div
+        class="float-button scroll-to-top"
+        @click="scrollToTop"
+        @mouseenter="isHovering = true"
+        @mouseleave="isHovering = false"
+        title="回到顶部"
+      >
         <Transition name="content-fade" mode="out-in">
           <i v-if="isHovering" key="arrow" class="ri-arrow-up-line"></i>
           <span v-else key="progress" class="progress-text">{{ readingProgress }}</span>
@@ -46,63 +61,66 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const visible = ref(false)
-const isHovering = ref(false)
-const readingProgress = ref(0)
-const isReadingMode = ref(false)
-const showMobileToc = ref(false)
+const route = useRoute();
+const visible = ref(false);
+const isHovering = ref(false);
+const readingProgress = ref(0);
+const isReadingMode = ref(false);
+const showMobileToc = ref(false);
 
-const isArticlePage = computed(() => route.name === 'posts-slug')
+const isArticlePage = computed(() => route.name === 'posts-slug');
 
-const isMobile = ref(false)
+const isMobile = ref(false);
 
 const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 900
-}
+  isMobile.value = window.innerWidth <= 900;
+};
 
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
-    behavior: 'smooth'
-  })
-}
+    behavior: 'smooth',
+  });
+};
 
 const toggleReadingMode = () => {
-  isReadingMode.value = !isReadingMode.value
-  document.documentElement.setAttribute('data-reading-mode', isReadingMode.value ? 'true' : 'false')
-}
+  isReadingMode.value = !isReadingMode.value;
+  document.documentElement.setAttribute(
+    'data-reading-mode',
+    isReadingMode.value ? 'true' : 'false'
+  );
+};
 
 const handleScroll = () => {
-  const currentScrollY = window.scrollY
+  const currentScrollY = window.scrollY;
 
   // 显示/隐藏按钮
-  visible.value = currentScrollY > 100
+  visible.value = currentScrollY > 100;
 
   // 计算阅读进度
-  const windowHeight = window.innerHeight
-  const documentHeight = document.documentElement.scrollHeight
-  const scrollableHeight = documentHeight - windowHeight
+  const windowHeight = window.innerHeight;
+  const documentHeight = document.documentElement.scrollHeight;
+  const scrollableHeight = documentHeight - windowHeight;
 
   if (scrollableHeight > 0) {
-    const progress = Math.round((currentScrollY / scrollableHeight) * 100)
-    readingProgress.value = Math.min(100, Math.max(0, progress))
+    const progress = Math.round((currentScrollY / scrollableHeight) * 100);
+    readingProgress.value = Math.min(100, Math.max(0, progress));
   } else {
-    readingProgress.value = 0
+    readingProgress.value = 0;
   }
-}
+};
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  handleScroll()
-  checkMobile()
-  window.addEventListener('resize', checkMobile)
-})
+  window.addEventListener('scroll', handleScroll);
+  handleScroll();
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-  window.removeEventListener('resize', checkMobile)
-})
+  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener('resize', checkMobile);
+});
 </script>
 
 <style scoped lang="scss">
@@ -157,7 +175,9 @@ onUnmounted(() => {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .fade-enter-from,
@@ -205,8 +225,7 @@ onUnmounted(() => {
 
 <style lang="scss">
 // 阅读模式
-html[data-reading-mode="true"] {
-
+html[data-reading-mode='true'] {
   // 隐藏非必要元素
   nav,
   footer,
@@ -219,7 +238,7 @@ html[data-reading-mode="true"] {
   }
 
   // 阅读模式配色变量（浅色主题）
-  &[data-theme="light"] {
+  &[data-theme='light'] {
     --reading-bg: #faf9f6;
     --reading-text: #2c2c2c;
     --reading-title: #2c2c2c;
@@ -227,7 +246,7 @@ html[data-reading-mode="true"] {
   }
 
   // 阅读模式配色变量（深色主题）
-  &[data-theme="dark"] {
+  &[data-theme='dark'] {
     --reading-bg: #1a1a1a;
     --reading-text: #e8e8e8;
     --reading-title: #f0f0f0;

@@ -59,15 +59,23 @@
               <template v-if="feedback.report_type === 'copyright'">
                 <div v-if="feedback.form_content.description" class="form-field">
                   <strong>侵权说明:</strong>
-                  <div class="field-value">{{ feedback.form_content.description }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.description }}
+                  </div>
                 </div>
 
                 <div class="form-field">
                   <strong>权利人证明文件:</strong>
                   <div class="field-value">
-                    <div v-if="getCopyrightProofFiles(feedback.form_content).length" class="attachment-list">
-                      <div v-for="(file, index) in getCopyrightProofFiles(feedback.form_content)" :key="index"
-                        class="attachment-item">
+                    <div
+                      v-if="getCopyrightProofFiles(feedback.form_content).length"
+                      class="attachment-list"
+                    >
+                      <div
+                        v-for="(file, index) in getCopyrightProofFiles(feedback.form_content)"
+                        :key="index"
+                        class="attachment-item"
+                      >
                         <el-link :href="file" target="_blank" type="primary">
                           <i class="el-icon-paperclip"></i>
                           {{ getFileName(file) }}
@@ -81,9 +89,17 @@
                 <div class="form-field">
                   <strong>侵权内容证明:</strong>
                   <div class="field-value">
-                    <div v-if="getCopyrightInfringementFiles(feedback.form_content).length" class="attachment-list">
-                      <div v-for="(file, index) in getCopyrightInfringementFiles(feedback.form_content)" :key="index"
-                        class="attachment-item">
+                    <div
+                      v-if="getCopyrightInfringementFiles(feedback.form_content).length"
+                      class="attachment-list"
+                    >
+                      <div
+                        v-for="(file, index) in getCopyrightInfringementFiles(
+                          feedback.form_content
+                        )"
+                        :key="index"
+                        class="attachment-item"
+                      >
                         <el-link :href="file" target="_blank" type="primary">
                           <i class="el-icon-paperclip"></i>
                           {{ getFileName(file) }}
@@ -99,20 +115,30 @@
               <template v-else-if="feedback.report_type === 'inappropriate'">
                 <div v-if="feedback.form_content.reason" class="form-field">
                   <strong>投诉原因:</strong>
-                  <div class="field-value">{{ feedback.form_content.reason }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.reason }}
+                  </div>
                 </div>
 
                 <div v-if="feedback.form_content.description" class="form-field">
                   <strong>投诉内容:</strong>
-                  <div class="field-value">{{ feedback.form_content.description }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.description }}
+                  </div>
                 </div>
 
                 <div class="form-field">
                   <strong>证据截图:</strong>
                   <div class="field-value">
-                    <div v-if="feedback.form_content.attachmentFiles?.length" class="attachment-list">
-                      <div v-for="(file, index) in feedback.form_content.attachmentFiles" :key="index"
-                        class="attachment-item">
+                    <div
+                      v-if="feedback.form_content.attachmentFiles?.length"
+                      class="attachment-list"
+                    >
+                      <div
+                        v-for="(file, index) in feedback.form_content.attachmentFiles"
+                        :key="index"
+                        class="attachment-item"
+                      >
                         <el-link :href="file" target="_blank" type="primary">
                           <i class="el-icon-paperclip"></i>
                           {{ getFileName(file) }}
@@ -128,20 +154,30 @@
               <template v-else-if="feedback.report_type === 'summary'">
                 <div v-if="feedback.form_content.reason" class="form-field">
                   <strong>问题类型:</strong>
-                  <div class="field-value">{{ feedback.form_content.reason }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.reason }}
+                  </div>
                 </div>
 
                 <div v-if="feedback.form_content.description" class="form-field">
                   <strong>反馈内容:</strong>
-                  <div class="field-value">{{ feedback.form_content.description }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.description }}
+                  </div>
                 </div>
 
                 <div class="form-field">
                   <strong>相关截图:</strong>
                   <div class="field-value">
-                    <div v-if="feedback.form_content.attachmentFiles?.length" class="attachment-list">
-                      <div v-for="(file, index) in feedback.form_content.attachmentFiles" :key="index"
-                        class="attachment-item">
+                    <div
+                      v-if="feedback.form_content.attachmentFiles?.length"
+                      class="attachment-list"
+                    >
+                      <div
+                        v-for="(file, index) in feedback.form_content.attachmentFiles"
+                        :key="index"
+                        class="attachment-item"
+                      >
                         <el-link :href="file" target="_blank" type="primary">
                           <i class="el-icon-paperclip"></i>
                           {{ getFileName(file) }}
@@ -157,20 +193,30 @@
               <template v-else-if="feedback.report_type === 'suggestion'">
                 <div v-if="feedback.form_content.description" class="form-field">
                   <strong>功能描述:</strong>
-                  <div class="field-value">{{ feedback.form_content.description }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.description }}
+                  </div>
                 </div>
 
                 <div v-if="feedback.form_content.reason" class="form-field">
                   <strong>使用场景:</strong>
-                  <div class="field-value">{{ feedback.form_content.reason }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.reason }}
+                  </div>
                 </div>
 
                 <div class="form-field">
                   <strong>相关附件:</strong>
                   <div class="field-value">
-                    <div v-if="feedback.form_content.attachmentFiles?.length" class="attachment-list">
-                      <div v-for="(file, index) in feedback.form_content.attachmentFiles" :key="index"
-                        class="attachment-item">
+                    <div
+                      v-if="feedback.form_content.attachmentFiles?.length"
+                      class="attachment-list"
+                    >
+                      <div
+                        v-for="(file, index) in feedback.form_content.attachmentFiles"
+                        :key="index"
+                        class="attachment-item"
+                      >
                         <el-link :href="file" target="_blank" type="primary">
                           <i class="el-icon-paperclip"></i>
                           {{ getFileName(file) }}
@@ -186,20 +232,27 @@
               <template v-else>
                 <div v-if="feedback.form_content.description" class="form-field">
                   <strong>详细描述:</strong>
-                  <div class="field-value">{{ feedback.form_content.description }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.description }}
+                  </div>
                 </div>
 
                 <div v-if="feedback.form_content.reason" class="form-field">
                   <strong>原因/类型:</strong>
-                  <div class="field-value">{{ feedback.form_content.reason }}</div>
+                  <div class="field-value">
+                    {{ feedback.form_content.reason }}
+                  </div>
                 </div>
 
                 <div v-if="feedback.form_content.attachmentFiles?.length" class="form-field">
                   <strong>附件文件:</strong>
                   <div class="field-value">
                     <div class="attachment-list">
-                      <div v-for="(file, index) in feedback.form_content.attachmentFiles" :key="index"
-                        class="attachment-item">
+                      <div
+                        v-for="(file, index) in feedback.form_content.attachmentFiles"
+                        :key="index"
+                        class="attachment-item"
+                      >
                         <el-link :href="file" target="_blank" type="primary">
                           <i class="el-icon-paperclip"></i>
                           {{ getFileName(file) }}
@@ -210,9 +263,7 @@
                 </div>
               </template>
             </div>
-            <div v-else class="empty-content">
-              暂无详细内容
-            </div>
+            <div v-else class="empty-content">暂无详细内容</div>
           </div>
         </div>
 
@@ -239,7 +290,12 @@
             </el-form-item>
 
             <el-form-item label="管理员回复">
-              <el-input v-model="form.admin_reply" type="textarea" :rows="8" placeholder="请输入回复内容..." />
+              <el-input
+                v-model="form.admin_reply"
+                type="textarea"
+                :rows="8"
+                placeholder="请输入回复内容..."
+              />
             </el-form-item>
 
             <el-form-item>
@@ -265,161 +321,160 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { getFeedbackDetail, updateFeedback } from '@/api/feedback'
-import type { Feedback, FeedbackStatus, ReportType } from '@/types/feedback'
-import { formatDate } from '@/utils/date'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { getFeedbackDetail, updateFeedback } from '@/api/feedback';
+import type { Feedback, FeedbackStatus, ReportType } from '@/types/feedback';
+import { formatDate } from '@/utils/date';
 
-const route = useRoute()
-const router = useRouter()
-const loading = ref(false)
-const submitting = ref(false)
-const feedbackId = ref(Number(route.params.id))
-const feedback = ref<Feedback | null>(null)
+const route = useRoute();
+const router = useRouter();
+const loading = ref(false);
+const submitting = ref(false);
+const feedbackId = ref(Number(route.params.id));
+const feedback = ref<Feedback | null>(null);
 const form = ref<{
-  status: FeedbackStatus
-  admin_reply: string
+  status: FeedbackStatus;
+  admin_reply: string;
 }>({
   status: 'resolved',
-  admin_reply: ''
-})
+  admin_reply: '',
+});
 
 /**
  * 获取反馈详情
  */
 const fetchDetail = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const res = await getFeedbackDetail(feedbackId.value)
-    feedback.value = res
+    const res = await getFeedbackDetail(feedbackId.value);
+    feedback.value = res;
   } catch (error) {
-    ElMessage.error('获取反馈详情失败')
-    handleBack()
+    ElMessage.error('获取反馈详情失败');
+    handleBack();
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 /**
  * 提交更新
  */
 const handleSubmit = async () => {
-  submitting.value = true
+  submitting.value = true;
   try {
-    await updateFeedback(feedbackId.value, form.value)
-    ElMessage.success('更新成功')
+    await updateFeedback(feedbackId.value, form.value);
+    ElMessage.success('更新成功');
     // 清空表单
-    form.value.status = 'resolved'
-    form.value.admin_reply = ''
+    form.value.status = 'resolved';
+    form.value.admin_reply = '';
     // 刷新详情
-    await fetchDetail()
+    await fetchDetail();
   } catch (error) {
-    ElMessage.error('更新失败')
+    ElMessage.error('更新失败');
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
-}
+};
 
 const handleBack = () => {
-  router.push('/feedback')
-}
+  router.push('/feedback');
+};
 
 const getReportTypeLabel = (reportType: ReportType) => {
   const labels: Record<string, string> = {
-    'copyright': '版权侵权内容投诉',
-    'inappropriate': '不当内容举报投诉',
-    'summary': '文章摘要问题反馈',
-    'suggestion': '功能建议优化反馈'
-  }
-  return labels[reportType] || reportType
-}
+    copyright: '版权侵权内容投诉',
+    inappropriate: '不当内容举报投诉',
+    summary: '文章摘要问题反馈',
+    suggestion: '功能建议优化反馈',
+  };
+  return labels[reportType] || reportType;
+};
 
 const getReportTypeTagType = (reportType: ReportType) => {
   const types: Record<string, any> = {
-    'copyright': 'warning',
-    'inappropriate': 'danger',
-    'summary': 'info',
-    'suggestion': 'success'
-  }
-  return types[reportType] || 'info'
-}
+    copyright: 'warning',
+    inappropriate: 'danger',
+    summary: 'info',
+    suggestion: 'success',
+  };
+  return types[reportType] || 'info';
+};
 
 const getStatusLabel = (status: FeedbackStatus) => {
   const labels: Record<FeedbackStatus, string> = {
     pending: '待处理',
     resolved: '已解决',
-    closed: '已关闭'
-  }
-  return labels[status] || status
-}
+    closed: '已关闭',
+  };
+  return labels[status] || status;
+};
 
 const getStatusTagType = (status: FeedbackStatus) => {
   const types: Record<FeedbackStatus, any> = {
     pending: 'warning',
     resolved: 'success',
-    closed: 'info'
-  }
-  return types[status] || 'info'
-}
+    closed: 'info',
+  };
+  return types[status] || 'info';
+};
 
 /**
  * 从URL中提取文件名
  */
 const getFileName = (url: string) => {
-  if (!url) return '未命名文件'
+  if (!url) return '未命名文件';
   try {
-    const parts = url.split('/')
-    const fileName = parts[parts.length - 1]
-    return fileName ? decodeURIComponent(fileName) : '未命名文件'
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1];
+    return fileName ? decodeURIComponent(fileName) : '未命名文件';
   } catch {
-    return url
+    return url;
   }
-}
+};
 
 /**
  * 获取版权侵权的权利人证明文件
  */
 const getCopyrightProofFiles = (content: any) => {
-  if (!content.attachmentFiles?.length) return []
+  if (!content.attachmentFiles?.length) return [];
 
   try {
-    const meta = JSON.parse(content.reason || '{}')
-    const proofCount = meta.proofCount || 0
-    return content.attachmentFiles.slice(0, proofCount)
+    const meta = JSON.parse(content.reason || '{}');
+    const proofCount = meta.proofCount || 0;
+    return content.attachmentFiles.slice(0, proofCount);
   } catch {
     // 如果解析失败，默认前一半是权利人证明
-    const half = Math.ceil(content.attachmentFiles.length / 2)
-    return content.attachmentFiles.slice(0, half)
+    const half = Math.ceil(content.attachmentFiles.length / 2);
+    return content.attachmentFiles.slice(0, half);
   }
-}
+};
 
 /**
  * 获取版权侵权的侵权内容证明文件
  */
 const getCopyrightInfringementFiles = (content: any) => {
-  if (!content.attachmentFiles?.length) return []
+  if (!content.attachmentFiles?.length) return [];
 
   try {
-    const meta = JSON.parse(content.reason || '{}')
-    const proofCount = meta.proofCount || 0
-    return content.attachmentFiles.slice(proofCount)
+    const meta = JSON.parse(content.reason || '{}');
+    const proofCount = meta.proofCount || 0;
+    return content.attachmentFiles.slice(proofCount);
   } catch {
     // 如果解析失败，默认后一半是侵权证据
-    const half = Math.ceil(content.attachmentFiles.length / 2)
-    return content.attachmentFiles.slice(half)
+    const half = Math.ceil(content.attachmentFiles.length / 2);
+    return content.attachmentFiles.slice(half);
   }
-}
+};
 
 onMounted(() => {
-  fetchDetail()
-})
+  fetchDetail();
+});
 </script>
 
 <style scoped lang="scss">
 .feedback-detail-page {
-
   .card-header {
     display: flex;
     justify-content: space-between;

@@ -1,30 +1,25 @@
 <script lang="ts" setup>
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
-const { tags } = useTags()
+const { tags } = useTags();
 
 useSeoMeta({
   title: '标签',
-  description: '浏览所有文章标签，快速找到感兴趣的内容'
-})
+  description: '浏览所有文章标签，快速找到感兴趣的内容',
+});
 </script>
 
 <template>
   <!-- 内容区域 -->
   <div id="page">
-      <h1 class="page-title">标签</h1>
-      <div class="tag-cloud-list">
-        <router-link 
-          v-for="tag in tags" 
-          :key="tag.id" 
-          :to="tag.url"
-          :title="tag.name"
-        >
-          {{ tag.name }}
-        </router-link>
-      </div>
+    <h1 class="page-title">标签</h1>
+    <div class="tag-cloud-list">
+      <router-link v-for="tag in tags" :key="tag.id" :to="tag.url" :title="tag.name">
+        {{ tag.name }}
+      </router-link>
+    </div>
   </div>
 </template>
 

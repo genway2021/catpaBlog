@@ -22,7 +22,11 @@
               <span class="label">最新版本</span>
               <span class="version-value">
                 <span class="value">{{ dynamicInfo.version_latest_version || '尚未检测' }}</span>
-                <el-tooltip v-if="versionCheckErrorMessage" :content="versionCheckErrorMessage" placement="top">
+                <el-tooltip
+                  v-if="versionCheckErrorMessage"
+                  :content="versionCheckErrorMessage"
+                  placement="top"
+                >
                   <span class="error-dot"></span>
                 </el-tooltip>
               </span>
@@ -78,8 +82,12 @@
               </div>
               <div class="info-item">
                 <span class="label">使用率</span>
-                <el-progress :percentage="Math.round(dynamicInfo.cpu_usage || 0)" :stroke-width="6"
-                  :color="getProgressColor(Math.round(dynamicInfo.cpu_usage || 0))" style="width: 120px" />
+                <el-progress
+                  :percentage="Math.round(dynamicInfo.cpu_usage || 0)"
+                  :stroke-width="6"
+                  :color="getProgressColor(Math.round(dynamicInfo.cpu_usage || 0))"
+                  style="width: 120px"
+                />
               </div>
               <div class="info-item">
                 <span class="label">型号</span>
@@ -91,8 +99,11 @@
               </div>
               <div class="info-item">
                 <span class="label">系统负载</span>
-                <span class="value">{{ dynamicInfo.load_1?.toFixed(2) || 'N/A' }} / {{ dynamicInfo.load_5?.toFixed(2) ||
-                  'N/A' }} / {{ dynamicInfo.load_15?.toFixed(2) || 'N/A' }}</span>
+                <span class="value"
+                  >{{ dynamicInfo.load_1?.toFixed(2) || 'N/A' }} /
+                  {{ dynamicInfo.load_5?.toFixed(2) || 'N/A' }} /
+                  {{ dynamicInfo.load_15?.toFixed(2) || 'N/A' }}</span
+                >
               </div>
             </div>
           </div>
@@ -108,15 +119,21 @@
             <div class="section-body">
               <div class="info-item">
                 <span class="label">总容量</span>
-                <span class="value">{{ formatBytes(dynamicInfo.memory_used) }} / {{ formatBytes(staticInfo.memory_total)
-                }}</span>
+                <span class="value"
+                  >{{ formatBytes(dynamicInfo.memory_used) }} /
+                  {{ formatBytes(staticInfo.memory_total) }}</span
+                >
               </div>
               <div class="info-item">
                 <span class="label">使用率</span>
-                <el-progress :percentage="calcPercent(dynamicInfo.memory_used, staticInfo.memory_total)"
+                <el-progress
+                  :percentage="calcPercent(dynamicInfo.memory_used, staticInfo.memory_total)"
                   :stroke-width="6"
-                  :color="getProgressColor(calcPercent(dynamicInfo.memory_used, staticInfo.memory_total))"
-                  style="width: 120px" />
+                  :color="
+                    getProgressColor(calcPercent(dynamicInfo.memory_used, staticInfo.memory_total))
+                  "
+                  style="width: 120px"
+                />
               </div>
               <div class="info-item">
                 <span class="label">未使用</span>
@@ -124,8 +141,10 @@
               </div>
               <div class="info-item">
                 <span class="label">Swap</span>
-                <span class="value">{{ formatBytes(dynamicInfo.swap_used) }} / {{ formatBytes(staticInfo.swap_total)
-                }}</span>
+                <span class="value"
+                  >{{ formatBytes(dynamicInfo.swap_used) }} /
+                  {{ formatBytes(staticInfo.swap_total) }}</span
+                >
               </div>
             </div>
           </div>
@@ -145,9 +164,14 @@
               </div>
               <div class="info-item">
                 <span class="label">使用率</span>
-                <el-progress :percentage="calcPercent(dynamicInfo.disk_used, staticInfo.disk_total)" :stroke-width="6"
-                  :color="getProgressColor(calcPercent(dynamicInfo.disk_used, staticInfo.disk_total))"
-                  style="width: 120px" />
+                <el-progress
+                  :percentage="calcPercent(dynamicInfo.disk_used, staticInfo.disk_total)"
+                  :stroke-width="6"
+                  :color="
+                    getProgressColor(calcPercent(dynamicInfo.disk_used, staticInfo.disk_total))
+                  "
+                  style="width: 120px"
+                />
               </div>
               <div class="info-item">
                 <span class="label">已使用</span>
@@ -175,7 +199,10 @@
               </div>
               <div class="info-item">
                 <span class="label">状态</span>
-                <el-tag :type="dynamicInfo.db_status === '正常' ? 'success' : 'danger'" size="small">
+                <el-tag
+                  :type="dynamicInfo.db_status === '正常' ? 'success' : 'danger'"
+                  size="small"
+                >
                   {{ dynamicInfo.db_status }}
                 </el-tag>
               </div>
@@ -205,29 +232,45 @@
             <div class="section-body">
               <div class="info-item">
                 <span class="label">文件存储</span>
-                <el-tag :type="staticInfo.storage_status === '正常' ? 'success' : 'danger'" size="small">
+                <el-tag
+                  :type="staticInfo.storage_status === '正常' ? 'success' : 'danger'"
+                  size="small"
+                >
                   {{ staticInfo.storage_status }}
                 </el-tag>
               </div>
               <div class="info-item">
                 <span class="label">邮箱通知</span>
                 <el-tag
-                  :type="staticInfo.email_status === '正常' ? 'success' : staticInfo.email_status === '未配置' ? 'info' : 'danger'"
-                  size="small">
+                  :type="
+                    staticInfo.email_status === '正常'
+                      ? 'success'
+                      : staticInfo.email_status === '未配置'
+                        ? 'info'
+                        : 'danger'
+                  "
+                  size="small"
+                >
                   {{ staticInfo.email_status }}
                 </el-tag>
               </div>
               <div class="info-item">
                 <span class="label">飞书交互</span>
                 <el-tag
-                  :type="staticInfo.feishu_status === '正常' ? 'success' : staticInfo.feishu_status === '未配置' ? 'info' : 'danger'"
-                  size="small">
+                  :type="
+                    staticInfo.feishu_status === '正常'
+                      ? 'success'
+                      : staticInfo.feishu_status === '未配置'
+                        ? 'info'
+                        : 'danger'
+                  "
+                  size="small"
+                >
                   {{ staticInfo.feishu_status }}
                 </el-tag>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </el-card>
@@ -235,16 +278,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { ElMessage } from 'element-plus';
 import {
-  Monitor, Cpu, Coin, DataLine,
-  FolderOpened, Connection, Bell
-} from '@element-plus/icons-vue'
-import { getSystemStatic, getSystemDynamic } from '@/api/system'
-import type { SystemStatic, SystemDynamic } from '@/types/system'
+  Monitor,
+  Cpu,
+  Coin,
+  DataLine,
+  FolderOpened,
+  Connection,
+  Bell,
+} from '@element-plus/icons-vue';
+import { getSystemStatic, getSystemDynamic } from '@/api/system';
+import type { SystemStatic, SystemDynamic } from '@/types/system';
 
-let refreshTimer: ReturnType<typeof setInterval> | null = null
+let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
 const staticInfo = ref<SystemStatic>({
   cpu_core: 0,
@@ -262,8 +310,8 @@ const staticInfo = ref<SystemStatic>({
   storage_status: '',
   email_status: '',
   feishu_status: '',
-  app_version: ''
-})
+  app_version: '',
+});
 
 const dynamicInfo = ref<SystemDynamic>({
   cpu_usage: 0,
@@ -280,68 +328,68 @@ const dynamicInfo = ref<SystemDynamic>({
   db_size: 0,
   db_conn_count: 0,
   version_latest_version: '',
-  version_last_check_error: ''
-})
+  version_last_check_error: '',
+});
 
 const fetchStaticInfo = async () => {
   try {
-    staticInfo.value = await getSystemStatic()
+    staticInfo.value = await getSystemStatic();
   } catch (error) {
-    ElMessage.error('获取系统静态信息失败')
+    ElMessage.error('获取系统静态信息失败');
   }
-}
+};
 
 const fetchDynamicInfo = async () => {
   try {
-    dynamicInfo.value = await getSystemDynamic()
+    dynamicInfo.value = await getSystemDynamic();
   } catch (error) {
-    ElMessage.error('获取系统动态信息失败')
+    ElMessage.error('获取系统动态信息失败');
   }
-}
+};
 
 const formatBytes = (bytes: number): string => {
-  if (bytes === 0) return '0 B'
-  const unit = 1024
-  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-  const i = Math.floor(Math.log(bytes) / Math.log(unit))
-  return (bytes / Math.pow(unit, i)).toFixed(1) + ' ' + units[i]
-}
+  if (bytes === 0) return '0 B';
+  const unit = 1024;
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(unit));
+  return (bytes / Math.pow(unit, i)).toFixed(1) + ' ' + units[i];
+};
 
 const calcPercent = (used: number, total: number): number => {
-  if (total === 0) return 0
-  return Math.round((used / total) * 100)
-}
+  if (total === 0) return 0;
+  return Math.round((used / total) * 100);
+};
 
 const formatDays = (seconds: number): string => {
-  const days = Math.floor(seconds / 86400)
-  return `${days} 天`
-}
+  const days = Math.floor(seconds / 86400);
+  return `${days} 天`;
+};
 
 const getProgressColor = (percentage: number): string => {
-  if (percentage < 50) return '#67c23a'
-  if (percentage < 80) return '#e6a23c'
-  return '#f56c6c'
-}
+  if (percentage < 50) return '#67c23a';
+  if (percentage < 80) return '#e6a23c';
+  return '#f56c6c';
+};
 
 const versionCheckErrorMessage = computed(() => {
   if (!dynamicInfo.value.version_last_check_error) {
-    return ''
+    return '';
   }
-  return `版本检查失败，请检查服务端网络是否可以访问 GitHub Releases API。错误信息：${dynamicInfo.value.version_last_check_error}`
-})
+  return `版本检查失败，请检查服务端网络是否可以访问 GitHub Releases API。错误信息：${dynamicInfo.value.version_last_check_error}`;
+});
 
 onMounted(() => {
-  fetchStaticInfo()
-  fetchDynamicInfo()
-  refreshTimer = setInterval(fetchDynamicInfo, 10000)
-})
+  fetchStaticInfo();
+  fetchDynamicInfo();
+  refreshTimer = setInterval(fetchDynamicInfo, 10000);
+});
 
 onUnmounted(() => {
   if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
+    clearInterval(refreshTimer);
+    refreshTimer = null;
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>

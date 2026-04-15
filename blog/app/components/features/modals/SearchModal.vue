@@ -1,92 +1,95 @@
 <script setup lang="ts">
-import { searchArticles } from '@/composables/api/article'
-import type { Article } from '@@/types/article'
+import { searchArticles } from '@/composables/api/article';
+import type { Article } from '@@/types/article';
 
-const props = defineProps<{ modelValue: boolean }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
+const props = defineProps<{ modelValue: boolean }>();
+const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
 
-const keyword = ref('')
-const articles = ref<Article[]>([])
-const total = ref(0)
-const page = ref(1)
-const pageSize = 5
-const loading = ref(false)
-const inputRef = ref<HTMLInputElement | null>(null)
+const keyword = ref('');
+const articles = ref<Article[]>([]);
+const total = ref(0);
+const page = ref(1);
+const pageSize = 5;
+const loading = ref(false);
+const inputRef = ref<HTMLInputElement | null>(null);
 
-const totalPages = computed(() => Math.ceil(total.value / pageSize))
-const hasSearched = computed(() => keyword.value.trim().length > 0)
+const totalPages = computed(() => Math.ceil(total.value / pageSize));
+const hasSearched = computed(() => keyword.value.trim().length > 0);
 
 // 高亮关键词
 const highlight = (text: string) => {
-  const kw = keyword.value.trim()
-  if (!kw || !text) return text
+  const kw = keyword.value.trim();
+  if (!kw || !text) return text;
 
   // 转义正则特殊字符
-  const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const regex = new RegExp(`(${escaped})`, 'gi')
+  const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escaped})`, 'gi');
 
-  return text.replace(regex, '<mark>$1</mark>')
-}
+  return text.replace(regex, '<mark>$1</mark>');
+};
 
 const close = () => {
-  emit('update:modelValue', false)
+  emit('update:modelValue', false);
   setTimeout(() => {
-    keyword.value = ''
-    articles.value = []
-    total.value = 0
-    page.value = 1
-  }, 300)
-}
+    keyword.value = '';
+    articles.value = [];
+    total.value = 0;
+    page.value = 1;
+  }, 300);
+};
 
 const search = async (newPage = 1) => {
-  const searchTerm = keyword.value.trim()
+  const searchTerm = keyword.value.trim();
   if (!searchTerm) {
-    articles.value = []
-    total.value = 0
-    return
+    articles.value = [];
+    total.value = 0;
+    return;
   }
 
-  loading.value = true
-  page.value = newPage
+  loading.value = true;
+  page.value = newPage;
 
   try {
     const data = await searchArticles(searchTerm, {
       page: newPage,
-      page_size: pageSize
-    })
-    articles.value = data.list
-    total.value = data.total
+      page_size: pageSize,
+    });
+    articles.value = data.list;
+    total.value = data.total;
   } catch (error) {
-    articles.value = []
-    total.value = 0
+    articles.value = [];
+    total.value = 0;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 防抖搜索（500ms）
-const debouncedSearch = useDebounceFn(() => search(1), 500)
+const debouncedSearch = useDebounceFn(() => search(1), 500);
 
 // 监听关键词变化，自动触发搜索
 watch(keyword, () => {
-  page.value = 1
-  debouncedSearch()
-})
+  page.value = 1;
+  debouncedSearch();
+});
 
 const prevPage = () => {
-  if (page.value > 1) search(page.value - 1)
-}
+  if (page.value > 1) search(page.value - 1);
+};
 
 const nextPage = () => {
-  if (page.value < totalPages.value) search(page.value + 1)
-}
+  if (page.value < totalPages.value) search(page.value + 1);
+};
 
-watch(() => props.modelValue, async (open) => {
-  if (open) {
-    await nextTick()
-    inputRef.value?.focus()
+watch(
+  () => props.modelValue,
+  async open => {
+    if (open) {
+      await nextTick();
+      inputRef.value?.focus();
+    }
   }
-})
+);
 </script>
 
 <template>
@@ -102,7 +105,12 @@ watch(() => props.modelValue, async (open) => {
 
           <!-- 搜索栏 -->
           <div class="search">
-            <input ref="inputRef" v-model="keyword" placeholder="输入关键词搜索..." @keyup.esc="close" />
+            <input
+              ref="inputRef"
+              v-model="keyword"
+              placeholder="输入关键词搜索..."
+              @keyup.esc="close"
+            />
             <i v-if="loading" class="ri-loader-4-line spin loading-icon"></i>
           </div>
 
@@ -114,8 +122,14 @@ watch(() => props.modelValue, async (open) => {
             </div>
             <!-- 有结果 -->
             <template v-else-if="articles.length > 0">
-              <NuxtLink v-for="item in articles" :key="item.id" :to="item.url" class="item" @click="close">
-                <NuxtImg v-if="item.cover" :src="item.cover" :alt="item.title" loading="lazy"  />
+              <NuxtLink
+                v-for="item in articles"
+                :key="item.id"
+                :to="item.url"
+                class="item"
+                @click="close"
+              >
+                <NuxtImg v-if="item.cover" :src="item.cover" :alt="item.title" loading="lazy" />
                 <div class="info">
                   <h3 v-html="highlight(item.title)"></h3>
                   <p v-if="item.excerpt" class="excerpt" v-html="highlight(item.excerpt)"></p>

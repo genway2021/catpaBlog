@@ -1,62 +1,65 @@
 <script setup lang="ts">
-import { updateUserProfile } from '@/composables/api/user'
+import { updateUserProfile } from '@/composables/api/user';
 
 const props = defineProps<{
-  modelValue: boolean
-}>()
+  modelValue: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'success'): void
-}>()
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'success'): void;
+}>();
 
-const { success: showSuccess, error: showError } = useToast()
-const { onSkip } = useBindEmail()
+const { success: showSuccess, error: showError } = useToast();
+const { onSkip } = useBindEmail();
 
-const email = ref('')
-const loading = ref(false)
-const emailError = ref('')
+const email = ref('');
+const loading = ref(false);
+const emailError = ref('');
 
 // 邮箱验证
 const validateEmail = (val: string) => {
-  if (!val.trim()) return '请输入邮箱'
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return '请输入正确的邮箱格式'
-  return ''
-}
+  if (!val.trim()) return '请输入邮箱';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return '请输入正确的邮箱格式';
+  return '';
+};
 
 // 提交绑定
 const handleSubmit = async () => {
-  emailError.value = validateEmail(email.value)
-  if (emailError.value) return
+  emailError.value = validateEmail(email.value);
+  if (emailError.value) return;
 
-  loading.value = true
+  loading.value = true;
   try {
     await updateUserProfile({
-      email: email.value.trim()
-    })
-    showSuccess('邮箱绑定成功')
-    emit('success')
-    emit('update:modelValue', false)
+      email: email.value.trim(),
+    });
+    showSuccess('邮箱绑定成功');
+    emit('success');
+    emit('update:modelValue', false);
   } catch (error: any) {
-    showError(error.message || '绑定失败')
+    showError(error.message || '绑定失败');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 稍后提醒（记录跳过时间）
 const handleRemindLater = () => {
-  onSkip()
-  emit('update:modelValue', false)
-}
+  onSkip();
+  emit('update:modelValue', false);
+};
 
 // 重置表单
-watch(() => props.modelValue, (val) => {
-  if (val) {
-    email.value = ''
-    emailError.value = ''
+watch(
+  () => props.modelValue,
+  val => {
+    if (val) {
+      email.value = '';
+      emailError.value = '';
+    }
   }
-})
+);
 </script>
 
 <template>
@@ -95,7 +98,12 @@ watch(() => props.modelValue, (val) => {
               </div>
 
               <div class="form-actions">
-                <button type="button" class="btn-secondary" @click="handleRemindLater" :disabled="loading">
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  @click="handleRemindLater"
+                  :disabled="loading"
+                >
                   稍后再说
                 </button>
                 <button type="submit" class="btn-primary" :disabled="loading">

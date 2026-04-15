@@ -23,13 +23,14 @@ func NewSubscriberHandler(service *service.SubscriberService) *SubscriberHandler
 
 // Subscribe 订阅
 //
-//	@Summary	邮件订阅
-//	@Tags		订阅
-//	@Accept		json
-//	@Produce	json
-//	@Param		request	body		object{email=string}	true	"邮箱地址"
-//	@Success	200		{object}	response.Response
-//	@Router		/api/v1/subscribe [post]
+//		@Summary 	邮件订阅
+//	 @Description 	用户通过提交邮箱地址订阅博客更新
+//		@Tags		订阅
+//		@Accept		json
+//		@Produce	json
+//		@Param		request	body		object{email=string}	true	"邮箱地址"
+//		@Success	200		{object}	response.Response
+//		@Router		/api/v1/subscribe [post]
 func (h *SubscriberHandler) Subscribe(c *gin.Context) {
 	var req struct {
 		Email string `json:"email" binding:"required,email"`
@@ -48,15 +49,16 @@ func (h *SubscriberHandler) Subscribe(c *gin.Context) {
 	response.Success(c, gin.H{"message": "订阅成功！"})
 }
 
-// Unsubscribe 退订
+// Unsubscribe 订阅退订
 //
-//	@Summary	退订
-//	@Tags		订阅
-//	@Accept		json
-//	@Produce	json
-//	@Param		token	query		string	true	"退订令牌"
-//	@Success	200		{object}	response.Response
-//	@Router		/api/v1/subscribe/unsubscribe [get]
+//		@Summary	订阅退订
+//	 @Description	用户通过退订令牌退订邮件通知
+//		@Tags		订阅
+//		@Accept		json
+//		@Produce	json
+//		@Param		token	query		string	true	"退订令牌"
+//		@Success	200		{object}	response.Response
+//		@Router		/api/v1/subscribe/unsubscribe [get]
 func (h *SubscriberHandler) Unsubscribe(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
@@ -72,12 +74,15 @@ func (h *SubscriberHandler) Unsubscribe(c *gin.Context) {
 	response.Success(c, gin.H{"message": "退订成功"})
 }
 
-// List 获取订阅者列表（后台）
+// ============ 后台管理接口 ============
+
+// List 获取订阅者列表
 //
 //	@Summary	获取订阅者列表
 //	@Tags		订阅管理
 //	@Accept		json
 //	@Produce	json
+//	@Security	BearerAuth
 //	@Param		page		query		int	true	"页码"
 //	@Param		page_size	query		int	true	"每页数量"
 //	@Success	200			{object}	response.Response{data=response.PageResult{list=[]dto.SubscriberResponse}}
@@ -103,12 +108,13 @@ func (h *SubscriberHandler) List(c *gin.Context) {
 	})
 }
 
-// Delete 删除订阅者（后台）
+// Delete 删除订阅者
 //
 //	@Summary	删除订阅者
 //	@Tags		订阅管理
 //	@Accept		json
 //	@Produce	json
+//	@Security	BearerAuth
 //	@Param		id	path		int	true	"订阅者ID"
 //	@Success	200	{object}	response.Response
 //	@Router		/api/v1/admin/subscribers/{id} [delete]

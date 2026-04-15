@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	rssFeedActionList       = "list"
-	rssFeedActionMarkRead   = "mark_read"
+	rssFeedActionList        = "list"
+	rssFeedActionMarkRead    = "mark_read"
 	rssFeedActionMarkAllRead = "mark_all_read"
 )
 
@@ -32,7 +32,7 @@ type RssFeedItem struct {
 
 // RssFeedManageInput rssfeed_manage 聚合 tool 输入
 type RssFeedManageInput struct {
-	Action  string              `json:"action"`
+	Action  string               `json:"action"`
 	Payload RssFeedManagePayload `json:"payload"`
 }
 

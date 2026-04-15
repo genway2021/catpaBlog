@@ -1,27 +1,27 @@
 <script setup lang="ts">
 interface Props {
-  isScrollingDown: boolean
-  isFixed: boolean
+  isScrollingDown: boolean;
+  isFixed: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
-const { flatNavigationMenus } = useMenus()
-const { blogConfig } = useSysConfig()
-const { currentArticle } = useCurrentArticle()
+const { flatNavigationMenus } = useMenus();
+const { blogConfig } = useSysConfig();
+const { currentArticle } = useCurrentArticle();
 
 const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 const displayTitle = computed(() => {
-  return currentArticle.value?.title || blogConfig.value.title
-})
+  return currentArticle.value?.title || blogConfig.value.title;
+});
 </script>
 
 <template>
   <div class="nav-menu">
-    <div class="menu-items" :class="{ 'hide': isScrollingDown && isFixed }">
+    <div class="menu-items" :class="{ hide: isScrollingDown && isFixed }">
       <template v-for="menu in flatNavigationMenus" :key="menu.id">
         <!-- 有子菜单的菜单项 -->
         <div v-if="menu.children && menu.children.length > 0" class="menu-item dropdown">
@@ -55,8 +55,13 @@ const displayTitle = computed(() => {
         </a>
       </template>
     </div>
-    <div class="scroll-title" :class="{ 'show': isScrollingDown && isFixed }">
-      <a href="#" class="scroll-to-top brighten no-after" @click.prevent="scrollToTop" aria-label="回到顶部">
+    <div class="scroll-title" :class="{ show: isScrollingDown && isFixed }">
+      <a
+        href="#"
+        class="scroll-to-top brighten no-after"
+        @click.prevent="scrollToTop"
+        aria-label="回到顶部"
+      >
         <span class="title" aria-hidden="true">{{ displayTitle }}</span>
       </a>
     </div>
@@ -64,7 +69,7 @@ const displayTitle = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/css/mixins" as *;
+@use '@/assets/css/mixins' as *;
 
 .nav-menu {
   flex: 3;

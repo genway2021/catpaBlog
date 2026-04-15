@@ -83,8 +83,8 @@ func (c *TagController) GetBySlug(ctx *gin.Context) {
 
 // List 获取标签列表
 //
-//	@Summary		标签列表（管理）
-//	@Description	获取所有标签用于管理
+//	@Summary		标签列表
+//	@Description	获取所有标签
 //	@Tags			标签管理
 //	@Accept			json
 //	@Produce		json
@@ -113,8 +113,8 @@ func (c *TagController) List(ctx *gin.Context) {
 
 // Get 获取标签信息
 //
-//	@Summary		标签详情（管理）
-//	@Description	通过 ID 获取标签信息
+//	@Summary		标签详情
+//	@Description	获取标签详细信息
 //	@Tags			标签管理
 //	@Accept			json
 //	@Produce		json
@@ -221,7 +221,7 @@ func (c *TagController) Update(ctx *gin.Context) {
 // Delete 删除标签
 //
 //	@Summary		删除标签
-//	@Description	软删除标签
+//	@Description	硬删除标签，不可恢复
 //	@Tags			标签管理
 //	@Accept			json
 //	@Produce		json

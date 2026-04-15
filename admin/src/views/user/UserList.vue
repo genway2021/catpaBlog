@@ -1,7 +1,17 @@
 <template>
-  <common-list title="用户列表" :data="userList" :loading="loading" :total="total" v-model:page="queryParams.page"
-    v-model:page-size="queryParams.page_size" create-text="新增用户" @create="handleCreate" @refresh="fetchUsers"
-    @update:page="fetchUsers" @update:pageSize="fetchUsers">
+  <common-list
+    title="用户列表"
+    :data="userList"
+    :loading="loading"
+    :total="total"
+    v-model:page="queryParams.page"
+    v-model:page-size="queryParams.page_size"
+    create-text="新增用户"
+    @create="handleCreate"
+    @refresh="fetchUsers"
+    @update:page="fetchUsers"
+    @update:pageSize="fetchUsers"
+  >
     <!-- 表格列 -->
     <el-table-column label="头像" width="100" align="center">
       <template #default="{ row }">
@@ -100,74 +110,77 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { User } from '@element-plus/icons-vue'
-import CommonList from '@/components/common/CommonList.vue'
-import type { User as UserType } from '@/types/user'
-import { getUsers, deleteUser } from '@/api/user'
-import type { PaginationQuery } from '@/types/request'
-import UserFormDialog from './components/UserFormDialog.vue'
-import { formatDateTime } from '@/utils/date'
-import { getCurrentUserRole } from '@/utils/auth'
+import { computed, ref, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { User } from '@element-plus/icons-vue';
+import CommonList from '@/components/common/CommonList.vue';
+import type { User as UserType } from '@/types/user';
+import { getUsers, deleteUser } from '@/api/user';
+import type { PaginationQuery } from '@/types/request';
+import UserFormDialog from './components/UserFormDialog.vue';
+import { formatDateTime } from '@/utils/date';
+import { getCurrentUserRole } from '@/utils/auth';
 
-const loading = ref(false)
-const userList = ref<UserType[]>([])
-const total = ref(0)
-const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 })
-const currentRole = computed(() => getCurrentUserRole())
+const loading = ref(false);
+const userList = ref<UserType[]>([]);
+const total = ref(0);
+const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 });
+const currentRole = computed(() => getCurrentUserRole());
 
 // 对话框相关
-const dialogVisible = ref(false)
-const currentUser = ref<UserType | null>(null)
+const dialogVisible = ref(false);
+const currentUser = ref<UserType | null>(null);
 
-const isManagedRole = (role: string) => role === 'admin' || role === 'super_admin'
-const canOperateUser = (user: UserType) => currentRole.value === 'super_admin' || !isManagedRole(user.role)
+const isManagedRole = (role: string) => role === 'admin' || role === 'super_admin';
+const canOperateUser = (user: UserType) =>
+  currentRole.value === 'super_admin' || !isManagedRole(user.role);
 
 const fetchUsers = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const [result] = await Promise.all([
       getUsers(queryParams.value),
-      new Promise(resolve => setTimeout(resolve, 300))
-    ])
-    userList.value = result.list
-    total.value = result.total
+      new Promise(resolve => setTimeout(resolve, 300)),
+    ]);
+    userList.value = result.list;
+    total.value = result.total;
   } catch {
-    ElMessage.error('获取用户列表失败')
+    ElMessage.error('获取用户列表失败');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handleCreate = () => {
-  currentUser.value = null
-  dialogVisible.value = true
-}
+  currentUser.value = null;
+  dialogVisible.value = true;
+};
 
 const handleEdit = (user: UserType) => {
-  if (!canOperateUser(user)) return
-  currentUser.value = user
-  dialogVisible.value = true
-}
+  if (!canOperateUser(user)) return;
+  currentUser.value = user;
+  dialogVisible.value = true;
+};
 
 const handleDelete = async (id: number) => {
-  const target = userList.value.find(user => user.id === id)
-  if (target && !canOperateUser(target)) return
+  const target = userList.value.find(user => user.id === id);
+  if (target && !canOperateUser(target)) return;
 
   try {
-    await ElMessageBox.confirm('确定要删除这个用户吗？', '提示', { type: 'warning' })
-    await deleteUser(id)
-    ElMessage.success('删除成功')
-    fetchUsers()
+    await ElMessageBox.confirm('确定要删除这个用户吗？', '提示', {
+      type: 'warning',
+    });
+    await deleteUser(id);
+    ElMessage.success('删除成功');
+    fetchUsers();
   } catch (error) {
-    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message)
+    if (error !== 'cancel' && error instanceof Error) ElMessage.error(error.message);
   }
-}
+};
 
 onMounted(() => {
-  fetchUsers()
-})
+  fetchUsers();
+});
 </script>
 
 <style scoped>

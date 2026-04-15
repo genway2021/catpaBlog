@@ -1,18 +1,17 @@
 <script setup lang="ts">
-
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '反馈投诉',
-  description: '如果您有任何问题或建议，欢迎通过此表单向我们反馈'
-})
+  description: '如果您有任何问题或建议，欢迎通过此表单向我们反馈',
+});
 
 const handleSuccess = () => {
   // 提交成功后的处理
-  console.log('Feedback submitted successfully')
-}
+  console.log('Feedback submitted successfully');
+};
 </script>
 
 <template>

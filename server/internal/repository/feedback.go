@@ -46,7 +46,6 @@ func (r *FeedbackRepository) List(ctx context.Context, offset, limit int) ([]mod
 	return feedbacks, total, err
 }
 
-
 // ExistsByAttachmentURL 检查是否有反馈附件引用该文件
 func (r *FeedbackRepository) ExistsByAttachmentURL(url string) (bool, error) {
 	var count int64

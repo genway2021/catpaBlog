@@ -32,14 +32,25 @@
   --prose-quote-text: #5a6c7d;
 
   // 表格颜色
-  --prose-table-header-bg: linear-gradient(135deg, rgba(73, 177, 245, 0.1), rgba(73, 177, 245, 0.05));
+  --prose-table-header-bg: linear-gradient(
+    135deg,
+    rgba(73, 177, 245, 0.1),
+    rgba(73, 177, 245, 0.05)
+  );
   --prose-table-border: rgba(128, 128, 128, 0.15);
   --prose-table-row-even: rgba(128, 128, 128, 0.02);
   --prose-table-row-hover: rgba(73, 177, 245, 0.05);
   --prose-table-shadow: rgba(0, 0, 0, 0.1);
 
   // 分割线颜色
-  --prose-hr-bg: linear-gradient(to right, transparent, rgba(73, 177, 245, 0.2), rgba(73, 177, 245, 0.6), rgba(73, 177, 245, 0.2), transparent);
+  --prose-hr-bg: linear-gradient(
+    to right,
+    transparent,
+    rgba(73, 177, 245, 0.2),
+    rgba(73, 177, 245, 0.6),
+    rgba(73, 177, 245, 0.2),
+    transparent
+  );
   --prose-hr-dot: #49b1f5;
   --prose-hr-shadow: white;
 
@@ -98,14 +109,25 @@
   --prose-quote-text: #b8b8b8;
 
   // 表格颜色
-  --prose-table-header-bg: linear-gradient(135deg, rgba(73, 177, 245, 0.15), rgba(73, 177, 245, 0.08));
+  --prose-table-header-bg: linear-gradient(
+    135deg,
+    rgba(73, 177, 245, 0.15),
+    rgba(73, 177, 245, 0.08)
+  );
   --prose-table-border: rgba(255, 255, 255, 0.1);
   --prose-table-row-even: rgba(255, 255, 255, 0.02);
   --prose-table-row-hover: rgba(73, 177, 245, 0.08);
   --prose-table-shadow: rgba(0, 0, 0, 0.3);
 
   // 分割线颜色
-  --prose-hr-bg: linear-gradient(to right, transparent, rgba(73, 177, 245, 0.3), rgba(73, 177, 245, 0.7), rgba(73, 177, 245, 0.3), transparent);
+  --prose-hr-bg: linear-gradient(
+    to right,
+    transparent,
+    rgba(73, 177, 245, 0.3),
+    rgba(73, 177, 245, 0.7),
+    rgba(73, 177, 245, 0.3),
+    transparent
+  );
   --prose-hr-dot: #49b1f5;
   --prose-hr-shadow: #121212;
 
@@ -136,7 +158,14 @@
 // ========== Markdown 内容排版样式 ==========
 .markdown-content {
   // ===== 基础设置 =====
-  font-family: 'LXGW WenKai Lite', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family:
+    'LXGW WenKai Lite',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    sans-serif;
   font-size: 1rem;
   line-height: 1.8;
   color: var(--prose-text);
@@ -226,8 +255,8 @@
     }
 
     // 外部链接图标
-    &[target="_blank"]::after {
-      content: "↗";
+    &[target='_blank']::after {
+      content: '↗';
       margin-left: 0.2rem;
       font-size: 0.8rem;
       opacity: 0.6;
@@ -273,19 +302,19 @@
     margin: 0.5rem 0;
     line-height: 1.75;
 
-    >p {
+    > p {
       margin: 0.5rem 0;
     }
 
     // 任务列表
     &.task-list-item,
-    &:has(> input[type="checkbox"]) {
+    &:has(> input[type='checkbox']) {
       list-style-type: none;
       margin-left: -1.5rem;
     }
 
     // 任务列表复选框样式
-    input[type="checkbox"] {
+    input[type='checkbox'] {
       margin-right: 0.5rem;
       pointer-events: none;
     }
@@ -336,7 +365,7 @@
       font-style: italic;
 
       &::before {
-        content: "—— ";
+        content: '—— ';
       }
     }
   }
@@ -385,7 +414,9 @@
           font-size: 24px;
           font-style: normal;
           color: var(--prose-codeblock-lang);
-          transition: color 0.2s ease, transform 0.3s ease;
+          transition:
+            color 0.2s ease,
+            transform 0.3s ease;
         }
 
         &:hover i {
@@ -434,7 +465,7 @@
 
       code {
         display: block;
-        padding: .5rem 1rem .5rem 0;
+        padding: 0.5rem 1rem 0.5rem 0;
         overflow-x: auto;
         background: none;
         border: none;
@@ -455,7 +486,7 @@
           position: sticky;
           left: 0;
           width: 2rem;
-          padding-right: .5rem;
+          padding-right: 0.5rem;
           margin-right: 1rem;
           text-align: right;
           color: var(--prose-codeblock-line-number);
@@ -567,7 +598,7 @@
 
     // 中间装饰 - 三段（中间方块，两边长条）
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       left: 50%;
       top: 50%;
@@ -575,12 +606,11 @@
       width: 6px;
       height: 6px;
       background: var(--prose-hr-dot);
-      box-shadow:
-        0 0 0 3px var(--prose-hr-shadow);
+      box-shadow: 0 0 0 3px var(--prose-hr-shadow);
     }
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       left: 50%;
       top: 50%;
@@ -695,7 +725,9 @@
     background: var(--prose-kbd-bg);
     border: 1px solid var(--prose-kbd-border);
     border-radius: 4px;
-    box-shadow: 0 2px 0 var(--prose-kbd-shadow), inset 0 1px 0 var(--prose-kbd-inner-shadow);
+    box-shadow:
+      0 2px 0 var(--prose-kbd-shadow),
+      inset 0 1px 0 var(--prose-kbd-inner-shadow);
     color: var(--prose-kbd-text);
     white-space: nowrap;
   }
@@ -872,7 +904,7 @@
     }
 
     .custom-tabs-content {
-      >* {
+      > * {
         &:first-child {
           margin-top: 0;
         }
@@ -927,10 +959,10 @@
       transition: max-height 0.35s ease;
 
       // 使用内层容器处理 padding，避免折叠时的抖动
-      >div {
+      > div {
         padding: 0 16px 16px;
 
-        >* {
+        > * {
           &:first-child {
             margin-top: 0;
           }
@@ -1058,7 +1090,6 @@
         transition: transform 0.3s ease;
       }
     }
-
   }
 
   // ===== 响应式调整 =====
@@ -1153,7 +1184,7 @@
         padding: 8px 12px;
       }
 
-      .custom-fold-content>div {
+      .custom-fold-content > div {
         padding: 0 12px 12px;
       }
     }

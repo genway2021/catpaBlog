@@ -1,6 +1,12 @@
-import request from "@/utils/request";
-import type { Article, CreateArticleRequest, UpdateArticleRequest, ImportArticlesResult, WeChatExportResult } from "@/types/article";
-import type { PaginationQuery } from "@/types/request";
+import request from '@/utils/request';
+import type {
+  Article,
+  CreateArticleRequest,
+  UpdateArticleRequest,
+  ImportArticlesResult,
+  WeChatExportResult,
+} from '@/types/article';
+import type { PaginationQuery } from '@/types/request';
 
 /**
  * 获取文章列表
@@ -8,7 +14,7 @@ import type { PaginationQuery } from "@/types/request";
  * @returns Promise<ArticleListResponse>
  */
 export function getArticles(params: PaginationQuery): Promise<any> {
-  return request.get("/admin/articles", { params });
+  return request.get('/admin/articles', { params });
 }
 
 /**
@@ -26,7 +32,7 @@ export function getArticle(id: number): Promise<Article> {
  * @returns Promise<Article>
  */
 export function createArticle(data: CreateArticleRequest): Promise<Article> {
-  return request.post("/admin/articles", data);
+  return request.post('/admin/articles', data);
 }
 
 /**
@@ -54,10 +60,10 @@ export function deleteArticle(id: number): Promise<void> {
  * @returns Promise<ImportArticlesResult>
  */
 export function importArticles(formData: FormData): Promise<ImportArticlesResult> {
-  return request.post("/admin/articles/import", formData, {
+  return request.post('/admin/articles/import', formData, {
     headers: {
-      "Content-Type": "multipart/form-data"
-    }
+      'Content-Type': 'multipart/form-data',
+    },
   });
 }
 
@@ -79,7 +85,7 @@ export function exportToWeChat(id: number): Promise<WeChatExportResult> {
  */
 export function downloadArticleZip(id: number): Promise<Blob> {
   return request.get(`/admin/articles/${id}/download/zip`, {
-    responseType: "blob",
-    timeout: 300000
+    responseType: 'blob',
+    timeout: 300000,
   });
 }

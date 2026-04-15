@@ -1,51 +1,51 @@
 <script setup lang="ts">
 interface EmojiItem {
-  key: string
-  val: string
+  key: string;
+  val: string;
 }
 
 interface EmojiGroup {
-  name: string
-  type: 'emoji' | 'image' | 'emoticon'
-  items: EmojiItem[]
+  name: string;
+  type: 'emoji' | 'image' | 'emoticon';
+  items: EmojiItem[];
 }
 
 const emit = defineEmits<{
-  select: [emoji: string]
-}>()
+  select: [emoji: string];
+}>();
 
-const { blogConfig } = useSysConfig()
-const emojiGroups = ref<EmojiGroup[]>([])
-const activeTab = ref(0)
-const loading = ref(true)
-const error = ref('')
+const { blogConfig } = useSysConfig();
+const emojiGroups = ref<EmojiGroup[]>([]);
+const activeTab = ref(0);
+const loading = ref(true);
+const error = ref('');
 
 // 加载表情包数据
 const loadEmojis = async () => {
-  const emojisUrl = blogConfig.value.emojis
+  const emojisUrl = blogConfig.value.emojis;
   if (!emojisUrl) {
-    error.value = '未配置表情包'
-    loading.value = false
-    return
+    error.value = '未配置表情包';
+    loading.value = false;
+    return;
   }
 
   try {
-    const response = await fetch(emojisUrl)
-    if (!response.ok) throw new Error('加载表情包失败')
-    emojiGroups.value = await response.json()
+    const response = await fetch(emojisUrl);
+    if (!response.ok) throw new Error('加载表情包失败');
+    emojiGroups.value = await response.json();
   } catch (err: any) {
-    error.value = err.message || '加载表情包失败'
+    error.value = err.message || '加载表情包失败';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 选择表情
 const selectEmoji = (item: EmojiItem, type: string) => {
-  emit('select', type === 'image' ? `:${item.key}:` : item.val)
-}
+  emit('select', type === 'image' ? `:${item.key}:` : item.val);
+};
 
-onMounted(loadEmojis)
+onMounted(loadEmojis);
 </script>
 
 <template>
@@ -81,7 +81,7 @@ onMounted(loadEmojis)
           class="emoji-group"
           :class="{
             'emoji-group-image': group.type === 'image',
-            'emoji-group-emoticon': group.type === 'emoticon'
+            'emoji-group-emoticon': group.type === 'emoticon',
           }"
         >
           <button
@@ -90,7 +90,7 @@ onMounted(loadEmojis)
             class="emoji-item"
             :class="{
               'emoji-image': group.type === 'image',
-              'emoji-emoticon': group.type === 'emoticon'
+              'emoji-emoticon': group.type === 'emoticon',
             }"
             :title="item.key"
             @click="selectEmoji(item, group.type)"

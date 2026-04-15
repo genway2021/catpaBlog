@@ -1,18 +1,40 @@
+version: "2"
+
 linters:
   enable:
-    - goimports
-    - govet
     - errcheck
+    - govet
     - staticcheck
-    - gosimple
-    - gofmt
-    - ineffassign
-    - misspell
     - unused
+    - gocritic
+    - gosec
+    - revive
+    - nilerr
+    - errname
+    - exhaustive
+    - nolintlint
 
-issues:
-  # 排除测试文件
-  exclude-dirs:
-    - vendor
-  exclude-files:
-    - ".*_test.go"
+  settings:
+    errcheck:
+      exclude-functions:
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Fprint
+        - fmt.Printf
+        - fmt.Println
+        - fmt.Print
+        - (io.Writer).Write
+
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: package-comments
+          disabled: true
+
+formatters:
+  enable:
+    - gofmt
+  settings:
+    gofmt:
+      simplify: true

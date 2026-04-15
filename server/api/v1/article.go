@@ -26,10 +26,10 @@ func NewArticleController(articleService *service.ArticleService) *ArticleContro
 
 // ============ 前台接口 ============
 
-// ListForWeb 获取前台文章列表
+// ListForWeb 文章列表
 //
-//	@Summary		文章列表
-//	@Description	获取已发布文章，置顶文章在前。支持按年/月/分类/标签筛选，参数可组合。不传分页参数则返回全部
+//	@Summary		获取文章列表
+//	@Description	获取已发布文章，置顶文章在前，支持按年/月/分类/标签筛选
 //	@Tags			文章
 //	@Accept			json
 //	@Produce		json
@@ -60,8 +60,8 @@ func (c *ArticleController) ListForWeb(ctx *gin.Context) {
 
 // Search 搜索文章
 //
-//	@Summary		搜索
-//	@Description	全文搜索标题和正文，返回匹配的文章及高亮摘要
+//	@Summary		搜索文章
+//	@Description	全文搜索标题和正文
 //	@Tags			文章
 //	@Accept			json
 //	@Produce		json
@@ -87,10 +87,10 @@ func (c *ArticleController) Search(ctx *gin.Context) {
 	response.PageSuccess(ctx, articles, total, req.Page, req.PageSize)
 }
 
-// GetBySlug 通过slug获取文章
+// GetBySlug 文章详情
 //
 //	@Summary		文章详情
-//	@Description	通过 slug 读取文章完整内容，自动增加阅读数
+//	@Description	通过 slug 读取文章完整内容
 //	@Tags			文章
 //	@Accept			json
 //	@Produce		json
@@ -118,8 +118,8 @@ func (c *ArticleController) GetBySlug(ctx *gin.Context) {
 
 // List 获取文章列表
 //
-//	@Summary		文章列表（管理）
-//	@Description	获取所有文章含草稿，用于后台管理
+//	@Summary		文章列表
+//	@Description	获取包含草稿的所有文章
 //	@Tags			文章管理
 //	@Accept			json
 //	@Produce		json
@@ -148,8 +148,8 @@ func (c *ArticleController) List(ctx *gin.Context) {
 
 // Get 获取文章详情
 //
-//	@Summary		文章详情（管理）
-//	@Description	通过 ID 获取，用于编辑器回显
+//	@Summary		文章详情
+//	@Description	文章详细信息，用于编辑器回显
 //	@Tags			文章管理
 //	@Accept			json
 //	@Produce		json
@@ -180,7 +180,7 @@ func (c *ArticleController) Get(ctx *gin.Context) {
 // Create 创建文章
 //
 //	@Summary		新建文章
-//	@Description	创建草稿或发布文章，自动生成 slug。支持设置置顶状态和发布状态，发布时自动设置发布时间
+//	@Description	创建草稿或发布文章，支持设置文章各种信息，发布时自动设置发布时间
 //	@Tags			文章管理
 //	@Accept			json
 //	@Produce		json
@@ -210,7 +210,7 @@ func (c *ArticleController) Create(ctx *gin.Context) {
 // Update 更新文章
 //
 //	@Summary		更新文章
-//	@Description	修改文章内容、分类、标签、置顶状态、发布状态等。支持调整发布时间，改为发布时自动设置发布时间，会自动更新相关统计
+//	@Description	修改文章各种信息，支持调整发布时间
 //	@Tags			文章管理
 //	@Accept			json
 //	@Produce		json
@@ -248,7 +248,7 @@ func (c *ArticleController) Update(ctx *gin.Context) {
 // Delete 删除文章
 //
 //	@Summary		删除文章
-//	@Description	硬删除文章，会自动更新分类和标签的文章计数
+//	@Description	硬删除文章，不可恢复
 //	@Tags			文章管理
 //	@Accept			json
 //	@Produce		json

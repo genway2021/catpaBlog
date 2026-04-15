@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import request from '@/utils/request';
 import type {
   Friend,
   FriendListData,
@@ -8,8 +8,8 @@ import type {
   FriendType,
   FriendTypeListData,
   CreateFriendTypeRequest,
-  UpdateFriendTypeRequest
-} from "@/types/friend";
+  UpdateFriendTypeRequest,
+} from '@/types/friend';
 
 // ========== 友链类型相关API ==========
 
@@ -18,7 +18,7 @@ import type {
  * @returns Promise<FriendTypeListData>
  */
 export function getFriendTypes(): Promise<FriendTypeListData> {
-  return request.get("/admin/friends/types");
+  return request.get('/admin/friends/types');
 }
 
 /**
@@ -36,7 +36,7 @@ export function getFriendTypeDetail(id: number): Promise<FriendType> {
  * @returns Promise<FriendType>
  */
 export function createFriendType(data: CreateFriendTypeRequest): Promise<FriendType> {
-  return request.post("/admin/friends/types", data);
+  return request.post('/admin/friends/types', data);
 }
 
 /**
@@ -66,7 +66,7 @@ export function deleteFriendType(id: number): Promise<void> {
  * @returns Promise<FriendListData>
  */
 export function getFriends(params?: FriendQuery): Promise<FriendListData> {
-  return request.get("/admin/friends", { params });
+  return request.get('/admin/friends', { params });
 }
 
 /**
@@ -84,7 +84,7 @@ export function getFriendDetail(id: number): Promise<Friend> {
  * @returns Promise<Friend>
  */
 export function createFriend(data: CreateFriendRequest): Promise<Friend> {
-  return request.post("/admin/friends", data);
+  return request.post('/admin/friends', data);
 }
 
 /**
@@ -105,4 +105,3 @@ export function updateFriend(id: number, data: UpdateFriendRequest): Promise<Fri
 export function deleteFriend(id: number): Promise<void> {
   return request.delete(`/admin/friends/${id}`);
 }
-

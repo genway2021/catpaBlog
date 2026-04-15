@@ -1,78 +1,85 @@
 <script setup lang="ts">
-import { getArticlesForWeb } from '@/composables/api/article'
+import { getArticlesForWeb } from '@/composables/api/article';
 
 definePageMeta({
-  typeHeader: 'home'
-})
+  typeHeader: 'home',
+});
 
-const { articles, total, currentPage, pageSize, fetchArticles } = useArticles()
-const { blogConfig } = useSysConfig()
+const { articles, total, currentPage, pageSize, fetchArticles } = useArticles();
+const { blogConfig } = useSysConfig();
 
-const homeLayout = computed(() => blogConfig.value['home_layout'] || 'waterfall')
+const homeLayout = computed(() => blogConfig.value['home_layout'] || 'waterfall');
 
 const { waterfall } = useWaterfall({
   containerSelector: '#post-list',
   columns: 2,
   gap: 16,
   waitForImages: false,
-  debounceDelay: 50
-})
+  debounceDelay: 50,
+});
 
 // 使用SSR获取首页数据
 const { data: initialData } = await useAsyncData('articles-list', async () => {
   const { list, total: resTotal } = await getArticlesForWeb({
     page: 1,
-    page_size: 20
-  })
-  return { list, total: resTotal }
-})
+    page_size: 20,
+  });
+  return { list, total: resTotal };
+});
 
 // 初始化数据
 if (initialData.value) {
-  articles.value = initialData.value.list.slice(0, 10)
-  total.value = initialData.value.total
-  currentPage.value = 1
+  articles.value = initialData.value.list.slice(0, 10);
+  total.value = initialData.value.total;
+  currentPage.value = 1;
 }
 
 const handlePageChange = async (page: number) => {
-  await fetchArticles({ page })
+  await fetchArticles({ page });
   if (process.client) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  setTimeout(() => waterfall(), 100)
-}
+  setTimeout(() => waterfall(), 100);
+};
 
 onMounted(async () => {
   // 只在客户端初始化瀑布流（仅针对瀑布流布局）
   if (process.client && homeLayout.value === 'waterfall') {
-    await nextTick()
+    await nextTick();
     requestAnimationFrame(() => {
-      waterfall()
-    })
+      waterfall();
+    });
   }
-})
+});
 
 // 监听路由变化，处理从详情页返回的情况
-const route = useRoute()
-watch(() => route.path, async (newPath) => {
-  if (newPath === '/' && process.client && homeLayout.value === 'waterfall') {
-    await nextTick()
-    setTimeout(() => {
-      waterfall()
-    }, 50)
+const route = useRoute();
+watch(
+  () => route.path,
+  async newPath => {
+    if (newPath === '/' && process.client && homeLayout.value === 'waterfall') {
+      await nextTick();
+      setTimeout(() => {
+        waterfall();
+      }, 50);
+    }
   }
-})
+);
 
-watch(() => articles.value.length, () => {
-  if (homeLayout.value === 'waterfall') {
-    setTimeout(() => waterfall(), 50)
+watch(
+  () => articles.value.length,
+  () => {
+    if (homeLayout.value === 'waterfall') {
+      setTimeout(() => waterfall(), 50);
+    }
   }
-})
+);
 
 useSeoMeta({
   title: '首页',
-  description: () => blogConfig.value.description || '欢迎来到我的博客，分享技术、生活与思考的个人空间'
-})
+  description: () =>
+    blogConfig.value.description || '欢迎来到我的博客，分享技术、生活与思考的个人空间',
+});
 </script>
 
 <template>
@@ -99,7 +106,9 @@ useSeoMeta({
             </span>
             <span class="article-meta" v-if="article.category">
               <i class="ri-inbox-2-fill"></i>
-              <NuxtLink class="article-meta__categories" :to="article.category.url">{{ article.category.name }}</NuxtLink>
+              <NuxtLink class="article-meta__categories" :to="article.category.url">{{
+                article.category.name
+              }}</NuxtLink>
             </span>
             <span class="article-meta tags" v-if="article.tags?.length">
               <template v-for="(tag, index) in article.tags" :key="tag.id">
@@ -134,7 +143,9 @@ useSeoMeta({
             </span>
             <span class="article-meta" v-if="article.category">
               <i class="ri-inbox-2-fill"></i>
-              <NuxtLink class="article-meta__categories" :to="article.category.url">{{ article.category.name }}</NuxtLink>
+              <NuxtLink class="article-meta__categories" :to="article.category.url">{{
+                article.category.name
+              }}</NuxtLink>
             </span>
             <span class="article-meta tags" v-if="article.tags?.length">
               <template v-for="(tag, index) in article.tags" :key="tag.id">
@@ -163,8 +174,13 @@ useSeoMeta({
     </div>
 
     <!-- 分页 -->
-    <UiPagination v-if="articles.length > 0" :total="total" :current-page="currentPage" :page-size="pageSize"
-      @change="handlePageChange" />
+    <UiPagination
+      v-if="articles.length > 0"
+      :total="total"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      @change="handlePageChange"
+    />
   </div>
 </template>
 

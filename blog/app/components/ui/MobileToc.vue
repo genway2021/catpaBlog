@@ -1,102 +1,105 @@
 <script setup lang="ts">
-import type { TocItem } from '@/utils/markdown'
+import type { TocItem } from '@/utils/markdown';
 
 interface Props {
-  visible: boolean
+  visible: boolean;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 const emit = defineEmits<{
-  close: []
-}>()
+  close: [];
+}>();
 
-const { currentArticle } = useCurrentArticle()
-const activeId = ref<string>('')
-const tocListRef = ref<HTMLElement | null>(null)
-const tocPopoverRef = ref<HTMLElement | null>(null)
+const { currentArticle } = useCurrentArticle();
+const activeId = ref<string>('');
+const tocListRef = ref<HTMLElement | null>(null);
+const tocPopoverRef = ref<HTMLElement | null>(null);
 
 const toc = computed<TocItem[]>(() => {
-  if (!currentArticle.value?.content) return []
-  return extractToc(currentArticle.value.content)
-})
+  if (!currentArticle.value?.content) return [];
+  return extractToc(currentArticle.value.content);
+});
 
-const hasToc = computed(() => toc.value.length > 0)
+const hasToc = computed(() => toc.value.length > 0);
 
 onClickOutside(tocPopoverRef, () => {
   if (props.visible) {
-    emit('close')
+    emit('close');
   }
-})
+});
 
 const scrollTocToActive = (id: string) => {
-  if (!tocListRef.value) return
+  if (!tocListRef.value) return;
 
   nextTick(() => {
-    const activeButton = tocListRef.value?.querySelector(`[data-toc-id="${id}"]`) as HTMLElement
-    if (!activeButton) return
+    const activeButton = tocListRef.value?.querySelector(`[data-toc-id="${id}"]`) as HTMLElement;
+    if (!activeButton) return;
 
-    const container = tocListRef.value!
-    const containerHeight = container.clientHeight
-    const buttonTop = activeButton.offsetTop
-    const buttonHeight = activeButton.clientHeight
+    const container = tocListRef.value!;
+    const containerHeight = container.clientHeight;
+    const buttonTop = activeButton.offsetTop;
+    const buttonHeight = activeButton.clientHeight;
 
-    const targetScroll = buttonTop - (containerHeight / 2) + (buttonHeight / 2)
+    const targetScroll = buttonTop - containerHeight / 2 + buttonHeight / 2;
 
     container.scrollTo({
       top: targetScroll,
-      behavior: 'smooth'
-    })
-  })
-}
+      behavior: 'smooth',
+    });
+  });
+};
 
 const scrollToHeading = (id: string) => {
-  scrollToElement(`#${id}`, { block: 'start' })
-  emit('close')
-}
+  scrollToElement(`#${id}`, { block: 'start' });
+  emit('close');
+};
 
 const handleScroll = () => {
-  const referencePoint = 64
-  const headings = toc.value
+  const referencePoint = 64;
+  const headings = toc.value;
 
-  if (headings.length === 0) return
+  if (headings.length === 0) return;
 
-  let closestHeading: TocItem | undefined = undefined
-  let closestDistance = Infinity
+  let closestHeading: TocItem | undefined = undefined;
+  let closestDistance = Infinity;
 
   for (const heading of headings) {
-    const element = document.getElementById(heading.id)
-    if (!element) continue
+    const element = document.getElementById(heading.id);
+    if (!element) continue;
 
-    const rect = element.getBoundingClientRect()
-    const distanceToReference = Math.abs(rect.top - referencePoint)
+    const rect = element.getBoundingClientRect();
+    const distanceToReference = Math.abs(rect.top - referencePoint);
 
     if (rect.top <= referencePoint + 50 && distanceToReference < closestDistance) {
-      closestDistance = distanceToReference
-      closestHeading = heading
+      closestDistance = distanceToReference;
+      closestHeading = heading;
     }
   }
 
-  const targetHeading = closestHeading || headings[0]
+  const targetHeading = closestHeading || headings[0];
   if (targetHeading && targetHeading.id !== activeId.value) {
-    activeId.value = targetHeading.id
-    scrollTocToActive(targetHeading.id)
+    activeId.value = targetHeading.id;
+    scrollTocToActive(targetHeading.id);
   }
-}
+};
 
 const handleClose = () => {
-  emit('close')
-}
+  emit('close');
+};
 
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    handleScroll()
+watch(
+  () => props.visible,
+  newVal => {
+    if (newVal) {
+      handleScroll();
+    }
   }
-})
+);
 
 onMounted(() => {
-  useEventListener(window, 'scroll', handleScroll, { passive: true })
-  handleScroll()
-})
+  useEventListener(window, 'scroll', handleScroll, { passive: true });
+  handleScroll();
+});
 </script>
 
 <template>
@@ -112,12 +115,15 @@ onMounted(() => {
         </div>
 
         <nav ref="tocListRef" class="toc-list" aria-label="文章目录">
-          <button v-for="item in toc" :key="item.id" :data-toc-id="item.id" :class="[
-            'toc-item',
-            `toc-level-${item.level}`,
-            { 'active': activeId === item.id }
-          ]" @click="scrollToHeading(item.id)" :aria-label="`跳转到 ${item.text}`"
-            :aria-current="activeId === item.id ? 'location' : undefined">
+          <button
+            v-for="item in toc"
+            :key="item.id"
+            :data-toc-id="item.id"
+            :class="['toc-item', `toc-level-${item.level}`, { active: activeId === item.id }]"
+            @click="scrollToHeading(item.id)"
+            :aria-label="`跳转到 ${item.text}`"
+            :aria-current="activeId === item.id ? 'location' : undefined"
+          >
             <span class="toc-text">{{ item.text }}</span>
           </button>
         </nav>
@@ -136,7 +142,9 @@ onMounted(() => {
   max-height: 60vh;
   background: var(--theme-bg-color, #fff);
   border-radius: 12px;
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 6px 30px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   overflow: hidden;

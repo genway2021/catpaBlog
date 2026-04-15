@@ -1,6 +1,11 @@
-import request from '@/utils/request'
-import type { Moment, MomentListData, CreateMomentRequest, UpdateMomentRequest } from '@/types/moment'
-import type { PaginationQuery } from '@/types/request'
+import request from '@/utils/request';
+import type {
+  Moment,
+  MomentListData,
+  CreateMomentRequest,
+  UpdateMomentRequest,
+} from '@/types/moment';
+import type { PaginationQuery } from '@/types/request';
 
 /**
  * 获取动态列表
@@ -8,7 +13,7 @@ import type { PaginationQuery } from '@/types/request'
  * @returns Promise<MomentListData>
  */
 export function getMoments(params: PaginationQuery): Promise<MomentListData> {
-  return request.get('/admin/moments', { params })
+  return request.get('/admin/moments', { params });
 }
 
 /**
@@ -17,7 +22,7 @@ export function getMoments(params: PaginationQuery): Promise<MomentListData> {
  * @returns Promise<Moment>
  */
 export function getMoment(id: number): Promise<Moment> {
-  return request.get(`/admin/moments/${id}`)
+  return request.get(`/admin/moments/${id}`);
 }
 
 /**
@@ -26,7 +31,7 @@ export function getMoment(id: number): Promise<Moment> {
  * @returns Promise<Moment>
  */
 export function createMoment(data: CreateMomentRequest): Promise<Moment> {
-  return request.post('/admin/moments', data)
+  return request.post('/admin/moments', data);
 }
 
 /**
@@ -36,7 +41,7 @@ export function createMoment(data: CreateMomentRequest): Promise<Moment> {
  * @returns Promise<Moment>
  */
 export function updateMoment(id: number, data: UpdateMomentRequest): Promise<Moment> {
-  return request.put(`/admin/moments/${id}`, data)
+  return request.put(`/admin/moments/${id}`, data);
 }
 
 /**
@@ -45,5 +50,5 @@ export function updateMoment(id: number, data: UpdateMomentRequest): Promise<Mom
  * @returns Promise<void>
  */
 export function deleteMoment(id: number): Promise<void> {
-  return request.delete(`/admin/moments/${id}`)
+  return request.delete(`/admin/moments/${id}`);
 }

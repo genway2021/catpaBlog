@@ -35,9 +35,9 @@ func NewUserController(userService *service.UserService, verificationService *se
 
 // ============ 认证接口 ============
 
-// BeginAuth 开始第三方认证
+// BeginAuth 第三方认证
 //
-//	@Summary		开始第三方认证
+//	@Summary		第三方认证
 //	@Description	跳转到第三方认证页面，支持登录和绑定
 //	@Tags			认证
 //	@Param			provider	path	string	true	"提供商 (github/google/qq)"
@@ -183,8 +183,8 @@ func (c *UserController) AuthCallback(ctx *gin.Context) {
 
 // Register 用户注册
 //
-//	@Summary		注册
-//	@Description	邮箱+密码注册，返回 Access Token、Refresh Token 和用户基本信息
+//	@Summary		用户注册
+//	@Description	邮箱密码注册
 //	@Tags			认证
 //	@Accept			json
 //	@Produce		json
@@ -213,8 +213,8 @@ func (c *UserController) Register(ctx *gin.Context) {
 
 // Login 用户登录
 //
-//	@Summary		登录
-//	@Description	邮箱+密码登录，返回 JWT token 和用户基本信息
+//	@Summary		用户登录
+//	@Description	邮箱密码登录，返回 JWT token 和用户基本信息
 //	@Tags			认证
 //	@Accept			json
 //	@Produce		json
@@ -243,7 +243,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 // RefreshToken 刷新token
 //
 //	@Summary		刷新token
-//	@Description	使用refresh token获取新的access token和refresh token
+//	@Description	使用refresh token获取新的access token
 //	@Tags			认证
 //	@Accept			json
 //	@Produce		json
@@ -269,9 +269,9 @@ func (c *UserController) RefreshToken(ctx *gin.Context) {
 	response.Success(ctx, refreshResp)
 }
 
-// ForgotPassword 请求重置密码
+// ForgotPassword 重置密码请求
 //
-//	@Summary		忘记密码
+//	@Summary		重置密码请求
 //	@Description	通过邮箱找回密码，发送重置验证码
 //	@Tags			认证
 //	@Accept			json
@@ -327,7 +327,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 
 // Logout 用户登出
 //
-//	@Summary		登出
+//	@Summary		用户登出
 //	@Description	将当前 token 加入黑名单使其失效
 //	@Tags			认证
 //	@Accept			json
@@ -384,10 +384,10 @@ func (c *UserController) GetProfile(ctx *gin.Context) {
 	response.Success(ctx, userInfo)
 }
 
-// UpdateForWeb 前台更新用户信息
+// UpdateForWeb 更新用户信息
 //
 //	@Summary		更新资料
-//	@Description	修改昵称、头像等信息，支持部分更新
+//	@Description	修改用户资料信息
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
@@ -427,7 +427,7 @@ func (c *UserController) UpdateForWeb(ctx *gin.Context) {
 // ChangePassword 修改当前用户密码
 //
 //	@Summary		修改密码
-//	@Description	修改密码需提供旧密码验证
+//	@Description	修改密码，需提供旧密码验证
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
@@ -458,7 +458,7 @@ func (c *UserController) ChangePassword(ctx *gin.Context) {
 	response.Success(ctx, nil)
 }
 
-// SetPassword 设置密码（针对 OAuth 注册用户首次设置密码）
+// SetPassword OAuth用户设置密码
 //
 //	@Summary		设置密码
 //	@Description	OAuth 注册用户首次设置密码，无需旧密码验证
@@ -495,7 +495,7 @@ func (c *UserController) SetPassword(ctx *gin.Context) {
 // DeactivateAccount 用户注销账号
 //
 //	@Summary		注销账号
-//	@Description	用户主动注销自己的账号，需提供密码验证。注销后账号将被软删除，无法恢复
+//	@Description	主动注销自己的账号，需提供密码验证，注销后账号将被软删除
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
@@ -526,12 +526,49 @@ func (c *UserController) DeactivateAccount(ctx *gin.Context) {
 	response.Success(ctx, nil)
 }
 
+// UnbindOAuth 解绑第三方账号
+//
+//	@Summary		解绑第三方账号
+//	@Description	解绑已绑定的第三方账号
+//	@Tags			用户
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			provider	path		string	true	"提供商 (github/google)"
+//	@Success		200			{object}	response.Response
+//	@Failure		400			{object}	response.Response
+//	@Failure		401			{object}	response.Response
+//	@Router			/user/oauth/{provider} [delete]
+func (c *UserController) UnbindOAuth(ctx *gin.Context) {
+	// 验证用户登录状态
+	userID, exists := ctx.Get("user_id")
+	if !exists {
+		response.Failed(ctx, "未登录")
+		return
+	}
+
+	// 验证提供商类型
+	provider := ctx.Param("provider")
+	if provider != "github" && provider != "google" && provider != "qq" {
+		response.ValidateFailed(ctx, "不支持的登录方式")
+		return
+	}
+
+	// 执行解绑
+	if err := c.userService.UnbindOAuth(userID.(uint), provider); err != nil {
+		response.Failed(ctx, err.Error())
+		return
+	}
+
+	response.Success(ctx, nil)
+}
+
 // ============ 后台管理接口 ============
 
-// List 获取用户列表（管理员接口）
+// List 获取用户列表
 //
-//	@Summary		用户列表（管理）
-//	@Description	获取所有用户列表
+//	@Summary		用户列表
+//	@Description	获取所有用户
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
@@ -559,10 +596,10 @@ func (c *UserController) List(ctx *gin.Context) {
 	response.PageSuccess(ctx, users, total, req.Page, req.PageSize)
 }
 
-// Get 获取用户详情（管理员接口）
+// Get 获取用户详情
 //
-//	@Summary		用户详情（管理）
-//	@Description	查看用户详情
+//	@Summary		用户详情
+//	@Description	查看用户详细信息
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
@@ -589,10 +626,10 @@ func (c *UserController) Get(ctx *gin.Context) {
 	response.Success(ctx, userInfo)
 }
 
-// Create 管理员创建用户
+// Create 创建用户
 //
 //	@Summary		创建用户
-//	@Description	管理员快速创建用户，可指定角色和状态，无需邮箱验证
+//	@Description	创建新用户
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
@@ -633,10 +670,10 @@ func (c *UserController) Create(ctx *gin.Context) {
 	response.Created(ctx, nil)
 }
 
-// Update 管理员更新用户
+// Update 更新用户
 //
 //	@Summary		更新用户
-//	@Description	管理员修改用户信息、角色、是否启用、密码等（所有字段均为可选）
+//	@Description	修改用户信息
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
@@ -681,10 +718,10 @@ func (c *UserController) Update(ctx *gin.Context) {
 	response.Success(ctx, nil)
 }
 
-// Delete 删除用户（管理员接口）
+// Delete 删除用户
 //
 //	@Summary		删除用户
-//	@Description	软删除用户，可通过恢复接口还原
+//	@Description	软删除用户
 //	@Tags			用户管理
 //	@Accept			json
 //	@Produce		json
@@ -715,45 +752,6 @@ func (c *UserController) Delete(ctx *gin.Context) {
 	}
 
 	if err := c.userService.Delete(authUser, uint(userID)); err != nil {
-		response.Failed(ctx, err.Error())
-		return
-	}
-
-	response.Success(ctx, nil)
-}
-
-// ============ OAuth 解绑接口 ============
-
-// UnbindOAuth 解绑第三方账号
-//
-//	@Summary		解绑第三方账号
-//	@Description	解绑已绑定的第三方账号
-//	@Tags			用户
-//	@Accept			json
-//	@Produce		json
-//	@Security		BearerAuth
-//	@Param			provider	path		string	true	"提供商 (github/google)"
-//	@Success		200			{object}	response.Response
-//	@Failure		400			{object}	response.Response
-//	@Failure		401			{object}	response.Response
-//	@Router			/user/oauth/{provider} [delete]
-func (c *UserController) UnbindOAuth(ctx *gin.Context) {
-	// 验证用户登录状态
-	userID, exists := ctx.Get("user_id")
-	if !exists {
-		response.Failed(ctx, "未登录")
-		return
-	}
-
-	// 验证提供商类型
-	provider := ctx.Param("provider")
-	if provider != "github" && provider != "google" && provider != "qq" {
-		response.ValidateFailed(ctx, "不支持的登录方式")
-		return
-	}
-
-	// 执行解绑
-	if err := c.userService.UnbindOAuth(userID.(uint), provider); err != nil {
 		response.Failed(ctx, err.Error())
 		return
 	}

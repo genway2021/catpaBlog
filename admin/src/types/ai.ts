@@ -1,25 +1,25 @@
 // AI功能请求类型
 export interface AISummaryRequest {
-    content: string
+  content: string;
 }
 
 export interface AIAISummaryRequest {
-    content: string
+  content: string;
 }
 
 export interface AITitleRequest {
-    content: string
+  content: string;
 }
 
 // AI功能响应类型
 export interface AISummaryResponse {
-    summary: string
+  summary: string;
 }
 
 export interface AIAISummaryResponse {
-    summary: string
+  summary: string;
 }
 
 export interface AITitleResponse {
-    title: string
+  title: string;
 }

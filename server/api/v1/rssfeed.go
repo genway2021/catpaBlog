@@ -52,7 +52,7 @@ func (c *RssFeedController) List(ctx *gin.Context) {
 // MarkRead 标记文章已读
 //
 //	@Summary		标记文章已读
-//	@Description	将指定文章标记为已读（仅超级管理员可操作）
+//	@Description	将指定文章标记为已读，限超级管理员
 //	@Tags			RSS订阅管理
 //	@Produce		json
 //	@Security		BearerAuth
@@ -81,7 +81,7 @@ func (c *RssFeedController) MarkRead(ctx *gin.Context) {
 // MarkAllRead 全部标记已读
 //
 //	@Summary		全部标记已读
-//	@Description	将所有未读文章标记为已读（仅超级管理员可操作）
+//	@Description	将所有未读文章标记为已读，限超级管理员
 //	@Tags			RSS订阅管理
 //	@Produce		json
 //	@Security		BearerAuth

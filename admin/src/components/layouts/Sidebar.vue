@@ -3,8 +3,15 @@
     <div class="logo">
       <span v-show="!isCollapse">Flec 管理系统</span>
     </div>
-    <el-menu :default-active="route.path" :collapse="isCollapse" background-color="#304156" text-color="#bfcbd9"
-      active-text-color="#409eff" router @select="handleMenuSelect">
+    <el-menu
+      :default-active="route.path"
+      :collapse="isCollapse"
+      background-color="#304156"
+      text-color="#bfcbd9"
+      active-text-color="#409eff"
+      router
+      @select="handleMenuSelect"
+    >
       <el-menu-item index="/">
         <i class="ri-dashboard-2-line ri-lg"></i>
         <template #title><span>仪表盘</span></template>
@@ -83,20 +90,20 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router';
 
-const route = useRoute()
+const route = useRoute();
 
 defineProps<{
-  isCollapse: boolean
-}>()
+  isCollapse: boolean;
+}>();
 
-const emit = defineEmits(['menu-click'])
+const emit = defineEmits(['menu-click']);
 
 // 菜单选择事件处理
 const handleMenuSelect = () => {
-  emit('menu-click')
-}
+  emit('menu-click');
+};
 </script>
 
 <style scoped lang="scss">

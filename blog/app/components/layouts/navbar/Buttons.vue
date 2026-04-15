@@ -1,84 +1,90 @@
 <script setup lang="ts">
 interface Emits {
-  (e: 'toggleDrawer'): void
+  (e: 'toggleDrawer'): void;
 }
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
 // 登录相关
-const isLoggedIn = useAuth()
-const { open: openLogin } = useLoginModal()
+const isLoggedIn = useAuth();
+const { open: openLogin } = useLoginModal();
 
 // 用户信息
-const { userAvatar, userNickname, userEmail, fetchUserInfo, clearUserInfo } = useUser()
+const { userAvatar, userNickname, userEmail, fetchUserInfo, clearUserInfo } = useUser();
 
 // 通知相关
-const { unreadCount, clearNotifications, fetchNotifications } = useNotifications()
+const { unreadCount, clearNotifications, fetchNotifications } = useNotifications();
 
-let pollingTimer: number | null = null
+let pollingTimer: number | null = null;
 
 // 监听登录状态，自动启动/停止轮询（仅在客户端执行）
-watch(isLoggedIn, (loggedIn) => {
-  // 只在客户端执行
-  if (!process.client) return
+watch(
+  isLoggedIn,
+  loggedIn => {
+    // 只在客户端执行
+    if (!process.client) return;
 
-  // 清理旧定时器
-  if (pollingTimer) {
-    clearInterval(pollingTimer)
-    pollingTimer = null
-  }
+    // 清理旧定时器
+    if (pollingTimer) {
+      clearInterval(pollingTimer);
+      pollingTimer = null;
+    }
 
-  if (loggedIn) {
-    // 获取用户信息
-    fetchUserInfo()
-    // 30秒轮询一次未读通知数量
-    pollingTimer = window.setInterval(() => {
-      fetchNotifications({ page: 1, page_size: 1 })
-    }, 30000)
-  } else {
-    clearUserInfo()
-    clearNotifications()
-  }
-}, { immediate: true })
+    if (loggedIn) {
+      // 获取用户信息
+      fetchUserInfo();
+      // 30秒轮询一次未读通知数量
+      pollingTimer = window.setInterval(() => {
+        fetchNotifications({ page: 1, page_size: 1 });
+      }, 30000);
+    } else {
+      clearUserInfo();
+      clearNotifications();
+    }
+  },
+  { immediate: true }
+);
 
 onUnmounted(() => {
   if (pollingTimer) {
-    clearInterval(pollingTimer)
+    clearInterval(pollingTimer);
   }
-})
+});
 
 // 搜索相关状态
-const showSearchModal = ref(false)
+const showSearchModal = ref(false);
 
 // 打开搜索弹窗
 const openSearch = () => {
-  showSearchModal.value = true
-}
+  showSearchModal.value = true;
+};
 
 // 用户菜单显示状态
-const showUserMenu = ref(false)
-const userMenuRef = ref<HTMLElement>()
+const showUserMenu = ref(false);
+const userMenuRef = ref<HTMLElement>();
 
 // 点击外部关闭菜单
 onClickOutside(userMenuRef, () => {
-  showUserMenu.value = false
-})
+  showUserMenu.value = false;
+});
 
 // 切换用户菜单
 const toggleUserMenu = () => {
-  showUserMenu.value = !showUserMenu.value
-}
+  showUserMenu.value = !showUserMenu.value;
+};
 
 // 退出登录
 const handleLogout = () => {
-  showUserMenu.value = false
-  logout()
-}
+  showUserMenu.value = false;
+  logout();
+};
 </script>
 
 <template>
   <div class="nav-button">
-    <button class="brighten" @click="openSearch" aria-label="搜索"><i class="ri-search-line ri-xl"></i></button>
+    <button class="brighten" @click="openSearch" aria-label="搜索">
+      <i class="ri-search-line ri-xl"></i>
+    </button>
     <!-- 主题切换按钮 - 使用 CSS 控制图标显示，避免 SSR 闪烁 -->
     <button class="brighten theme-toggle" @click="toggleTheme" aria-label="切换主题">
       <i class="ri-moon-line ri-xl theme-icon-moon"></i>
@@ -106,10 +112,15 @@ const handleLogout = () => {
               <i class="ri-user-settings-line"></i>
               个人设置
             </a>
-            <a href="/notifications" class="dropdown-item notification-item" @click="showUserMenu = false">
+            <a
+              href="/notifications"
+              class="dropdown-item notification-item"
+              @click="showUserMenu = false"
+            >
               <i class="ri-notification-3-line"></i>
               <span>通知中心</span>
-              <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount
+              <span v-if="unreadCount > 0" class="notification-badge">{{
+                unreadCount > 99 ? '99+' : unreadCount
               }}</span>
             </a>
             <button class="dropdown-item" @click="handleLogout">
@@ -140,7 +151,7 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: .5rem;
+  gap: 0.5rem;
 
   .button-menu {
     display: none;

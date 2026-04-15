@@ -22,10 +22,20 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="formVisible" :title="current.id ? '编辑类型' : '新增类型'" width="450px" append-to-body>
+    <el-dialog
+      v-model="formVisible"
+      :title="current.id ? '编辑类型' : '新增类型'"
+      width="450px"
+      append-to-body
+    >
       <el-form :model="current" label-width="80px">
         <el-form-item label="类型名称" required>
-          <el-input v-model="current.name" placeholder="请输入类型名称" maxlength="50" show-word-limit />
+          <el-input
+            v-model="current.name"
+            placeholder="请输入类型名称"
+            maxlength="50"
+            show-word-limit
+          />
         </el-form-item>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -49,66 +59,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
-import { getFriendTypes, createFriendType, updateFriendType, deleteFriendType } from '@/api/friend'
-import type { FriendType } from '@/types/friend'
-const props = defineProps<{ modelValue: boolean }>()
-const emit = defineEmits(['update:modelValue', 'success'])
+import { ref, computed, onMounted } from 'vue';
+import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
+import { getFriendTypes, createFriendType, updateFriendType, deleteFriendType } from '@/api/friend';
+import type { FriendType } from '@/types/friend';
+const props = defineProps<{ modelValue: boolean }>();
+const emit = defineEmits(['update:modelValue', 'success']);
 
 // 暴露方法给父组件调用
 defineExpose({
-  refreshData: loadData
-})
+  refreshData: loadData,
+});
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
+  set: val => emit('update:modelValue', val),
+});
 
-const list = ref<FriendType[]>([])
+const list = ref<FriendType[]>([]);
 
-const formVisible = ref(false)
+const formVisible = ref(false);
 const current = ref<Partial<FriendType>>({
   id: 0,
   name: '',
   sort: 5,
   is_visible: true,
-  count: 0
-})
+  count: 0,
+});
 
 // 初始化加载数据
 onMounted(() => {
-  loadData()
-})
+  loadData();
+});
 
 // 加载友链类型列表
 async function loadData() {
-  const loading = ElLoading.service()
+  const loading = ElLoading.service();
   try {
-    const res = await getFriendTypes()
-    list.value = res.list
+    const res = await getFriendTypes();
+    list.value = res.list;
   } catch (err) {
-    ElMessage.error('加载友链类型列表失败')
+    ElMessage.error('加载友链类型列表失败');
   } finally {
-    loading.close()
+    loading.close();
   }
 }
 
 // 打开表单
 function openForm(row?: FriendType) {
   if (row) {
-    current.value = { ...row }
+    current.value = { ...row };
   } else {
     current.value = {
       id: 0,
       name: '',
       sort: 5,
       is_visible: true,
-      count: 0
-    }
+      count: 0,
+    };
   }
-  formVisible.value = true
+  formVisible.value = true;
 }
 
 // 删除友链类型
@@ -117,15 +127,17 @@ async function remove(row: FriendType) {
     await ElMessageBox.confirm(
       '删除类型后，关联的友链type_id会被设置为NULL。确定要删除这个类型吗？',
       '提示',
-      { type: 'warning' }
-    )
-    await deleteFriendType(row.id)
-    await loadData()
-    emit('success') // 通知父组件刷新
-    ElMessage.success('删除成功')
+      {
+        type: 'warning',
+      }
+    );
+    await deleteFriendType(row.id);
+    await loadData();
+    emit('success'); // 通知父组件刷新
+    ElMessage.success('删除成功');
   } catch (error) {
     if (error !== 'cancel') {
-      console.error(error)
+      console.error(error);
     }
   }
 }
@@ -133,34 +145,34 @@ async function remove(row: FriendType) {
 // 保存友链类型
 async function save() {
   if (!current.value.name?.trim()) {
-    return ElMessage.warning('请输入类型名称')
+    return ElMessage.warning('请输入类型名称');
   }
 
-  const loading = ElLoading.service()
+  const loading = ElLoading.service();
   try {
     if (current.value.id) {
       // 编辑类型
       await updateFriendType(current.value.id, {
         name: current.value.name,
         sort: current.value.sort,
-        is_visible: current.value.is_visible
-      })
+        is_visible: current.value.is_visible,
+      });
     } else {
       // 新增类型
       await createFriendType({
         name: current.value.name,
         sort: current.value.sort,
-        is_visible: current.value.is_visible
-      })
+        is_visible: current.value.is_visible,
+      });
     }
-    await loadData()
-    formVisible.value = false
-    emit('success') // 通知父组件刷新
-    ElMessage.success('保存成功')
+    await loadData();
+    formVisible.value = false;
+    emit('success'); // 通知父组件刷新
+    ElMessage.success('保存成功');
   } catch (err) {
-    ElMessage.error('保存失败')
+    ElMessage.error('保存失败');
   } finally {
-    loading.close()
+    loading.close();
   }
 }
 </script>

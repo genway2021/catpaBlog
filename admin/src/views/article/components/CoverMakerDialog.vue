@@ -6,8 +6,13 @@
           <header class="editor-header">
             <span class="app-title">制作封面</span>
             <div class="header-right">
-              <el-dropdown trigger="click" @command="handleExportCommand" split-button
-                @click="handleExportCommand('apply')" :popper-class="'export-dropdown'">
+              <el-dropdown
+                trigger="click"
+                @command="handleExportCommand"
+                split-button
+                @click="handleExportCommand('apply')"
+                :popper-class="'export-dropdown'"
+              >
                 应用
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -41,8 +46,13 @@
                       <span>加载中...</span>
                     </div>
                     <div v-else class="photos-list">
-                      <div v-for="photo in displayedPhotos" :key="photo.id" class="photo-item"
-                        :class="{ active: selectedPhoto?.id === photo.id }" @click="selectPhoto(photo)">
+                      <div
+                        v-for="photo in displayedPhotos"
+                        :key="photo.id"
+                        class="photo-item"
+                        :class="{ active: selectedPhoto?.id === photo.id }"
+                        @click="selectPhoto(photo)"
+                      >
                         <img :src="photo.thumbnail" alt="" loading="lazy" />
                       </div>
                     </div>
@@ -56,8 +66,13 @@
                 </template>
                 <template v-else>
                   <div class="upload-section">
-                    <el-upload :auto-upload="false" :show-file-list="false" accept="image/*"
-                      :on-change="handleImageUpload" drag>
+                    <el-upload
+                      :auto-upload="false"
+                      :show-file-list="false"
+                      accept="image/*"
+                      :on-change="handleImageUpload"
+                      drag
+                    >
                       <div class="upload-area">
                         <el-icon class="upload-icon">
                           <Plus />
@@ -70,7 +85,12 @@
               </div>
 
               <div v-if="imageSource !== 'upload'" class="toolbar-bottom">
-                <el-input v-model="searchQuery" placeholder="搜索图片..." @keyup.enter="searchPhotos" clearable>
+                <el-input
+                  v-model="searchQuery"
+                  placeholder="搜索图片..."
+                  @keyup.enter="searchPhotos"
+                  clearable
+                >
                   <template #append>
                     <el-button :icon="Search" @click="searchPhotos" />
                   </template>
@@ -93,20 +113,36 @@
                     <div class="guide-line vertical-center"></div>
                     <div class="guide-line horizontal-center"></div>
                   </div>
-                  <div v-if="textElements.subtitle.text" class="text-element subtitle-element" :style="getSubtitleStyle()"
-                    @mousedown="startDragElement('subtitle', $event)">
+                  <div
+                    v-if="textElements.subtitle.text"
+                    class="text-element subtitle-element"
+                    :style="getSubtitleStyle()"
+                    @mousedown="startDragElement('subtitle', $event)"
+                  >
                     {{ textElements.subtitle.text }}
                   </div>
-                  <div v-if="textElements.title.text" class="text-element title-element" :style="getTitleStyle()"
-                    @mousedown="startDragElement('title', $event)">
+                  <div
+                    v-if="textElements.title.text"
+                    class="text-element title-element"
+                    :style="getTitleStyle()"
+                    @mousedown="startDragElement('title', $event)"
+                  >
                     {{ textElements.title.text }}
                   </div>
-                  <div v-if="textElements.author.text" class="text-element author-element" :style="getAuthorStyle()"
-                    @mousedown="startDragElement('author', $event)">
+                  <div
+                    v-if="textElements.author.text"
+                    class="text-element author-element"
+                    :style="getAuthorStyle()"
+                    @mousedown="startDragElement('author', $event)"
+                  >
                     {{ textElements.author.text }}
                   </div>
-                  <div v-if="textElements.avatar.src" class="avatar-element" :style="getAvatarStyle()"
-                    @mousedown="startDragElement('avatar', $event)">
+                  <div
+                    v-if="textElements.avatar.src"
+                    class="avatar-element"
+                    :style="getAvatarStyle()"
+                    @mousedown="startDragElement('avatar', $event)"
+                  >
                     <img :src="textElements.avatar.src" :style="getAvatarImageStyle()" />
                   </div>
                 </div>
@@ -116,9 +152,17 @@
             <aside class="properties-panel">
               <div class="property-group">
                 <label>遮罩层浓度</label>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <el-slider v-model="overlayOpacity" :min="0" :max="100" :step="5" style="flex: 1;" />
-                  <span style="min-width: 45px; text-align: right; color: #666;">{{ overlayOpacity }}%</span>
+                <div style="display: flex; align-items: center; gap: 12px">
+                  <el-slider
+                    v-model="overlayOpacity"
+                    :min="0"
+                    :max="100"
+                    :step="5"
+                    style="flex: 1"
+                  />
+                  <span style="min-width: 45px; text-align: right; color: #666"
+                    >{{ overlayOpacity }}%</span
+                  >
                 </div>
               </div>
               <div class="property-group">
@@ -135,7 +179,12 @@
               </div>
               <div class="property-group">
                 <label>头像</label>
-                <el-upload action="#" :show-file-list="false" :before-upload="handleAvatarUpload" accept="image/*">
+                <el-upload
+                  action="#"
+                  :show-file-list="false"
+                  :before-upload="handleAvatarUpload"
+                  accept="image/*"
+                >
                   <el-button type="primary">选择图片</el-button>
                 </el-upload>
               </div>
@@ -148,62 +197,62 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Close, Plus, Picture, Search, Loading } from '@element-plus/icons-vue'
+import { ref, computed, watch, nextTick, onUnmounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { Close, Plus, Picture, Search, Loading } from '@element-plus/icons-vue';
 
 interface TextElement {
-  text: string
-  x: number
-  y: number
-  fontSize: number
-  fontFamily: string
-  color: string
+  text: string;
+  x: number;
+  y: number;
+  fontSize: number;
+  fontFamily: string;
+  color: string;
 }
 
 interface AvatarElement {
-  src: string
-  x: number
-  y: number
-  size: number
+  src: string;
+  x: number;
+  y: number;
+  size: number;
 }
 
 interface PlatformPhoto {
-  id: string
-  url: string
-  thumbnail: string
+  id: string;
+  url: string;
+  thumbnail: string;
 }
 
 interface Props {
-  modelValue: boolean
-  title?: string
-  author?: string
-  avatar?: string
+  modelValue: boolean;
+  title?: string;
+  author?: string;
+  avatar?: string;
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'save', imageUrl: string): void
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'save', imageUrl: string): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
-const visible = ref(false)
-const canvasRef = ref<HTMLElement>()
-const photosGridRef = ref<HTMLElement>()
-const imageSource = ref<'unsplash' | 'pixabay' | 'pexels' | 'upload'>('unsplash')
-const searchQuery = ref('')
-const platformPhotos = ref<PlatformPhoto[]>([])
-const selectedPhoto = ref<PlatformPhoto | null>(null)
-const loadingPhotos = ref(false)
-const loadingMore = ref(false)
-const hasMorePhotos = ref(true)
-const currentPage = ref(1)
-const perPage = ref(20)
-const imageUrl = ref('')
-const imageLoaded = ref(false)
-const overlayOpacity = ref(60)
+const visible = ref(false);
+const canvasRef = ref<HTMLElement>();
+const photosGridRef = ref<HTMLElement>();
+const imageSource = ref<'unsplash' | 'pixabay' | 'pexels' | 'upload'>('unsplash');
+const searchQuery = ref('');
+const platformPhotos = ref<PlatformPhoto[]>([]);
+const selectedPhoto = ref<PlatformPhoto | null>(null);
+const loadingPhotos = ref(false);
+const loadingMore = ref(false);
+const hasMorePhotos = ref(true);
+const currentPage = ref(1);
+const perPage = ref(20);
+const imageUrl = ref('');
+const imageLoaded = ref(false);
+const overlayOpacity = ref(60);
 
 const textElements = ref({
   title: {
@@ -212,7 +261,7 @@ const textElements = ref({
     y: 40,
     fontSize: 148,
     fontFamily: 'SlidefontKBK',
-    color: '#ffffff'
+    color: '#ffffff',
   } as TextElement,
   subtitle: {
     text: '',
@@ -220,7 +269,7 @@ const textElements = ref({
     y: 25,
     fontSize: 78,
     fontFamily: 'SlidefontKBK',
-    color: '#ffffff'
+    color: '#ffffff',
   } as TextElement,
   author: {
     text: '',
@@ -228,67 +277,67 @@ const textElements = ref({
     y: 57.5,
     fontSize: 95,
     fontFamily: 'SlidefontKBK',
-    color: '#ffffff'
+    color: '#ffffff',
   } as TextElement,
   avatar: {
     src: '',
     x: 50,
     y: 75,
-    size: 120
-  } as AvatarElement
-})
+    size: 120,
+  } as AvatarElement,
+});
 
-const dragStart = ref({ x: 0, y: 0, elementX: 0, elementY: 0 })
-const isDragging = ref(false)
-const currentDragElement = ref<'title' | 'subtitle' | 'author' | 'avatar' | null>(null)
-const canvasContainerRef = ref<HTMLElement>()
+const dragStart = ref({ x: 0, y: 0, elementX: 0, elementY: 0 });
+const isDragging = ref(false);
+const currentDragElement = ref<'title' | 'subtitle' | 'author' | 'avatar' | null>(null);
+const canvasContainerRef = ref<HTMLElement>();
 
 const displayedPhotos = computed(() => {
-  return platformPhotos.value.slice(0, currentPage.value * perPage.value)
-})
+  return platformPhotos.value.slice(0, currentPage.value * perPage.value);
+});
 
 // 计算画布缩放比例
 const canvasScale = computed(() => {
-  if (!canvasContainerRef.value) return 1
-  const container = canvasContainerRef.value
-  const containerWidth = container.clientWidth
-  const containerHeight = container.clientHeight
-  const scaleX = containerWidth / 1920
-  const scaleY = containerHeight / 1080
-  return Math.min(scaleX, scaleY)
-})
+  if (!canvasContainerRef.value) return 1;
+  const container = canvasContainerRef.value;
+  const containerWidth = container.clientWidth;
+  const containerHeight = container.clientHeight;
+  const scaleX = containerWidth / 1920;
+  const scaleY = containerHeight / 1080;
+  return Math.min(scaleX, scaleY);
+});
 
 // 获取画布样式（包含缩放）
 const canvasStyle = computed(() => {
   return {
-    transform: `translate(-50%, -50%) scale(${canvasScale.value})`
-  }
-})
+    transform: `translate(-50%, -50%) scale(${canvasScale.value})`,
+  };
+});
 
-const IMAGE_API_URL = 'https://pixhub.flec.top'
+const IMAGE_API_URL = 'https://pixhub.flec.top';
 
 function handleClose() {
-  visible.value = false
-  emit('update:modelValue', false)
+  visible.value = false;
+  emit('update:modelValue', false);
 }
 
 function handleAvatarUpload(file: File) {
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    textElements.value.avatar.src = e.target?.result as string
-  }
-  reader.readAsDataURL(file)
-  return false
+  const reader = new FileReader();
+  reader.onload = e => {
+    textElements.value.avatar.src = e.target?.result as string;
+  };
+  reader.readAsDataURL(file);
+  return false;
 }
 
 function getCanvasSize() {
   // 固定画布逻辑尺寸为 1920x1080，确保在所有设备上元素位置一致
-  return { width: 1920, height: 1080 }
+  return { width: 1920, height: 1080 };
 }
 
 function getTitleStyle() {
-  const title = textElements.value.title
-  const canvasSize = getCanvasSize()
+  const title = textElements.value.title;
+  const canvasSize = getCanvasSize();
   return {
     position: 'absolute' as const,
     left: `${(title.x / 100) * canvasSize.width}px`,
@@ -300,13 +349,13 @@ function getTitleStyle() {
     userSelect: 'none' as const,
     transform: 'translate(-50%, -50%)',
     textAlign: 'center' as const,
-    whiteSpace: 'nowrap' as const
-  }
+    whiteSpace: 'nowrap' as const,
+  };
 }
 
 function getSubtitleStyle() {
-  const subtitle = textElements.value.subtitle
-  const canvasSize = getCanvasSize()
+  const subtitle = textElements.value.subtitle;
+  const canvasSize = getCanvasSize();
   return {
     position: 'absolute' as const,
     left: `${(subtitle.x / 100) * canvasSize.width}px`,
@@ -318,13 +367,13 @@ function getSubtitleStyle() {
     userSelect: 'none' as const,
     transform: 'translate(-50%, -50%)',
     textAlign: 'center' as const,
-    whiteSpace: 'nowrap' as const
-  }
+    whiteSpace: 'nowrap' as const,
+  };
 }
 
 function getAuthorStyle() {
-  const author = textElements.value.author
-  const canvasSize = getCanvasSize()
+  const author = textElements.value.author;
+  const canvasSize = getCanvasSize();
   return {
     position: 'absolute' as const,
     left: `${(author.x / 100) * canvasSize.width}px`,
@@ -336,13 +385,13 @@ function getAuthorStyle() {
     userSelect: 'none' as const,
     transform: 'translate(-50%, -50%)',
     textAlign: 'center' as const,
-    whiteSpace: 'nowrap' as const
-  }
+    whiteSpace: 'nowrap' as const,
+  };
 }
 
 function getAvatarStyle() {
-  const avatar = textElements.value.avatar
-  const canvasSize = getCanvasSize()
+  const avatar = textElements.value.avatar;
+  const canvasSize = getCanvasSize();
   return {
     position: 'absolute' as const,
     left: `${(avatar.x / 100) * canvasSize.width}px`,
@@ -350,8 +399,8 @@ function getAvatarStyle() {
     width: `${avatar.size}px`,
     height: `${avatar.size}px`,
     cursor: 'move' as const,
-    transform: 'translate(-50%, -50%)'
-  }
+    transform: 'translate(-50%, -50%)',
+  };
 }
 
 function getAvatarImageStyle() {
@@ -360,315 +409,330 @@ function getAvatarImageStyle() {
     height: '100%',
     objectFit: 'cover' as const,
     borderRadius: '50%',
-    border: '4px solid #ffffff'
-  }
+    border: '4px solid #ffffff',
+  };
 }
 
 function startDragElement(element: 'title' | 'subtitle' | 'author' | 'avatar', e: MouseEvent) {
-  e.preventDefault()
-  e.stopPropagation()
-  isDragging.value = true
-  currentDragElement.value = element
-  const el = textElements.value[element]
+  e.preventDefault();
+  e.stopPropagation();
+  isDragging.value = true;
+  currentDragElement.value = element;
+  const el = textElements.value[element];
   dragStart.value = {
     x: e.clientX,
     y: e.clientY,
     elementX: el.x,
-    elementY: el.y
-  }
-  document.addEventListener('mousemove', handleDragElement)
-  document.addEventListener('mouseup', stopDragElement)
+    elementY: el.y,
+  };
+  document.addEventListener('mousemove', handleDragElement);
+  document.addEventListener('mouseup', stopDragElement);
 }
 
 function handleDragElement(e: MouseEvent) {
-  if (!isDragging.value || !currentDragElement.value) return
-  const canvasSize = getCanvasSize()
-  const scale = canvasScale.value
-  const dx = (e.clientX - dragStart.value.x) / scale
-  const dy = (e.clientY - dragStart.value.y) / scale
-  const dxPercent = (dx / canvasSize.width) * 100
-  const dyPercent = (dy / canvasSize.height) * 100
-  const element = textElements.value[currentDragElement.value]
-  const gridSize = 2.5
-  let newX = dragStart.value.elementX + dxPercent
-  let newY = dragStart.value.elementY + dyPercent
-  newX = Math.round(newX / gridSize) * gridSize
-  newY = Math.round(newY / gridSize) * gridSize
-  element.x = Math.max(0, Math.min(100, newX))
-  element.y = Math.max(0, Math.min(100, newY))
+  if (!isDragging.value || !currentDragElement.value) return;
+  const canvasSize = getCanvasSize();
+  const scale = canvasScale.value;
+  const dx = (e.clientX - dragStart.value.x) / scale;
+  const dy = (e.clientY - dragStart.value.y) / scale;
+  const dxPercent = (dx / canvasSize.width) * 100;
+  const dyPercent = (dy / canvasSize.height) * 100;
+  const element = textElements.value[currentDragElement.value];
+  const gridSize = 2.5;
+  let newX = dragStart.value.elementX + dxPercent;
+  let newY = dragStart.value.elementY + dyPercent;
+  newX = Math.round(newX / gridSize) * gridSize;
+  newY = Math.round(newY / gridSize) * gridSize;
+  element.x = Math.max(0, Math.min(100, newX));
+  element.y = Math.max(0, Math.min(100, newY));
 }
 
 function stopDragElement() {
-  isDragging.value = false
-  currentDragElement.value = null
-  document.removeEventListener('mousemove', handleDragElement)
-  document.removeEventListener('mouseup', stopDragElement)
+  isDragging.value = false;
+  currentDragElement.value = null;
+  document.removeEventListener('mousemove', handleDragElement);
+  document.removeEventListener('mouseup', stopDragElement);
 }
 
 async function searchPhotos() {
-  loadingPhotos.value = true
-  currentPage.value = 1
-  platformPhotos.value = []
+  loadingPhotos.value = true;
+  currentPage.value = 1;
+  platformPhotos.value = [];
   try {
     const params = new URLSearchParams({
       platform: imageSource.value,
       page_size: String(perPage.value),
       page: '1',
-      ...(searchQuery.value.trim() && { query: searchQuery.value })
-    })
-    const response = await fetch(`${IMAGE_API_URL}/?${params}`)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const data = await response.json()
-    const photos = data.results || []
+      ...(searchQuery.value.trim() && { query: searchQuery.value }),
+    });
+    const response = await fetch(`${IMAGE_API_URL}/?${params}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const photos = data.results || [];
     if (photos.length > 0) {
-      platformPhotos.value = photos
-      hasMorePhotos.value = photos.length >= perPage.value
-      selectPhoto(photos[0])
+      platformPhotos.value = photos;
+      hasMorePhotos.value = photos.length >= perPage.value;
+      selectPhoto(photos[0]);
     } else {
-      ElMessage.warning('没有找到相关图片')
+      ElMessage.warning('没有找到相关图片');
     }
   } catch (error) {
-    ElMessage.error('搜索图片失败')
+    ElMessage.error('搜索图片失败');
   } finally {
-    loadingPhotos.value = false
+    loadingPhotos.value = false;
   }
 }
 
 async function loadMorePhotos() {
-  if (loadingMore.value || !hasMorePhotos.value) return
-  loadingMore.value = true
-  const nextPage = currentPage.value + 1
+  if (loadingMore.value || !hasMorePhotos.value) return;
+  loadingMore.value = true;
+  const nextPage = currentPage.value + 1;
   try {
     const params = new URLSearchParams({
       platform: imageSource.value,
       page_size: String(perPage.value),
       page: String(nextPage),
-      ...(searchQuery.value.trim() && { query: searchQuery.value })
-    })
-    const response = await fetch(`${IMAGE_API_URL}/?${params}`)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const data = await response.json()
-    const photos = data.results || []
+      ...(searchQuery.value.trim() && { query: searchQuery.value }),
+    });
+    const response = await fetch(`${IMAGE_API_URL}/?${params}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const photos = data.results || [];
     if (photos.length > 0) {
-      platformPhotos.value.push(...photos)
-      currentPage.value = nextPage
-      hasMorePhotos.value = photos.length >= perPage.value
+      platformPhotos.value.push(...photos);
+      currentPage.value = nextPage;
+      hasMorePhotos.value = photos.length >= perPage.value;
     }
   } catch (error) {
-    ElMessage.error('加载更多图片失败')
+    ElMessage.error('加载更多图片失败');
   } finally {
-    loadingMore.value = false
+    loadingMore.value = false;
   }
 }
 
 function selectPhoto(photo: PlatformPhoto) {
-  selectedPhoto.value = photo
-  imageUrl.value = photo.url || ''
-  imageLoaded.value = true
+  selectedPhoto.value = photo;
+  imageUrl.value = photo.url || '';
+  imageLoaded.value = true;
 }
 
 function handleImageUpload(file: any) {
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    imageUrl.value = e.target?.result as string
-    imageLoaded.value = true
-    selectedPhoto.value = null
-  }
-  reader.readAsDataURL(file.raw)
+  const reader = new FileReader();
+  reader.onload = e => {
+    imageUrl.value = e.target?.result as string;
+    imageLoaded.value = true;
+    selectedPhoto.value = null;
+  };
+  reader.readAsDataURL(file.raw);
 }
 
 async function generateImageDataUrl() {
   if (!canvasRef.value || !imageLoaded.value) {
-    ElMessage.warning('请先上传图片')
-    return null
+    ElMessage.warning('请先上传图片');
+    return null;
   }
   try {
-    const previewCanvas = canvasRef.value
-    const titleElement = previewCanvas.querySelector('.title-element') as HTMLElement
-    const subtitleElement = previewCanvas.querySelector('.subtitle-element') as HTMLElement
-    const authorElement = previewCanvas.querySelector('.author-element') as HTMLElement
-    const avatarElement = previewCanvas.querySelector('.avatar-element') as HTMLElement
-    const canvas = document.createElement('canvas')
-    canvas.width = 1920
-    canvas.height = 1080
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('无法创建 Canvas 上下文')
+    const previewCanvas = canvasRef.value;
+    const titleElement = previewCanvas.querySelector('.title-element') as HTMLElement;
+    const subtitleElement = previewCanvas.querySelector('.subtitle-element') as HTMLElement;
+    const authorElement = previewCanvas.querySelector('.author-element') as HTMLElement;
+    const avatarElement = previewCanvas.querySelector('.avatar-element') as HTMLElement;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1920;
+    canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('无法创建 Canvas 上下文');
     // 预览画布现在是固定的 1920x1080，所以缩放比例是 1:1
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
     await new Promise((resolve, reject) => {
-      img.onload = resolve
-      img.onerror = reject
-      img.src = imageUrl.value
-    })
-    const imgAspect = img.width / img.height
-    const canvasAspect = canvas.width / canvas.height
-    let drawWidth, drawHeight, drawX, drawY
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = imageUrl.value;
+    });
+    const imgAspect = img.width / img.height;
+    const canvasAspect = canvas.width / canvas.height;
+    let drawWidth, drawHeight, drawX, drawY;
     if (imgAspect > canvasAspect) {
-      drawHeight = canvas.height
-      drawWidth = drawHeight * imgAspect
-      drawX = (canvas.width - drawWidth) / 2
-      drawY = 0
+      drawHeight = canvas.height;
+      drawWidth = drawHeight * imgAspect;
+      drawX = (canvas.width - drawWidth) / 2;
+      drawY = 0;
     } else {
-      drawWidth = canvas.width
-      drawHeight = drawWidth / imgAspect
-      drawX = 0
-      drawY = (canvas.height - drawHeight) / 2
+      drawWidth = canvas.width;
+      drawHeight = drawWidth / imgAspect;
+      drawX = 0;
+      drawY = (canvas.height - drawHeight) / 2;
     }
-    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight)
-    ctx.fillStyle = `rgba(31, 41, 55, ${overlayOpacity.value / 100})`
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    ctx.fillStyle = `rgba(31, 41, 55, ${overlayOpacity.value / 100})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     if (textElements.value.title.text && titleElement) {
-      const computedStyle = window.getComputedStyle(titleElement)
-      const actualFontSize = parseFloat(computedStyle.fontSize)
-      ctx.font = `${actualFontSize}px 'SlidefontKBK'`
-      ctx.fillStyle = '#ffffff'
-      const titleRect = titleElement.getBoundingClientRect()
-      const previewRect = previewCanvas.getBoundingClientRect()
-      const titleX = ((titleRect.left + titleRect.width / 2 - previewRect.left) / canvasScale.value)
-      const titleY = ((titleRect.top + titleRect.height / 2 - previewRect.top) / canvasScale.value)
-      ctx.fillText(textElements.value.title.text, titleX, titleY)
+      const computedStyle = window.getComputedStyle(titleElement);
+      const actualFontSize = parseFloat(computedStyle.fontSize);
+      ctx.font = `${actualFontSize}px 'SlidefontKBK'`;
+      ctx.fillStyle = '#ffffff';
+      const titleRect = titleElement.getBoundingClientRect();
+      const previewRect = previewCanvas.getBoundingClientRect();
+      const titleX = (titleRect.left + titleRect.width / 2 - previewRect.left) / canvasScale.value;
+      const titleY = (titleRect.top + titleRect.height / 2 - previewRect.top) / canvasScale.value;
+      ctx.fillText(textElements.value.title.text, titleX, titleY);
     }
     if (textElements.value.subtitle.text && subtitleElement) {
-      const computedStyle = window.getComputedStyle(subtitleElement)
-      const actualFontSize = parseFloat(computedStyle.fontSize)
-      ctx.font = `${actualFontSize}px 'SlidefontKBK'`
-      ctx.fillStyle = '#ffffff'
-      const subtitleRect = subtitleElement.getBoundingClientRect()
-      const previewRect = previewCanvas.getBoundingClientRect()
-      const subtitleX = ((subtitleRect.left + subtitleRect.width / 2 - previewRect.left) / canvasScale.value)
-      const subtitleY = ((subtitleRect.top + subtitleRect.height / 2 - previewRect.top) / canvasScale.value)
-      ctx.fillText(textElements.value.subtitle.text, subtitleX, subtitleY)
+      const computedStyle = window.getComputedStyle(subtitleElement);
+      const actualFontSize = parseFloat(computedStyle.fontSize);
+      ctx.font = `${actualFontSize}px 'SlidefontKBK'`;
+      ctx.fillStyle = '#ffffff';
+      const subtitleRect = subtitleElement.getBoundingClientRect();
+      const previewRect = previewCanvas.getBoundingClientRect();
+      const subtitleX =
+        (subtitleRect.left + subtitleRect.width / 2 - previewRect.left) / canvasScale.value;
+      const subtitleY =
+        (subtitleRect.top + subtitleRect.height / 2 - previewRect.top) / canvasScale.value;
+      ctx.fillText(textElements.value.subtitle.text, subtitleX, subtitleY);
     }
     if (textElements.value.author.text && authorElement) {
-      const computedStyle = window.getComputedStyle(authorElement)
-      const actualFontSize = parseFloat(computedStyle.fontSize)
-      ctx.font = `${actualFontSize}px 'SlidefontKBK'`
-      ctx.fillStyle = '#ffffff'
-      const authorRect = authorElement.getBoundingClientRect()
-      const previewRect = previewCanvas.getBoundingClientRect()
-      const authorX = ((authorRect.left + authorRect.width / 2 - previewRect.left) / canvasScale.value)
-      const authorY = ((authorRect.top + authorRect.height / 2 - previewRect.top) / canvasScale.value)
-      ctx.fillText(textElements.value.author.text, authorX, authorY)
+      const computedStyle = window.getComputedStyle(authorElement);
+      const actualFontSize = parseFloat(computedStyle.fontSize);
+      ctx.font = `${actualFontSize}px 'SlidefontKBK'`;
+      ctx.fillStyle = '#ffffff';
+      const authorRect = authorElement.getBoundingClientRect();
+      const previewRect = previewCanvas.getBoundingClientRect();
+      const authorX =
+        (authorRect.left + authorRect.width / 2 - previewRect.left) / canvasScale.value;
+      const authorY =
+        (authorRect.top + authorRect.height / 2 - previewRect.top) / canvasScale.value;
+      ctx.fillText(textElements.value.author.text, authorX, authorY);
     }
     if (textElements.value.avatar.src && avatarElement) {
-      const avatarImg = new Image()
-      avatarImg.crossOrigin = 'anonymous'
-      await new Promise((resolve) => {
-        avatarImg.onload = resolve
-        avatarImg.onerror = () => resolve(null)
-        avatarImg.src = textElements.value.avatar.src
-      })
+      const avatarImg = new Image();
+      avatarImg.crossOrigin = 'anonymous';
+      await new Promise(resolve => {
+        avatarImg.onload = resolve;
+        avatarImg.onerror = () => resolve(null);
+        avatarImg.src = textElements.value.avatar.src;
+      });
       if (avatarImg.complete) {
-        const avatarRect = avatarElement.getBoundingClientRect()
-        const previewRect = previewCanvas.getBoundingClientRect()
-        const avatarX = ((avatarRect.left + avatarRect.width / 2 - previewRect.left) / canvasScale.value)
-        const avatarY = ((avatarRect.top + avatarRect.height / 2 - previewRect.top) / canvasScale.value)
-        const avatarRadius = (avatarRect.width / 2 / canvasScale.value)
-        ctx.save()
-        ctx.beginPath()
-        ctx.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2)
-        ctx.closePath()
-        ctx.clip()
-        ctx.drawImage(avatarImg, avatarX - avatarRadius, avatarY - avatarRadius, avatarRadius * 2, avatarRadius * 2)
-        ctx.restore()
-        ctx.beginPath()
-        ctx.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2)
-        ctx.strokeStyle = '#ffffff'
-        ctx.lineWidth = 2
-        ctx.stroke()
+        const avatarRect = avatarElement.getBoundingClientRect();
+        const previewRect = previewCanvas.getBoundingClientRect();
+        const avatarX =
+          (avatarRect.left + avatarRect.width / 2 - previewRect.left) / canvasScale.value;
+        const avatarY =
+          (avatarRect.top + avatarRect.height / 2 - previewRect.top) / canvasScale.value;
+        const avatarRadius = avatarRect.width / 2 / canvasScale.value;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(
+          avatarImg,
+          avatarX - avatarRadius,
+          avatarY - avatarRadius,
+          avatarRadius * 2,
+          avatarRadius * 2
+        );
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
     }
-    return canvas.toDataURL('image/png', 0.95)
+    return canvas.toDataURL('image/png', 0.95);
   } catch (error) {
-    ElMessage.error('生成图片失败')
-    return null
+    ElMessage.error('生成图片失败');
+    return null;
   }
 }
 
 const handleExportCommand = async (command: 'apply' | 'apply-export' | 'export-only') => {
-  const dataUrl = await generateImageDataUrl()
-  if (!dataUrl) return
+  const dataUrl = await generateImageDataUrl();
+  if (!dataUrl) return;
   if (command === 'apply') {
-    emit('save', dataUrl)
-    handleClose()
-    ElMessage.success('封面已应用到文章')
+    emit('save', dataUrl);
+    handleClose();
+    ElMessage.success('封面已应用到文章');
   } else if (command === 'apply-export') {
-    emit('save', dataUrl)
-    handleClose()
-    ElMessage.success('封面已应用到文章')
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = `cover-${Date.now()}.png`
-    link.click()
-    ElMessage.success('图片已导出')
+    emit('save', dataUrl);
+    handleClose();
+    ElMessage.success('封面已应用到文章');
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `cover-${Date.now()}.png`;
+    link.click();
+    ElMessage.success('图片已导出');
   } else if (command === 'export-only') {
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = `cover-${Date.now()}.png`
-    link.click()
-    ElMessage.success('图片已导出')
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `cover-${Date.now()}.png`;
+    link.click();
+    ElMessage.success('图片已导出');
   }
-}
+};
 
-watch(() => props.modelValue, (val) => {
-  visible.value = val
-})
+watch(
+  () => props.modelValue,
+  val => {
+    visible.value = val;
+  }
+);
 
-watch(visible, (val) => {
-  emit('update:modelValue', val)
+watch(visible, val => {
+  emit('update:modelValue', val);
   if (val) {
-    if (props.title) textElements.value.title.text = props.title
-    if (props.author) textElements.value.author.text = props.author
+    if (props.title) textElements.value.title.text = props.title;
+    if (props.author) textElements.value.author.text = props.author;
     if (props.avatar) {
       if (import.meta.env.DEV) {
-        const apiBaseUrl = import.meta.env.VITE_API_URL
-        const backendBaseUrl = apiBaseUrl.replace(/\/api\/v\d+$/, '')
+        const apiBaseUrl = import.meta.env.VITE_API_URL;
+        const backendBaseUrl = apiBaseUrl.replace(/\/api\/v\d+$/, '');
         if (props.avatar.startsWith(backendBaseUrl)) {
-          textElements.value.avatar.src = props.avatar.replace(backendBaseUrl, '')
+          textElements.value.avatar.src = props.avatar.replace(backendBaseUrl, '');
         } else {
-          textElements.value.avatar.src = props.avatar
+          textElements.value.avatar.src = props.avatar;
         }
       } else {
-        textElements.value.avatar.src = props.avatar
+        textElements.value.avatar.src = props.avatar;
       }
     }
     if (imageSource.value !== 'upload' && platformPhotos.value.length === 0) {
-      searchPhotos()
+      searchPhotos();
     }
     nextTick(() => {
-      setupScrollListener()
-    })
+      setupScrollListener();
+    });
   }
-})
+});
 
-watch(imageSource, (val) => {
+watch(imageSource, val => {
   if (val !== 'upload') {
-    searchPhotos()
+    searchPhotos();
   }
-})
+});
 
 function setupScrollListener() {
-  const grid = photosGridRef.value
-  if (!grid) return
+  const grid = photosGridRef.value;
+  if (!grid) return;
   const handleScroll = () => {
-    const { scrollTop, scrollHeight, clientHeight } = grid
+    const { scrollTop, scrollHeight, clientHeight } = grid;
     if (scrollTop + clientHeight >= scrollHeight - 100) {
       if (hasMorePhotos.value && !loadingMore.value && !loadingPhotos.value) {
-        loadMorePhotos()
+        loadMorePhotos();
       }
     }
-  }
-  grid.addEventListener('scroll', handleScroll, { passive: true })
+  };
+  grid.addEventListener('scroll', handleScroll, { passive: true });
 }
 
 onUnmounted(() => {
   if (textElements.value.avatar.src && textElements.value.avatar.src.startsWith('blob:')) {
-    URL.revokeObjectURL(textElements.value.avatar.src)
+    URL.revokeObjectURL(textElements.value.avatar.src);
   }
-})
+});
 </script>
 
 <style scoped lang="scss">
@@ -817,7 +881,7 @@ onUnmounted(() => {
         }
 
         &.active {
-          border: 2px solid #409EFF;
+          border: 2px solid #409eff;
           box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.2);
         }
 
@@ -857,7 +921,7 @@ onUnmounted(() => {
       transition: all 0.3s ease;
 
       &:hover {
-        border-color: #409EFF;
+        border-color: #409eff;
         background: rgba(64, 158, 255, 0.05);
       }
 
@@ -901,7 +965,7 @@ onUnmounted(() => {
       width: 0;
     }
 
-    >* {
+    > * {
       position: absolute;
       top: 0;
       left: 0;
@@ -959,7 +1023,7 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #1F2937;
+    background: #1f2937;
     pointer-events: none;
     z-index: 1;
   }

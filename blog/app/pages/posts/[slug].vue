@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { getArticleBySlug } from "@/composables/api/article";
-import type { Article } from "@@/types/article";
+import { getArticleBySlug } from '@/composables/api/article';
+import type { Article } from '@@/types/article';
 
 definePageMeta({
-  typeHeader: 'post'
-})
+  typeHeader: 'post',
+});
 
 const route = useRoute();
 const router = useRouter();
@@ -15,7 +15,7 @@ const { $tracker } = useNuxtApp();
 // 使用SSR获取文章详情
 const { data: initialData } = await useAsyncData(`post-${route.params.slug}`, async () => {
   const slug = route.params.slug as string;
-  
+
   try {
     const articleData = await getArticleBySlug(slug);
     setCurrentArticle(articleData);
@@ -26,15 +26,15 @@ const { data: initialData } = await useAsyncData(`post-${route.params.slug}`, as
     }
     return null;
   }
-})
+});
 
 // 初始化本地 article ref
-article.value = initialData.value?.article ?? null
+article.value = initialData.value?.article ?? null;
 
 // 动态页面标题和 SEO
 useHead({
-  title: () => article.value?.title
-})
+  title: () => article.value?.title,
+});
 
 useSeoMeta({
   title: () => article.value?.title,
@@ -46,7 +46,7 @@ useSeoMeta({
   twitterTitle: () => article.value?.title,
   twitterDescription: () => article.value?.summary,
   twitterImage: () => article.value?.cover,
-})
+});
 
 // 文章结构化数据
 useSchemaOrg([
@@ -56,8 +56,8 @@ useSchemaOrg([
     image: () => article.value?.cover,
     datePublished: () => article.value?.publish_time,
     dateModified: () => article.value?.update_time,
-  })
-])
+  }),
+]);
 
 const fetchArticle = async () => {
   const slug = route.params.slug as string;
@@ -94,9 +94,12 @@ const fetchArticle = async () => {
 watch(() => route.params.slug, fetchArticle);
 
 // 监听 URL hash 变化，实现锚点跳转
-watch(() => route.hash, (hash) => {
-  if (hash) scrollToElement(hash, { block: 'start' });
-})
+watch(
+  () => route.hash,
+  hash => {
+    if (hash) scrollToElement(hash, { block: 'start' });
+  }
+);
 
 // 组件卸载时清除文章数据
 onUnmounted(() => {

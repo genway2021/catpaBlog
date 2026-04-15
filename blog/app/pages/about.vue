@@ -1,39 +1,40 @@
 <script lang="ts" setup>
-import { getArticlesForWeb } from '@/composables/api/article'
-import { getCategories } from '@/composables/api/category'
-import { getTags } from '@/composables/api/tag'
+import { getArticlesForWeb } from '@/composables/api/article';
+import { getCategories } from '@/composables/api/category';
+import { getTags } from '@/composables/api/tag';
 
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '关于',
-  description: '了解博主的个人信息、经历和故事'
-})
+  description: '了解博主的个人信息、经历和故事',
+});
 
-const personalityMap: Record<string, { name: string; color: string; image: string; url: string }> = {
-  'INTJ': { name: '建筑师', color: '#885fb8', image: 'intj-architect', url: 'intj' },
-  'INTP': { name: '逻辑学家', color: '#885fb8', image: 'intp-logician', url: 'intp' },
-  'ENTJ': { name: '指挥官', color: '#885fb8', image: 'entj-commander', url: 'entj' },
-  'ENTP': { name: '辩论家', color: '#885fb8', image: 'entp-debater', url: 'entp' },
-  'INFJ': { name: '提倡者', color: '#56a178', image: 'infj-advocate', url: 'infj' },
-  'INFP': { name: '调停者', color: '#56a178', image: 'infp-mediator', url: 'infp' },
-  'ENFJ': { name: '主人公', color: '#56a178', image: 'enfj-protagonist', url: 'enfj' },
-  'ENFP': { name: '竞选者', color: '#56a178', image: 'enfp-campaigner', url: 'enfp' },
-  'ISTJ': { name: '物流师', color: '#4298b4', image: 'istj-logistician', url: 'istj' },
-  'ISFJ': { name: '守卫者', color: '#4298b4', image: 'isfj-defender', url: 'isfj' },
-  'ESTJ': { name: '总经理', color: '#4298b4', image: 'estj-executive', url: 'estj' },
-  'ESFJ': { name: '执政官', color: '#4298b4', image: 'esfj-consul', url: 'esfj' },
-  'ISTP': { name: '鉴赏家', color: '#e4ae3a', image: 'istp-virtuoso', url: 'istp' },
-  'ISFP': { name: '探险家', color: '#e4ae3a', image: 'isfp-adventurer', url: 'isfp' },
-  'ESTP': { name: '企业家', color: '#e4ae3a', image: 'estp-entrepreneur', url: 'estp' },
-  'ESFP': { name: '表演者', color: '#e4ae3a', image: 'esfp-entertainer', url: 'esfp' },
-}
+const personalityMap: Record<string, { name: string; color: string; image: string; url: string }> =
+  {
+    INTJ: { name: '建筑师', color: '#885fb8', image: 'intj-architect', url: 'intj' },
+    INTP: { name: '逻辑学家', color: '#885fb8', image: 'intp-logician', url: 'intp' },
+    ENTJ: { name: '指挥官', color: '#885fb8', image: 'entj-commander', url: 'entj' },
+    ENTP: { name: '辩论家', color: '#885fb8', image: 'entp-debater', url: 'entp' },
+    INFJ: { name: '提倡者', color: '#56a178', image: 'infj-advocate', url: 'infj' },
+    INFP: { name: '调停者', color: '#56a178', image: 'infp-mediator', url: 'infp' },
+    ENFJ: { name: '主人公', color: '#56a178', image: 'enfj-protagonist', url: 'enfj' },
+    ENFP: { name: '竞选者', color: '#56a178', image: 'enfp-campaigner', url: 'enfp' },
+    ISTJ: { name: '物流师', color: '#4298b4', image: 'istj-logistician', url: 'istj' },
+    ISFJ: { name: '守卫者', color: '#4298b4', image: 'isfj-defender', url: 'isfj' },
+    ESTJ: { name: '总经理', color: '#4298b4', image: 'estj-executive', url: 'estj' },
+    ESFJ: { name: '执政官', color: '#4298b4', image: 'esfj-consul', url: 'esfj' },
+    ISTP: { name: '鉴赏家', color: '#e4ae3a', image: 'istp-virtuoso', url: 'istp' },
+    ISFP: { name: '探险家', color: '#e4ae3a', image: 'isfp-adventurer', url: 'isfp' },
+    ESTP: { name: '企业家', color: '#e4ae3a', image: 'estp-entrepreneur', url: 'estp' },
+    ESFP: { name: '表演者', color: '#e4ae3a', image: 'esfp-entertainer', url: 'esfp' },
+  };
 
 const getPersonalityInfo = (code: string) => {
   const baseType = code.substring(0, 4).toUpperCase();
-  const info = personalityMap[baseType]!
+  const info = personalityMap[baseType]!;
 
   return {
     name: info.name,
@@ -43,32 +44,32 @@ const getPersonalityInfo = (code: string) => {
   };
 };
 
-const { siteStats } = useStats()
-const { total: articleTotal } = useArticles()
-const { total: categoryTotal } = useCategories()
-const { total: tagTotal } = useTags()
-const { blogConfig, basicConfig } = useSysConfig()
+const { siteStats } = useStats();
+const { total: articleTotal } = useArticles();
+const { total: categoryTotal } = useCategories();
+const { total: tagTotal } = useTags();
+const { blogConfig, basicConfig } = useSysConfig();
 
 const { data: articlesData } = await useAsyncData('about-articles', async () => {
-  const { total: resTotal } = await getArticlesForWeb({ page: 1, page_size: 1 })
-  return { total: resTotal }
-})
+  const { total: resTotal } = await getArticlesForWeb({ page: 1, page_size: 1 });
+  return { total: resTotal };
+});
 
 const { data: categoriesData } = await useAsyncData('about-categories', async () => {
-  const { total: resTotal } = await getCategories()
-  return { total: resTotal }
-})
+  const { total: resTotal } = await getCategories();
+  return { total: resTotal };
+});
 
 const { data: tagsData } = await useAsyncData('about-tags', async () => {
-  const { total: resTotal } = await getTags()
-  return { total: resTotal }
-})
+  const { total: resTotal } = await getTags();
+  return { total: resTotal };
+});
 
-if (articlesData.value) articleTotal.value = articlesData.value.total
-if (categoriesData.value) categoryTotal.value = categoriesData.value.total
-if (tagsData.value) tagTotal.value = tagsData.value.total
+if (articlesData.value) articleTotal.value = articlesData.value.total;
+if (categoriesData.value) categoryTotal.value = categoriesData.value.total;
+if (tagsData.value) tagTotal.value = tagsData.value.total;
 
-const parseJSON = <T = any>(jsonStr: string | undefined, fallback: T): T => {
+const parseJSON = <T = any,>(jsonStr: string | undefined, fallback: T): T => {
   try {
     return jsonStr ? JSON.parse(jsonStr) : fallback;
   } catch {
@@ -102,41 +103,25 @@ const info = computed(() => {
       main: parseJSON<string[]>(blog.about_motto_main, []),
       sub: blog.about_motto_sub || '',
     },
-    socialize: parseJSON<Array<{ name: string; url: string }>>(
-      blog.about_socialize,
-      []
-    ),
-    creation: parseJSON<Array<{ name: string; url: string }>>(
-      blog.about_creation,
-      []
-    ),
-    versions: parseJSON<Array<{ name: string; version: string }>>(
-      blog.about_versions,
-      []
-    ),
-    union: parseJSON<Array<{ name: string; url: string }>>(
-      blog.about_unions,
-      []
-    ),
+    socialize: parseJSON<Array<{ name: string; url: string }>>(blog.about_socialize, []),
+    creation: parseJSON<Array<{ name: string; url: string }>>(blog.about_creation, []),
+    versions: parseJSON<Array<{ name: string; version: string }>>(blog.about_versions, []),
+    union: parseJSON<Array<{ name: string; url: string }>>(blog.about_unions, []),
     story: blog.about_story || '',
   };
 });
 
 const runningDays = computed(() => {
-  const established = blogConfig.value.established || '2024-01-01'
-  const startDate = new Date(established).getTime()
-  const now = Date.now()
-  return Math.floor((now - startDate) / 86400000)
-})
+  const established = blogConfig.value.established || '2024-01-01';
+  const startDate = new Date(established).getTime();
+  const now = Date.now();
+  return Math.floor((now - startDate) / 86400000);
+});
 const runTime = computed(() => `已稳定运行 ${runningDays.value} 天 🚀`);
 
 const formatWords = (words: string) => {
   const n = +words;
-  return n >= 1e4
-    ? (n / 1e4).toFixed(1) + "w"
-    : n >= 1e3
-      ? (n / 1e3).toFixed(1) + "k"
-      : words;
+  return n >= 1e4 ? (n / 1e4).toFixed(1) + 'w' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : words;
 };
 </script>
 
@@ -171,7 +156,11 @@ const formatWords = (words: string) => {
       <div class="information">
         <div class="about-layout Introduction">
           <div v-for="n in Math.ceil(info.profile.length / 3)" :key="n" class="bar-box-row">
-            <div v-for="item in info.profile.slice((n - 1) * 3, n * 3)" :key="item.label" class="bar-box">
+            <div
+              v-for="item in info.profile.slice((n - 1) * 3, n * 3)"
+              :key="item.label"
+              class="bar-box"
+            >
               <span class="tips">{{ item.label }}</span>
               <div class="title" :style="{ color: item.color }">
                 {{ item.value }}
@@ -198,15 +187,21 @@ const formatWords = (words: string) => {
           在
           <a href="https://www.16personalities.com/ch" target="_blank">16Personalities</a>
           了解关于
-          <a :href="info.personality.url" target="_blank">{{
-            info.personality.name
-          }}</a>&ensp;的更多信息
+          <a :href="info.personality.url" target="_blank">{{ info.personality.name }}</a
+          >&ensp;的更多信息
         </div>
       </div>
       <div class="about-layout P-box-right">
         <div class="tips">座右铭</div>
-        <span v-for="(text, index) in info.motto.main" :key="index" class="title"
-          :style="{ opacity: index === info.motto.main.length - 1 ? 1 : 0.6, marginBottom: index < info.motto.main.length - 1 ? '8px' : '0' }">
+        <span
+          v-for="(text, index) in info.motto.main"
+          :key="index"
+          class="title"
+          :style="{
+            opacity: index === info.motto.main.length - 1 ? 1 : 0.6,
+            marginBottom: index < info.motto.main.length - 1 ? '8px' : '0',
+          }"
+        >
           {{ text }}
         </span>
         <div v-if="info.motto.sub" class="tips-bottom">{{ info.motto.sub }}</div>
@@ -219,16 +214,28 @@ const formatWords = (words: string) => {
         <div class="tips">账号</div>
         <div class="title">联系方式</div>
         <div class="S-box">
-          <a v-for="item in info.socialize" :key="item.name" class="btn-layout" :href="item.url" target="_blank">{{
-            item.name }}</a>
+          <a
+            v-for="item in info.socialize"
+            :key="item.name"
+            class="btn-layout"
+            :href="item.url"
+            target="_blank"
+            >{{ item.name }}</a
+          >
         </div>
       </div>
       <div class="about-layout Creation">
         <div class="tips">订阅</div>
         <div class="title">创作平台</div>
         <div class="S-box">
-          <a v-for="item in info.creation" :key="item.name" class="btn-layout" :href="item.url" target="_blank">{{
-            item.name }}</a>
+          <a
+            v-for="item in info.creation"
+            :key="item.name"
+            class="btn-layout"
+            :href="item.url"
+            target="_blank"
+            >{{ item.name }}</a
+          >
         </div>
       </div>
     </div>
@@ -286,8 +293,14 @@ const formatWords = (words: string) => {
         <div class="tips">共创</div>
         <div class="title">站长联盟</div>
         <div class="U-box">
-          <a v-for="item in info.union" :key="item.name" class="btn-layout" :href="item.url" target="_blank">{{
-            item.name }}</a>
+          <a
+            v-for="item in info.union"
+            :key="item.name"
+            class="btn-layout"
+            :href="item.url"
+            target="_blank"
+            >{{ item.name }}</a
+          >
         </div>
       </div>
     </div>
@@ -656,19 +669,16 @@ const formatWords = (words: string) => {
       position: relative;
 
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 30% 50%,
-            rgba(73, 177, 245, 0.15) 0%,
-            transparent 50%),
-          radial-gradient(circle at 70% 80%,
-            rgba(120, 194, 244, 0.1) 0%,
-            transparent 50%);
+        background:
+          radial-gradient(circle at 30% 50%, rgba(73, 177, 245, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 70% 80%, rgba(120, 194, 244, 0.1) 0%, transparent 50%);
         pointer-events: none;
       }
 
-      &>* {
+      & > * {
         z-index: 1;
       }
 

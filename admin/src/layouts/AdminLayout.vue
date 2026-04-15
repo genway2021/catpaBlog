@@ -1,7 +1,7 @@
 <template>
   <div class="admin-layout">
     <!-- 移动端：checkbox 控制抽屉 -->
-    <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
+    <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle" />
 
     <el-container class="layout-container">
       <!-- 固定侧边栏 -->
@@ -14,7 +14,11 @@
 
       <el-container>
         <el-header>
-          <Header :layout-mode="layoutMode" :sidebar-collapsed="sidebarCollapsed" @toggle-sidebar="toggleSidebar" />
+          <Header
+            :layout-mode="layoutMode"
+            :sidebar-collapsed="sidebarCollapsed"
+            @toggle-sidebar="toggleSidebar"
+          />
         </el-header>
         <el-main>
           <router-view />
@@ -25,29 +29,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Header from '@/components/layouts/Header.vue'
-import Sidebar from '@/components/layouts/Sidebar.vue'
+import { ref, computed } from 'vue';
+import Header from '@/components/layouts/Header.vue';
+import Sidebar from '@/components/layouts/Sidebar.vue';
 
-const sidebarCollapsed = ref(false)
+const sidebarCollapsed = ref(false);
 
 const sidebarWidth = computed(() => {
-  return sidebarCollapsed.value ? '64px' : '200px'
-})
+  return sidebarCollapsed.value ? '64px' : '200px';
+});
 
 const toggleSidebar = () => {
-  sidebarCollapsed.value = !sidebarCollapsed.value
-}
+  sidebarCollapsed.value = !sidebarCollapsed.value;
+};
 
-const layoutMode = 'fixed'
+const layoutMode = 'fixed';
 
 const handleMenuClick = () => {
   // 移动端点击菜单后关闭抽屉
-  const checkbox = document.getElementById('sidebar-toggle') as HTMLInputElement
+  const checkbox = document.getElementById('sidebar-toggle') as HTMLInputElement;
   if (checkbox) {
-    checkbox.checked = false
+    checkbox.checked = false;
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -104,11 +108,11 @@ const handleMenuClick = () => {
 // checkbox 选中时显示侧边栏
 .sidebar-toggle:checked {
   @media (max-width: 768px) {
-    ~.layout-container .sidebar {
+    ~ .layout-container .sidebar {
       left: 0;
     }
 
-    ~.layout-container .sidebar-overlay {
+    ~ .layout-container .sidebar-overlay {
       opacity: 1;
       pointer-events: auto;
       cursor: pointer;

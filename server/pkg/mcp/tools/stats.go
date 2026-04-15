@@ -18,7 +18,7 @@ const (
 
 // StatsQueryInput stats_query 聚合 tool 输入
 type StatsQueryInput struct {
-	Action  string           `json:"action"`
+	Action  string            `json:"action"`
 	Payload StatsQueryPayload `json:"payload"`
 }
 

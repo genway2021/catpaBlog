@@ -11,18 +11,36 @@
     </el-form-item>
 
     <el-form-item label="站长简介">
-      <el-input v-model="form.author_desc" type="textarea" :rows="3" placeholder="站长个人简介" :disabled="loading" />
+      <el-input
+        v-model="form.author_desc"
+        type="textarea"
+        :rows="3"
+        placeholder="站长个人简介"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <div class="image-row">
       <el-form-item label="站长头像">
-        <ImageUploader ref="authorAvatarUploaderRef" v-model="form.author_avatar" upload-type="站长头像" width="120px"
-          height="120px" :disabled="loading" />
+        <ImageUploader
+          ref="authorAvatarUploaderRef"
+          v-model="form.author_avatar"
+          upload-type="站长头像"
+          width="120px"
+          height="120px"
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item label="站长形象">
-        <ImageUploader ref="authorPhotoUploaderRef" v-model="form.author_photo" upload-type="站长形象" width="80px"
-          height="120px" :disabled="loading" />
+        <ImageUploader
+          ref="authorPhotoUploaderRef"
+          v-model="form.author_photo"
+          upload-type="站长形象"
+          width="80px"
+          height="120px"
+          :disabled="loading"
+        />
       </el-form-item>
     </div>
 
@@ -39,51 +57,63 @@
     <el-divider content-position="left">系统地址</el-divider>
 
     <el-form-item label="管理地址">
-      <el-input v-model="form.admin_url" placeholder="例如 https://admin.your-site.com" :disabled="loading" />
+      <el-input
+        v-model="form.admin_url"
+        placeholder="例如 https://admin.your-site.com"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="博客地址">
-      <el-input v-model="form.blog_url" placeholder="例如 https://blog.your-site.com" :disabled="loading" />
+      <el-input
+        v-model="form.blog_url"
+        placeholder="例如 https://blog.your-site.com"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="主页地址">
-      <el-input v-model="form.home_url" placeholder="例如 https://your-site.com" :disabled="loading" />
+      <el-input
+        v-model="form.home_url"
+        placeholder="例如 https://your-site.com"
+        :disabled="loading"
+      />
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ImageUploader from '@/components/common/ImageUploader.vue'
+import { ref } from 'vue';
+import ImageUploader from '@/components/common/ImageUploader.vue';
 
 interface BasicForm {
-  author: string
-  author_email: string
-  author_desc: string
-  author_avatar: string
-  author_photo: string
-  icp: string
-  police_record: string
-  admin_url: string
-  blog_url: string
-  home_url: string
+  author: string;
+  author_email: string;
+  author_desc: string;
+  author_avatar: string;
+  author_photo: string;
+  icp: string;
+  police_record: string;
+  admin_url: string;
+  blog_url: string;
+  home_url: string;
 }
 
-const form = defineModel<BasicForm>('form', { required: true })
+const form = defineModel<BasicForm>('form', { required: true });
 
 defineProps<{
-  loading?: boolean
-}>()
+  loading?: boolean;
+}>();
 
 // 图片上传器引用
-const authorAvatarUploaderRef = ref<InstanceType<typeof ImageUploader>>()
-const authorPhotoUploaderRef = ref<InstanceType<typeof ImageUploader>>()
+const authorAvatarUploaderRef = ref<InstanceType<typeof ImageUploader>>();
+const authorPhotoUploaderRef = ref<InstanceType<typeof ImageUploader>>();
 
 // 暴露给父组件使用
 defineExpose({
   authorAvatarUploaderRef,
-  authorPhotoUploaderRef
-})
+  authorPhotoUploaderRef,
+});
 </script>
 
 <style lang="scss" scoped>

@@ -24,14 +24,15 @@ func NewMenuHandler(menuService *service.MenuService) *MenuHandler {
 
 // Create 创建菜单
 //
-//	@Summary	创建菜单
-//	@Tags		菜单管理
-//	@Accept		json
-//	@Produce	json
-//	@Security	BearerAuth
-//	@Param		request	body		dto.MenuCreateRequest	true	"菜单信息"
-//	@Success	201		{object}	response.Response{data=dto.MenuResponse}
-//	@Router		/admin/menus [post]
+//		@Summary	创建菜单
+//	 @Description	创建新的菜单项
+//		@Tags		菜单管理
+//		@Accept		json
+//		@Produce	json
+//		@Security	BearerAuth
+//		@Param		request	body		dto.MenuCreateRequest	true	"菜单信息"
+//		@Success	201		{object}	response.Response{data=dto.MenuResponse}
+//		@Router		/admin/menus [post]
 func (h *MenuHandler) Create(ctx *gin.Context) {
 	var req dto.MenuCreateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -50,15 +51,16 @@ func (h *MenuHandler) Create(ctx *gin.Context) {
 
 // Update 更新菜单
 //
-//	@Summary	更新菜单
-//	@Tags		菜单管理
-//	@Accept		json
-//	@Produce	json
-//	@Security	BearerAuth
-//	@Param		id		path		int						true	"菜单ID"
-//	@Param		request	body		dto.MenuUpdateRequest	true	"菜单信息"
-//	@Success	200		{object}	response.Response{data=dto.MenuResponse}
-//	@Router		/admin/menus/{id} [put]
+//		@Summary	更新菜单
+//	 @Description	更新菜单项信息
+//		@Tags		菜单管理
+//		@Accept		json
+//		@Produce	json
+//		@Security	BearerAuth
+//		@Param		id		path		int						true	"菜单ID"
+//		@Param		request	body		dto.MenuUpdateRequest	true	"菜单信息"
+//		@Success	200		{object}	response.Response{data=dto.MenuResponse}
+//		@Router		/admin/menus/{id} [put]
 func (h *MenuHandler) Update(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
@@ -83,15 +85,16 @@ func (h *MenuHandler) Update(ctx *gin.Context) {
 
 // Delete 删除菜单
 //
-//	@Summary	删除菜单
-//	@Tags		菜单管理
-//	@Accept		json
-//	@Produce	json
-//	@Security	BearerAuth
-//	@Param		id		path		int						true	"菜单ID"
-//	@Param		request	body		dto.MenuDeleteRequest	false	"删除选项"
-//	@Success	200		{object}	response.Response
-//	@Router		/admin/menus/{id} [delete]
+//		@Summary	删除菜单
+//	 @Description	硬删除菜单项，不可恢复
+//		@Tags		菜单管理
+//		@Accept		json
+//		@Produce	json
+//		@Security	BearerAuth
+//		@Param		id		path		int						true	"菜单ID"
+//		@Param		request	body		dto.MenuDeleteRequest	false	"删除选项"
+//		@Success	200		{object}	response.Response
+//		@Router		/admin/menus/{id} [delete]
 func (h *MenuHandler) Delete(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
@@ -113,14 +116,15 @@ func (h *MenuHandler) Delete(ctx *gin.Context) {
 
 // Get 获取菜单详情
 //
-//	@Summary	获取菜单详情
-//	@Tags		菜单管理
-//	@Accept		json
-//	@Produce	json
-//	@Security	BearerAuth
-//	@Param		id	path		int	true	"菜单ID"
-//	@Success	200	{object}	response.Response{data=dto.MenuResponse}
-//	@Router		/admin/menus/{id} [get]
+//		@Summary	获取菜单详情
+//	 @Description	获取菜单项的详细信息
+//		@Tags		菜单管理
+//		@Accept		json
+//		@Produce	json
+//		@Security	BearerAuth
+//		@Param		id	path		int	true	"菜单ID"
+//		@Success	200	{object}	response.Response{data=dto.MenuResponse}
+//		@Router		/admin/menus/{id} [get]
 func (h *MenuHandler) Get(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
@@ -139,14 +143,15 @@ func (h *MenuHandler) Get(ctx *gin.Context) {
 
 // List 获取菜单树
 //
-//	@Summary	获取菜单树
-//	@Tags		菜单管理
-//	@Accept		json
-//	@Produce	json
-//	@Security	BearerAuth
-//	@Param	type	query		string	false	"菜单类型: aggregate/navigation/footer"
-//	@Success	200		{object}	response.Response{data=[]dto.MenuTreeNode}
-//	@Router		/admin/menus [get]
+//		@Summary	获取菜单树
+//	 @Description	按类型获取菜单树
+//		@Tags		菜单管理
+//		@Accept		json
+//		@Produce	json
+//		@Security	BearerAuth
+//		@Param	type	query		string	false	"菜单类型: aggregate/navigation/footer"
+//		@Success	200		{object}	response.Response{data=[]dto.MenuTreeNode}
+//		@Router		/admin/menus [get]
 func (h *MenuHandler) List(ctx *gin.Context) {
 	var req dto.MenuTreeQueryRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {

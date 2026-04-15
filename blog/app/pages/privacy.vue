@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-const { basicConfig } = useSysConfig()
+const { basicConfig } = useSysConfig();
 
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '隐私政策',
-  description: '了解我们如何收集、使用和保护您的个人信息'
-})
+  description: '了解我们如何收集、使用和保护您的个人信息',
+});
 
-const contactEmail = computed(() => basicConfig.value.author_email || '')
+const contactEmail = computed(() => basicConfig.value.author_email || '');
 </script>
 
 <template>
@@ -20,7 +20,10 @@ const contactEmail = computed(() => basicConfig.value.author_email || '')
     <div class="content">
       <p>本隐私政策说明我们如何收集、使用和保护你的个人信息。</p>
 
-      <p>继续使用本站即表示你同意本政策。如有疑问，请通过 <strong>{{ contactEmail }}</strong> 联系我们。</p>
+      <p>
+        继续使用本站即表示你同意本政策。如有疑问，请通过
+        <strong>{{ contactEmail }}</strong> 联系我们。
+      </p>
 
       <h1>一、我们收集的信息</h1>
 
@@ -64,11 +67,16 @@ const contactEmail = computed(() => basicConfig.value.author_email || '')
 
       <p><strong>服务器存储：</strong>用户账号信息、评论内容、访问日志等存储在服务器数据库中。</p>
 
-      <p><strong>本地存储：</strong>主题偏好、登录令牌等保存在你的浏览器中，详见 <router-link to="/cookies">Cookie 与本地存储</router-link>。</p>
+      <p>
+        <strong>本地存储：</strong>主题偏好、登录令牌等保存在你的浏览器中，详见
+        <router-link to="/cookies">Cookie 与本地存储</router-link>。
+      </p>
 
       <h1>四、第三方服务</h1>
 
-      <p>本站使用 Cravatar 头像服务，仅发送邮箱的 MD5 哈希值（不发送原始邮箱），用于获取用户头像。</p>
+      <p>
+        本站使用 Cravatar 头像服务，仅发送邮箱的 MD5 哈希值（不发送原始邮箱），用于获取用户头像。
+      </p>
 
       <h1>五、信息的共享</h1>
 
@@ -100,17 +108,32 @@ const contactEmail = computed(() => basicConfig.value.author_email || '')
         <li>拒绝特定数据处理</li>
       </ul>
 
-      <p>如需行使上述权利，请联系 <strong>{{ contactEmail }}</strong>。</p>
+      <p>
+        如需行使上述权利，请联系 <strong>{{ contactEmail }}</strong
+        >。
+      </p>
 
       <h1>八、免责声明</h1>
 
-      <p><strong>数据安全：</strong>我们采取合理措施保护你的信息，但无法保证绝对安全。互联网传输和电子存储方式均存在固有风险。</p>
+      <p>
+        <strong>数据安全：</strong
+        >我们采取合理措施保护你的信息，但无法保证绝对安全。互联网传输和电子存储方式均存在固有风险。
+      </p>
 
-      <p><strong>用户责任：</strong>你应对提供给本站的信息的准确性和合法性负责。因提供虚假、违法信息造成的后果由你自行承担。</p>
+      <p>
+        <strong>用户责任：</strong
+        >你应对提供给本站的信息的准确性和合法性负责。因提供虚假、违法信息造成的后果由你自行承担。
+      </p>
 
-      <p><strong>服务中断：</strong>本站服务可能因维护、故障或不可抗力等原因中断或变更，我们不承担由此产生的损失。</p>
+      <p>
+        <strong>服务中断：</strong
+        >本站服务可能因维护、故障或不可抗力等原因中断或变更，我们不承担由此产生的损失。
+      </p>
 
-      <p><strong>第三方服务：</strong>本站可能包含第三方链接或服务，我们不对第三方的隐私政策或内容负责。</p>
+      <p>
+        <strong>第三方服务：</strong
+        >本站可能包含第三方链接或服务，我们不对第三方的隐私政策或内容负责。
+      </p>
 
       <h1>九、内容许可</h1>
 
@@ -126,13 +149,20 @@ const contactEmail = computed(() => basicConfig.value.author_email || '')
 
       <h1>十、争议解决</h1>
 
-      <p>本隐私政策的解释、效力及争议解决均适用中华人民共和国法律。如发生争议，双方应友好协商解决；协商不成的，任何一方可向本站所在地人民法院提起诉讼。</p>
+      <p>
+        本隐私政策的解释、效力及争议解决均适用中华人民共和国法律。如发生争议，双方应友好协商解决；协商不成的，任何一方可向本站所在地人民法院提起诉讼。
+      </p>
 
       <h1>十一、政策更新</h1>
 
-      <p>本隐私政策可能不定期更新，更新后的政策将在本页面公布。继续使用本站即表示你接受更新后的政策。</p>
+      <p>
+        本隐私政策可能不定期更新，更新后的政策将在本页面公布。继续使用本站即表示你接受更新后的政策。
+      </p>
 
-      <p>如有任何疑问，请联系 <strong>{{ contactEmail }}</strong>。</p>
+      <p>
+        如有任何疑问，请联系 <strong>{{ contactEmail }}</strong
+        >。
+      </p>
 
       <p class="update-time">最后更新时间：2025年10月</p>
     </div>

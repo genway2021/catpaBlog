@@ -3,7 +3,11 @@
     <el-divider content-position="left">网站信息</el-divider>
 
     <el-form-item label="网站标题">
-      <el-input v-model="form.title" placeholder="用于RSS订阅和邮件显示的站点标题" :disabled="loading" />
+      <el-input
+        v-model="form.title"
+        placeholder="用于RSS订阅和邮件显示的站点标题"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="网站副标题">
@@ -15,105 +19,202 @@
     </el-form-item>
 
     <el-form-item label="网站描述">
-      <el-input v-model="form.description" type="textarea" :rows="3" placeholder="网站描述，用于SEO" :disabled="loading" />
+      <el-input
+        v-model="form.description"
+        type="textarea"
+        :rows="3"
+        placeholder="网站描述，用于SEO"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="关键词">
-      <el-input v-model="form.keywords" placeholder="网站关键词，多个用逗号分隔" :disabled="loading" />
+      <el-input
+        v-model="form.keywords"
+        placeholder="网站关键词，多个用逗号分隔"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="建站日期">
-      <el-date-picker v-model="form.established" type="date" placeholder="选择建站日期" format="YYYY-MM-DD"
-        value-format="YYYY-MM-DD" :disabled="loading" style="width: 100%" />
+      <el-date-picker
+        v-model="form.established"
+        type="date"
+        placeholder="选择建站日期"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        :disabled="loading"
+        style="width: 100%"
+      />
     </el-form-item>
 
     <el-divider content-position="left">全局样式</el-divider>
 
     <div class="image-row">
       <el-form-item label="网站Favicon">
-        <ImageUploader ref="faviconUploaderRef" v-model="form.favicon" upload-type="博客图标" width="120px"
-          height="120px" :disabled="loading" />
+        <ImageUploader
+          ref="faviconUploaderRef"
+          v-model="form.favicon"
+          upload-type="博客图标"
+          width="120px"
+          height="120px"
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item label="背景图片">
-        <ImageUploader ref="backgroundUploaderRef" v-model="form.background_image" upload-type="博客背景" width="213px"
-          height="120px" :disabled="loading" />
+        <ImageUploader
+          ref="backgroundUploaderRef"
+          v-model="form.background_image"
+          upload-type="博客背景"
+          width="213px"
+          height="120px"
+          :disabled="loading"
+        />
       </el-form-item>
 
       <el-form-item label="站点截图">
-        <ImageUploader ref="screenshotUploaderRef" v-model="form.screenshot" upload-type="博客截图" width="213px"
-          height="120px" :disabled="loading" />
+        <ImageUploader
+          ref="screenshotUploaderRef"
+          v-model="form.screenshot"
+          upload-type="博客截图"
+          width="213px"
+          height="120px"
+          :disabled="loading"
+        />
       </el-form-item>
     </div>
 
     <el-form-item label="侧边栏公告">
-      <el-input v-model="form.announcement" type="textarea" :rows="4" placeholder="支持多行文案和简单 HTML"
-        :disabled="loading" />
+      <el-input
+        v-model="form.announcement"
+        type="textarea"
+        :rows="4"
+        placeholder="支持多行文案和简单 HTML"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="打字机文本">
-      <JsonListEditor v-model="form.typingTextsList" :fields="typingTextsFields" :default-item="{ value: '' }"
-        :disabled="loading" />
+      <JsonListEditor
+        v-model="form.typingTextsList"
+        :fields="typingTextsFields"
+        :default-item="{ value: '' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-divider content-position="left">社交媒体</el-divider>
 
     <el-form-item label="侧边栏社交">
-      <JsonListEditor v-model="form.sidebarSocialList" :fields="sidebarSocialFields"
-        :default-item="{ name: '', url: '', icon: '' }" :disabled="loading" />
+      <JsonListEditor
+        v-model="form.sidebarSocialList"
+        :fields="sidebarSocialFields"
+        :default-item="{ name: '', url: '', icon: '' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="页脚社交">
-      <JsonListEditor v-model="form.footerSocialList" :fields="footerSocialFields"
-        :default-item="{ name: '', url: '', icon: '', position: 'left' }" :disabled="loading" />
+      <JsonListEditor
+        v-model="form.footerSocialList"
+        :fields="footerSocialFields"
+        :default-item="{ name: '', url: '', icon: '', position: 'left' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="页脚链接">
-      <JsonListEditor v-model="form.footerLinksList" :fields="footerLinksFields"
-        :default-item="{ name: '', url: '' }" :disabled="loading" />
+      <JsonListEditor
+        v-model="form.footerLinksList"
+        :fields="footerLinksFields"
+        :default-item="{ name: '', url: '' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-divider content-position="left">页面配置</el-divider>
 
     <el-form-item label="动态数量">
-      <el-input-number v-model="form.moments_size" :min="1" :disabled="loading"
-        placeholder="动态列表每页显示数量" style="width: 200px" />
+      <el-input-number
+        v-model="form.moments_size"
+        :min="1"
+        :disabled="loading"
+        placeholder="动态列表每页显示数量"
+        style="width: 200px"
+      />
     </el-form-item>
 
     <el-form-item label="首页布局">
-      <el-select v-model="form.home_layout" :disabled="loading" placeholder="选择首页布局" style="width: 200px">
+      <el-select
+        v-model="form.home_layout"
+        :disabled="loading"
+        placeholder="选择首页布局"
+        style="width: 200px"
+      >
         <el-option label="瀑布流" value="waterfall" />
         <el-option label="单列布局" value="single_column" />
       </el-select>
     </el-form-item>
 
     <el-form-item label="留言信">
-      <el-input v-model="form.message_content" type="textarea" :rows="8"
-        placeholder="每行一段文字，显示在留言页面的信封中" :disabled="loading" />
+      <el-input
+        v-model="form.message_content"
+        type="textarea"
+        :rows="8"
+        placeholder="每行一段文字，显示在留言页面的信封中"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-divider content-position="left">关于页面配置</el-divider>
 
     <el-form-item label="个人描述">
-      <el-input v-model="form.about_describe" type="textarea" :rows="3" placeholder="关于页面的个人描述" :disabled="loading" />
+      <el-input
+        v-model="form.about_describe"
+        type="textarea"
+        :rows="3"
+        placeholder="关于页面的个人描述"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="描述提示">
-      <el-input v-model="form.about_describe_tips" placeholder="例如：前端工程师 · 业余 · 专注 · 享受生活" :disabled="loading" />
+      <el-input
+        v-model="form.about_describe_tips"
+        placeholder="例如：前端工程师 · 业余 · 专注 · 享受生活"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="展览图片">
-      <ImageUploader ref="aboutExhibitionUploaderRef" v-model="form.about_exhibition" upload-type="展览图片" width="213px"
-        height="120px" :disabled="loading" />
+      <ImageUploader
+        ref="aboutExhibitionUploaderRef"
+        v-model="form.about_exhibition"
+        upload-type="展览图片"
+        width="213px"
+        height="120px"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="个人资料">
-      <JsonListEditor v-model="form.profileList" :fields="profileFields" :disabled="loading" hide-controls />
+      <JsonListEditor
+        v-model="form.profileList"
+        :fields="profileFields"
+        :disabled="loading"
+        hide-controls
+      />
     </el-form-item>
 
     <el-form-item label="性格类型">
-      <el-select v-model="form.about_personality" placeholder="请选择性格类型" clearable :disabled="loading"
-        style="width: 100%">
+      <el-select
+        v-model="form.about_personality"
+        placeholder="请选择性格类型"
+        clearable
+        :disabled="loading"
+        style="width: 100%"
+      >
         <el-option-group label="分析家">
           <el-option label="INTJ-A (建筑师-自信型)" value="INTJ-A" />
           <el-option label="INTJ-T (建筑师-波动型)" value="INTJ-T" />
@@ -169,46 +270,70 @@
     </el-form-item>
 
     <el-form-item label="联系方式">
-      <JsonListEditor v-model="form.socializeList" :fields="socializeFields" :default-item="{ name: '', url: '' }"
-        :disabled="loading" />
+      <JsonListEditor
+        v-model="form.socializeList"
+        :fields="socializeFields"
+        :default-item="{ name: '', url: '' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="创作平台">
-      <JsonListEditor v-model="form.creationList" :fields="creationFields" :default-item="{ name: '', url: '' }"
-        :disabled="loading" />
+      <JsonListEditor
+        v-model="form.creationList"
+        :fields="creationFields"
+        :default-item="{ name: '', url: '' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="版本信息">
-      <JsonListEditor v-model="form.versionsList" :fields="versionsFields" :disabled="loading" hide-controls />
+      <JsonListEditor
+        v-model="form.versionsList"
+        :fields="versionsFields"
+        :disabled="loading"
+        hide-controls
+      />
     </el-form-item>
 
     <el-form-item label="站长联盟">
-      <JsonListEditor v-model="form.unionsList" :fields="unionsFields" :default-item="{ name: '', url: '' }"
-        :disabled="loading" />
+      <JsonListEditor
+        v-model="form.unionsList"
+        :fields="unionsFields"
+        :default-item="{ name: '', url: '' }"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="心路历程">
-      <el-input v-model="form.about_story" type="textarea" :rows="6" placeholder="关于本站的介绍和心路历程" :disabled="loading" />
+      <el-input
+        v-model="form.about_story"
+        type="textarea"
+        :rows="6"
+        placeholder="关于本站的介绍和心路历程"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-divider content-position="left">自定义代码</el-divider>
 
     <el-form-item label="字体配置">
-      <el-input v-model="form.font" placeholder="字体文件URL|字体名称（https://hanzi.bluu.pl/fonts/986/result.css|LXGW WenKai）"
-        :disabled="loading">
+      <el-input
+        v-model="form.font"
+        placeholder="字体文件URL|字体名称（https://hanzi.bluu.pl/fonts/986/result.css|LXGW WenKai）"
+        :disabled="loading"
+      >
         <template #append>
           <el-dropdown trigger="click" @command="handleFontSiteCommand">
-            <el-button>
-              查找字体
-            </el-button>
+            <el-button> 查找字体 </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="https://hanzi.bluu.pl/">
-                  <i class="ri-global-line" style="margin-right: 8px;"></i>
+                  <i class="ri-global-line" style="margin-right: 8px"></i>
                   千字网
                 </el-dropdown-item>
                 <el-dropdown-item command="https://fonts.zeoseven.com/">
-                  <i class="ri-global-line" style="margin-right: 8px;"></i>
+                  <i class="ri-global-line" style="margin-right: 8px"></i>
                   ZSFT
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -219,97 +344,135 @@
     </el-form-item>
 
     <el-form-item label="自定义 Head">
-      <el-input v-model="form.custom_head" type="textarea" :rows="10" placeholder="输入要在 <head> 中插入的代码"
-        :disabled="loading" />
+      <el-input
+        v-model="form.custom_head"
+        type="textarea"
+        :rows="10"
+        placeholder="输入要在 <head> 中插入的代码"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-form-item label="自定义 Body">
-      <el-input v-model="form.custom_body" type="textarea" :rows="10" placeholder="输入要在 <body> 中插入的代码"
-        :disabled="loading" />
+      <el-input
+        v-model="form.custom_body"
+        type="textarea"
+        :rows="10"
+        placeholder="输入要在 <body> 中插入的代码"
+        :disabled="loading"
+      />
     </el-form-item>
 
     <el-divider content-position="left">表情包配置</el-divider>
 
     <el-form-item label="表情包">
-      <el-input v-model="form.emojis" placeholder='输入表情包配置（JSON文件）' :disabled="loading" />
+      <el-input
+        v-model="form.emojis"
+        placeholder="输入表情包配置（JSON文件）"
+        :disabled="loading"
+      />
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ImageUploader from '@/components/common/ImageUploader.vue'
-import JsonListEditor from '@/components/common/JsonListEditor.vue'
-import type { FieldConfig } from '@/components/common/JsonListEditor.vue'
+import { ref } from 'vue';
+import ImageUploader from '@/components/common/ImageUploader.vue';
+import JsonListEditor from '@/components/common/JsonListEditor.vue';
+import type { FieldConfig } from '@/components/common/JsonListEditor.vue';
 
 interface BlogFormData {
   // 博客网站信息
-  title: string
-  subtitle: string
-  slogan: string
-  description: string
-  keywords: string
-  established: string
+  title: string;
+  subtitle: string;
+  slogan: string;
+  description: string;
+  keywords: string;
+  established: string;
 
   // 全局样式
-  favicon: string
-  background_image: string
-  screenshot: string
-  announcement: string
-  typingTextsList: Array<{ value: string }>
+  favicon: string;
+  background_image: string;
+  screenshot: string;
+  announcement: string;
+  typingTextsList: Array<{ value: string }>;
 
   // 社交媒体
-  sidebarSocialList: Array<{ name: string; url: string; icon: string }>
-  footerSocialList: Array<{ name: string; url: string; icon: string; position: string }>
+  sidebarSocialList: Array<{ name: string; url: string; icon: string }>;
+  footerSocialList: Array<{
+    name: string;
+    url: string;
+    icon: string;
+    position: string;
+  }>;
 
   // 页脚链接
-  footerLinksList: Array<{ name: string; url: string }>
+  footerLinksList: Array<{ name: string; url: string }>;
 
   // 页面配置
-  moments_size: number
-  message_content: string
-  home_layout: string
+  moments_size: number;
+  message_content: string;
+  home_layout: string;
 
   // 关于页面配置
-  about_describe: string
-  about_describe_tips: string
-  about_exhibition: string
-  profileList: Array<{ label: string; value: string; color: string }>
-  about_personality: string
-  mottoMainList: string[]
-  about_motto_sub: string
-  socializeList: Array<{ name: string; url: string }>
-  creationList: Array<{ name: string; url: string }>
-  versionsList: Array<{ name: string; version: string }>
-  unionsList: Array<{ name: string; url: string }>
-  about_story: string
-  custom_head: string
-  custom_body: string
-  emojis: string
-  font: string
+  about_describe: string;
+  about_describe_tips: string;
+  about_exhibition: string;
+  profileList: Array<{ label: string; value: string; color: string }>;
+  about_personality: string;
+  mottoMainList: string[];
+  about_motto_sub: string;
+  socializeList: Array<{ name: string; url: string }>;
+  creationList: Array<{ name: string; url: string }>;
+  versionsList: Array<{ name: string; version: string }>;
+  unionsList: Array<{ name: string; url: string }>;
+  about_story: string;
+  custom_head: string;
+  custom_body: string;
+  emojis: string;
+  font: string;
 }
 
-const form = defineModel<BlogFormData>('form', { required: true })
+const form = defineModel<BlogFormData>('form', { required: true });
 
 defineProps<{
-  loading?: boolean
-}>()
+  loading?: boolean;
+}>();
 
 // 图片上传器引用
-const faviconUploaderRef = ref<InstanceType<typeof ImageUploader>>()
-const backgroundUploaderRef = ref<InstanceType<typeof ImageUploader>>()
-const screenshotUploaderRef = ref<InstanceType<typeof ImageUploader>>()
-const aboutExhibitionUploaderRef = ref<InstanceType<typeof ImageUploader>>()
+const faviconUploaderRef = ref<InstanceType<typeof ImageUploader>>();
+const backgroundUploaderRef = ref<InstanceType<typeof ImageUploader>>();
+const screenshotUploaderRef = ref<InstanceType<typeof ImageUploader>>();
+const aboutExhibitionUploaderRef = ref<InstanceType<typeof ImageUploader>>();
 
 // 预设的常用社交平台图标
 const commonIcons = [
-  'github-line', 'mail-line', 'twitter-x-line', 'bilibili-line', 'wechat-line',
-  'qq-line', 'weibo-line', 'zhihu-line', 'douban-line', 'linkedin-line',
-  'facebook-line', 'instagram-line', 'youtube-line', 'tiktok-line', 'discord-line',
-  'telegram-line', 'slack-line', 'rss-line', 'links-line'
-]
+  'github-line',
+  'mail-line',
+  'twitter-x-line',
+  'bilibili-line',
+  'wechat-line',
+  'qq-line',
+  'weibo-line',
+  'zhihu-line',
+  'douban-line',
+  'linkedin-line',
+  'facebook-line',
+  'instagram-line',
+  'youtube-line',
+  'tiktok-line',
+  'discord-line',
+  'telegram-line',
+  'slack-line',
+  'rss-line',
+  'links-line',
+];
 
-const iconOptions = commonIcons.map(icon => ({ label: icon, value: icon, icon: 'ri-' + icon }))
+const iconOptions = commonIcons.map(icon => ({
+  label: icon,
+  value: icon,
+  icon: 'ri-' + icon,
+}));
 const iconField = {
   key: 'icon',
   type: 'select' as const,
@@ -318,23 +481,33 @@ const iconField = {
   prefix: 'ri-',
   filterable: true,
   allowCreate: true,
-  options: iconOptions
-}
+  options: iconOptions,
+};
 
 // 字段配置
 const typingTextsFields: FieldConfig[] = [
-  { key: 'value', type: 'text', placeholder: '打字机文本', style: 'flex: 1' }
-]
+  { key: 'value', type: 'text', placeholder: '打字机文本', style: 'flex: 1' },
+];
 
 const sidebarSocialFields: FieldConfig[] = [
   { key: 'name', type: 'text', placeholder: '平台名称', style: 'width: 120px' },
-  { key: 'url', type: 'text', placeholder: '链接地址', style: 'flex: 1; margin: 0 8px' },
-  iconField
-]
+  {
+    key: 'url',
+    type: 'text',
+    placeholder: '链接地址',
+    style: 'flex: 1; margin: 0 8px',
+  },
+  iconField,
+];
 
 const footerSocialFields: FieldConfig[] = [
   { key: 'name', type: 'text', placeholder: '平台名称', style: 'width: 100px' },
-  { key: 'url', type: 'text', placeholder: '链接地址', style: 'flex: 1; margin: 0 8px' },
+  {
+    key: 'url',
+    type: 'text',
+    placeholder: '链接地址',
+    style: 'flex: 1; margin: 0 8px',
+  },
   iconField,
   {
     key: 'position',
@@ -343,52 +516,77 @@ const footerSocialFields: FieldConfig[] = [
     style: 'width: 80px; margin-right: 8px',
     options: [
       { label: '左', value: 'left' },
-      { label: '右', value: 'right' }
-    ]
-  }
-]
+      { label: '右', value: 'right' },
+    ],
+  },
+];
 
 const footerLinksFields: FieldConfig[] = [
   { key: 'name', type: 'text', placeholder: '链接名称', style: 'width: 120px' },
-  { key: 'url', type: 'text', placeholder: '链接地址 (/开头为内链)', style: 'flex: 1; margin: 0 8px' }
-]
+  {
+    key: 'url',
+    type: 'text',
+    placeholder: '链接地址 (/开头为内链)',
+    style: 'flex: 1; margin: 0 8px',
+  },
+];
 
 const nameUrlFields: FieldConfig[] = [
   { key: 'name', type: 'text', placeholder: '平台名称', style: 'width: 120px' },
-  { key: 'url', type: 'text', placeholder: '链接地址', style: 'flex: 1; margin: 0 8px' }
-]
+  {
+    key: 'url',
+    type: 'text',
+    placeholder: '链接地址',
+    style: 'flex: 1; margin: 0 8px',
+  },
+];
 
-const socializeFields = nameUrlFields
-const creationFields = nameUrlFields
+const socializeFields = nameUrlFields;
+const creationFields = nameUrlFields;
 
 const unionsFields: FieldConfig[] = [
   { key: 'name', type: 'text', placeholder: '联盟名称', style: 'width: 150px' },
-  { key: 'url', type: 'text', placeholder: '链接地址', style: 'flex: 1; margin: 0 8px' }
-]
+  {
+    key: 'url',
+    type: 'text',
+    placeholder: '链接地址',
+    style: 'flex: 1; margin: 0 8px',
+  },
+];
 
 const profileFields: FieldConfig[] = [
   { key: 'label', type: 'text', placeholder: '标签', style: 'width: 100px' },
-  { key: 'value', type: 'text', placeholder: '值', style: 'flex: 1; margin: 0 8px' },
-  { key: 'color', type: 'color' }
-]
+  {
+    key: 'value',
+    type: 'text',
+    placeholder: '值',
+    style: 'flex: 1; margin: 0 8px',
+  },
+  { key: 'color', type: 'color' },
+];
 
 const versionsFields: FieldConfig[] = [
   { key: 'name', type: 'text', placeholder: '技术名称', style: 'width: 150px' },
-  { key: 'version', type: 'text', placeholder: '版本号', style: 'flex: 1; margin: 0 8px' }
-]
+  {
+    key: 'version',
+    type: 'text',
+    placeholder: '版本号',
+    style: 'flex: 1; margin: 0 8px',
+  },
+];
 
 // 处理字体网站跳转
 const handleFontSiteCommand = (url: string) => {
-  window.open(url, '_blank')
-}
+  window.open(url, '_blank');
+};
 
 // 暴露上传器引用给父组件
 defineExpose({
   faviconUploaderRef,
   backgroundUploaderRef,
   screenshotUploaderRef,
-  aboutExhibitionUploaderRef
-})
+  aboutExhibitionUploaderRef,
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,134 +1,153 @@
 <script setup lang="ts">
-import type { CommentTargetType } from '@@/types/comment'
-import CommentInput from './CommentInput.vue'
-import CommentList from './CommentList.vue'
-import CommentEmpty from './CommentEmpty.vue'
-import { loadEmojiMap } from '@/composables/useEmojis'
+import type { CommentTargetType } from '@@/types/comment';
+import CommentInput from './CommentInput.vue';
+import CommentList from './CommentList.vue';
+import CommentEmpty from './CommentEmpty.vue';
+import { loadEmojiMap } from '@/composables/useEmojis';
 
 // 组件属性
 const props = defineProps<{
-  targetType: CommentTargetType  // 目标类型 (article/page)
-  targetKey: string | number      // 目标键值 (文章slug或页面key)
-}>()
+  targetType: CommentTargetType; // 目标类型 (article/page)
+  targetKey: string | number; // 目标键值 (文章slug或页面key)
+}>();
 
 // 使用评论 store
-const { comments, fetchComments, addComment, removeComment, resetComments, flattenComments } = useComments()
+const { comments, fetchComments, addComment, removeComment, resetComments, flattenComments } =
+  useComments();
 
 // 加载表情映射
-const { blogConfig } = useSysConfig()
-const emojiMapLoaded = ref(false)
+const { blogConfig } = useSysConfig();
+const emojiMapLoaded = ref(false);
 
 const initEmojiMap = async () => {
-  const emojisUrl = blogConfig.value.emojis
+  const emojisUrl = blogConfig.value.emojis;
   if (emojisUrl) {
-    await loadEmojiMap(emojisUrl)
+    await loadEmojiMap(emojisUrl);
   }
-  emojiMapLoaded.value = true
-}
+  emojiMapLoaded.value = true;
+};
 
-onMounted(initEmojiMap)
+onMounted(initEmojiMap);
 
 // 全局登录弹窗
-const { open: openLogin } = useLoginModal()
+const { open: openLogin } = useLoginModal();
 
 // 回复状态管理
-const replyingToId = ref<number | null>(null)
-const replyingToNickname = ref<string>('')
+const replyingToId = ref<number | null>(null);
+const replyingToNickname = ref<string>('');
 
-const route = useRoute()
+const route = useRoute();
 
-let hasHandledInitialHash = false
+let hasHandledInitialHash = false;
 
 const scrollToComment = (hash?: string | null) => {
-  if (!hash || !hash.startsWith('#comment-')) return
+  if (!hash || !hash.startsWith('#comment-')) return;
 
   nextTick(() => {
-    const elementId = hash.slice(1)
-    if (!document.getElementById(elementId)) return
+    const elementId = hash.slice(1);
+    if (!document.getElementById(elementId)) return;
 
-    scrollToElement(hash)
+    scrollToElement(hash);
     if (window.history?.replaceState) {
-      const { pathname, search } = window.location
-      window.history.replaceState(null, '', pathname + search)
+      const { pathname, search } = window.location;
+      window.history.replaceState(null, '', pathname + search);
     }
-  })
-}
+  });
+};
 
 // 监听目标变化，自动加载评论
-watch(() => [props.targetType, props.targetKey], ([type, key]) => {
-  // 只在 targetKey 有效时才加载评论，避免传递 undefined
-  if (key) {
-    fetchComments(type as CommentTargetType, key as string | number)
-  }
-}, { immediate: true })
+watch(
+  () => [props.targetType, props.targetKey],
+  ([type, key]) => {
+    // 只在 targetKey 有效时才加载评论，避免传递 undefined
+    if (key) {
+      fetchComments(type as CommentTargetType, key as string | number);
+    }
+  },
+  { immediate: true }
+);
 
 // 评论加载完成后滚动一次
-watch(comments, (newComments) => {
-  if (!hasHandledInitialHash && newComments.length > 0) {
-    scrollToComment(route.hash)
-    hasHandledInitialHash = true
-  }
-}, { flush: 'post' })
+watch(
+  comments,
+  newComments => {
+    if (!hasHandledInitialHash && newComments.length > 0) {
+      scrollToComment(route.hash);
+      hasHandledInitialHash = true;
+    }
+  },
+  { flush: 'post' }
+);
 
 // 监听 hash 变化
-watch(() => route.hash, (hash) => {
-  scrollToComment(hash)
-})
+watch(
+  () => route.hash,
+  hash => {
+    scrollToComment(hash);
+  }
+);
 
 // 组件卸载时重置评论
-onUnmounted(resetComments)
+onUnmounted(resetComments);
 
 // 是否有评论
-const hasComments = computed(() => comments.value.length > 0)
+const hasComments = computed(() => comments.value.length > 0);
 
 // 扁平化的评论列表（用于渲染）
-const flatComments = computed(() => flattenComments(comments.value))
+const flatComments = computed(() => flattenComments(comments.value));
 
 // 计算所有评论总数（包括回复）
 const totalCommentsCount = computed(() => {
-  const count = (list: typeof comments.value): number => 
-    list.reduce((total, c) => total + 1 + (c.replies?.length ? count(c.replies) : 0), 0)
-  return count(comments.value)
-})
+  const count = (list: typeof comments.value): number =>
+    list.reduce((total, c) => total + 1 + (c.replies?.length ? count(c.replies) : 0), 0);
+  return count(comments.value);
+});
 
 // 处理评论提交（顶层评论）
-const handleAddComment = async (content: string, guestInfo?: { nickname?: string; email?: string; website?: string }) => {
+const handleAddComment = async (
+  content: string,
+  guestInfo?: { nickname?: string; email?: string; website?: string }
+) => {
   await addComment({
     target_type: props.targetType,
     target_key: props.targetKey,
     content,
-    ...guestInfo
-  })
-}
+    ...guestInfo,
+  });
+};
 
 // 处理回复提交
-const handleAddReply = async (commentId: number, content: string, guestInfo?: { nickname?: string; email?: string; website?: string }) => {
+const handleAddReply = async (
+  commentId: number,
+  content: string,
+  guestInfo?: { nickname?: string; email?: string; website?: string }
+) => {
   await addComment({
     target_type: props.targetType,
     target_key: props.targetKey,
     content,
     parent_id: commentId,
-    ...guestInfo
-  })
-}
+    ...guestInfo,
+  });
+};
 
 // 开始回复
 const startReply = (id: number, nickname: string) => {
   if (replyingToId.value === id) {
     // 如果点击的是同一个评论，则取消回复
-    replyingToId.value = null
-    replyingToNickname.value = ''
+    replyingToId.value = null;
+    replyingToNickname.value = '';
   } else {
-    replyingToId.value = id
-    replyingToNickname.value = nickname
+    replyingToId.value = id;
+    replyingToNickname.value = nickname;
   }
-}
+};
 
 // 取消回复
 const cancelReply = () => {
-  replyingToId.value = null
-  replyingToNickname.value = ''
-}
+  replyingToId.value = null;
+  replyingToNickname.value = '';
+};
 
 // 提供评论上下文给所有子组件
 provideCommentContext({
@@ -142,9 +161,9 @@ provideCommentContext({
     replyingToId,
     replyingToNickname,
     startReply,
-    cancelReply
-  }
-})
+    cancelReply,
+  },
+});
 </script>
 
 <template>
@@ -161,10 +180,7 @@ provideCommentContext({
     <CommentInput />
 
     <!-- 评论列表 -->
-    <CommentList
-      v-if="emojiMapLoaded && hasComments"
-      :comments="flatComments"
-    />
+    <CommentList v-if="emojiMapLoaded && hasComments" :comments="flatComments" />
 
     <!-- 无评论状态 -->
     <CommentEmpty v-else-if="emojiMapLoaded && !hasComments" />
@@ -250,7 +266,7 @@ provideCommentContext({
     border-radius: 4px;
     overflow-x: auto;
     font-family: 'Consolas', 'Monaco', monospace;
-    
+
     code {
       padding: 0;
       background: transparent;
@@ -265,7 +281,8 @@ provideCommentContext({
     opacity: 0.8;
   }
 
-  ul, ol {
+  ul,
+  ol {
     margin: 0.5em 0;
     padding-left: 1.8em;
   }
@@ -273,7 +290,7 @@ provideCommentContext({
   a {
     color: var(--theme-color);
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -283,8 +300,8 @@ provideCommentContext({
     max-width: 100%;
   }
 
-  // 表情图片样式                                                                                                                                                      
-  .emoji-image {                                                                                                                                                       
+  // 表情图片样式
+  .emoji-image {
     display: inline-block;
     width: 36px;
     height: 36px;
@@ -293,4 +310,3 @@ provideCommentContext({
   }
 }
 </style>
-

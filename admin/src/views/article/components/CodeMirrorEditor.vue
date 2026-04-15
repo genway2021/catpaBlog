@@ -1,5 +1,8 @@
 <template>
-  <div class="codemirror-editor-wrapper" :class="{ 'is-fullscreen': isBrowserFullscreen || isPageFullscreen }">
+  <div
+    class="codemirror-editor-wrapper"
+    :class="{ 'is-fullscreen': isBrowserFullscreen || isPageFullscreen }"
+  >
     <!-- 工具栏 -->
     <div class="editor-toolbar">
       <template v-for="(item, index) in toolbarItems" :key="index">
@@ -16,12 +19,22 @@
                 <i :class="item.icon"></i>
               </button>
             </template>
-            <div style="padding: 8px 0;">
-              <el-input v-model="onlineImageUrl" placeholder="输入图片URL，按回车下载" size="small" clearable
-                @keyup.enter="handleOnlineImageDownload" style="width: 100%;">
+            <div style="padding: 8px 0">
+              <el-input
+                v-model="onlineImageUrl"
+                placeholder="输入图片URL，按回车下载"
+                size="small"
+                clearable
+                @keyup.enter="handleOnlineImageDownload"
+                style="width: 100%"
+              >
                 <template #append>
-                  <el-button @click="handleOnlineImageDownload" :loading="downloadingImage"
-                    :disabled="!onlineImageUrl.trim()" size="small">
+                  <el-button
+                    @click="handleOnlineImageDownload"
+                    :loading="downloadingImage"
+                    :disabled="!onlineImageUrl.trim()"
+                    size="small"
+                  >
                     下载
                   </el-button>
                 </template>
@@ -31,26 +44,50 @@
         </template>
         <!-- 表情选择器按钮 -->
         <template v-else-if="item.title === '表情'">
-          <el-popover :width="320" trigger="click" placement="bottom" v-model:visible="emojiState.visible"
-            @show="handleEmojiPickerShow">
+          <el-popover
+            :width="320"
+            trigger="click"
+            placement="bottom"
+            v-model:visible="emojiState.visible"
+            @show="handleEmojiPickerShow"
+          >
             <template #reference>
-              <button :title="item.title" class="toolbar-btn" :class="{ active: emojiState.visible }">
+              <button
+                :title="item.title"
+                class="toolbar-btn"
+                :class="{ active: emojiState.visible }"
+              >
                 <i :class="item.icon"></i>
               </button>
             </template>
             <!-- 表情内容 -->
             <div class="emoji-wrap">
               <div class="emoji-bar">
-                <button v-for="(group, index) in emojiState.groups" :key="index" class="emoji-tab"
-                  :class="{ active: emojiState.activeTab === index }" @click="emojiState.activeTab = index">
+                <button
+                  v-for="(group, index) in emojiState.groups"
+                  :key="index"
+                  class="emoji-tab"
+                  :class="{ active: emojiState.activeTab === index }"
+                  @click="emojiState.activeTab = index"
+                >
                   {{ group.name }}
                 </button>
               </div>
               <div class="emoji-list">
-                <div v-for="(group, index) in emojiState.groups" v-show="emojiState.activeTab === index" :key="index"
-                  class="emoji-group" :class="{ 'emoji-text': group.type === 'emoticon' }">
-                  <button v-for="item in group.items" :key="item.key" class="emoji-btn" :title="item.key"
-                    @click="selectEmoji(item, group.type)">
+                <div
+                  v-for="(group, index) in emojiState.groups"
+                  v-show="emojiState.activeTab === index"
+                  :key="index"
+                  class="emoji-group"
+                  :class="{ 'emoji-text': group.type === 'emoticon' }"
+                >
+                  <button
+                    v-for="item in group.items"
+                    :key="item.key"
+                    class="emoji-btn"
+                    :title="item.key"
+                    @click="selectEmoji(item, group.type)"
+                  >
                     <img v-if="group.type === 'image'" :src="item.val" :alt="item.key" />
                     <span v-else>{{ item.val }}</span>
                   </button>
@@ -60,34 +97,55 @@
           </el-popover>
         </template>
         <!-- 普通按钮 -->
-        <button v-else @click="item.action" :title="item.title" :class="{
-          active: item.isActive?.(),
-          'mobile-only': item.mobileOnly
-        }" class="toolbar-btn">
+        <button
+          v-else
+          @click="item.action"
+          :title="item.title"
+          :class="{
+            active: item.isActive?.(),
+            'mobile-only': item.mobileOnly,
+          }"
+          class="toolbar-btn"
+        >
           <i v-if="item.icon" :class="item.icon"></i>
           <span v-else>{{ item.label }}</span>
         </button>
       </template>
 
-      <input ref="imageInputRef" type="file" accept="image/*" multiple style="display: none"
-        @change="handleImageSelect" />
+      <input
+        ref="imageInputRef"
+        type="file"
+        accept="image/*"
+        multiple
+        style="display: none"
+        @change="handleImageSelect"
+      />
     </div>
 
     <!-- 编辑器主体 -->
     <div class="editor-container">
       <!-- 编辑器面板 -->
-      <div class="editor-pane" :class="{
-        'full-width': viewMode === 'editor',
-        'hidden': viewMode === 'preview'
-      }" @mousedown="handleEditorPaneMouseDown">
+      <div
+        class="editor-pane"
+        :class="{
+          'full-width': viewMode === 'editor',
+          hidden: viewMode === 'preview',
+        }"
+        @mousedown="handleEditorPaneMouseDown"
+      >
         <div ref="editorRef" class="cm-host"></div>
       </div>
 
       <!-- 预览面板 -->
-      <div v-show="viewMode !== 'editor'" ref="previewPaneRef" class="preview-pane" :class="{
-        'full-width': viewMode === 'preview',
-        'html-mode': viewMode === 'html'
-      }">
+      <div
+        v-show="viewMode !== 'editor'"
+        ref="previewPaneRef"
+        class="preview-pane"
+        :class="{
+          'full-width': viewMode === 'preview',
+          'html-mode': viewMode === 'html',
+        }"
+      >
         <div v-if="viewMode === 'html'" class="html-code">
           <pre><code>{{ renderedHtml }}</code></pre>
         </div>
@@ -103,13 +161,15 @@
           </button>
         </div>
         <div class="toc-content">
-          <div v-for="(heading, index) in tableOfContents" :key="index" :class="`toc-item toc-level-${heading.level}`"
-            @click="scrollToHeading(heading)">
+          <div
+            v-for="(heading, index) in tableOfContents"
+            :key="index"
+            :class="`toc-item toc-level-${heading.level}`"
+            @click="scrollToHeading(heading)"
+          >
             {{ heading.text }}
           </div>
-          <div v-if="tableOfContents.length === 0" class="toc-empty">
-            暂无目录
-          </div>
+          <div v-if="tableOfContents.length === 0" class="toc-empty">暂无目录</div>
         </div>
       </div>
     </div>
@@ -125,573 +185,648 @@
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, reactive, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
-import { uploadFile } from '@/api/file'
-import { getSettingGroup } from '@/api/sysconfig'
+import {
+  ref,
+  shallowRef,
+  reactive,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+} from 'vue';
+import { ElMessage } from 'element-plus';
+import { uploadFile } from '@/api/file';
+import { getSettingGroup } from '@/api/sysconfig';
 import {
   renderMarkdownWithSourceMap,
   renderMarkdownWithStyles,
   countWords,
   estimateReadingTime,
   extractToc,
-  type TocItem
-} from '@/utils/markdown'
-import { EditorView, keymap, showPanel } from '@codemirror/view'
-import { EditorState, StateField, StateEffect, RangeSetBuilder } from '@codemirror/state'
-import { Decoration } from '@codemirror/view'
-import type { Panel, DecorationSet } from '@codemirror/view'
-import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
-import { markdown } from '@codemirror/lang-markdown'
-import { SearchCursor } from '@codemirror/search'
-import mermaid from 'mermaid'
+  type TocItem,
+} from '@/utils/markdown';
+import { EditorView, keymap, showPanel } from '@codemirror/view';
+import { EditorState, StateField, StateEffect, RangeSetBuilder } from '@codemirror/state';
+import { Decoration } from '@codemirror/view';
+import type { Panel, DecorationSet } from '@codemirror/view';
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+import { markdown } from '@codemirror/lang-markdown';
+import { SearchCursor } from '@codemirror/search';
+import mermaid from 'mermaid';
 
 // 简易搜索功能
-const setSearchQuery = StateEffect.define<string>()
-const setSearchIndex = StateEffect.define<number>()
+const setSearchQuery = StateEffect.define<string>();
+const setSearchIndex = StateEffect.define<number>();
 
-const searchStateField = StateField.define<{ matches: { from: number; to: number }[]; idx: number }>({
+const searchStateField = StateField.define<{
+  matches: { from: number; to: number }[];
+  idx: number;
+}>({
   create: () => ({ matches: [], idx: 0 }),
   update: (v, tr) => {
     for (const e of tr.effects) {
       if (e.is(setSearchQuery)) {
-        if (!e.value) return { matches: [], idx: 0 }
-        const matches: { from: number; to: number }[] = []
-        const cursor = new SearchCursor(tr.state.doc, e.value, 0, undefined, s => s.toLowerCase())
-        while (!cursor.next().done) matches.push({ from: cursor.value.from, to: cursor.value.to })
-        return { matches, idx: 0 }
+        if (!e.value) return { matches: [], idx: 0 };
+        const matches: { from: number; to: number }[] = [];
+        const cursor = new SearchCursor(tr.state.doc, e.value, 0, undefined, s => s.toLowerCase());
+        while (!cursor.next().done) matches.push({ from: cursor.value.from, to: cursor.value.to });
+        return { matches, idx: 0 };
       }
-      if (e.is(setSearchIndex)) return { ...v, idx: e.value }
+      if (e.is(setSearchIndex)) return { ...v, idx: e.value };
     }
-    return v
-  }
-})
+    return v;
+  },
+});
 
 const searchDecorations = StateField.define<DecorationSet>({
   create: () => Decoration.none,
   update: (_, tr) => {
-    const { matches, idx } = tr.state.field(searchStateField)
-    if (!matches.length) return Decoration.none
-    const builder = new RangeSetBuilder<Decoration>()
-    matches.forEach((m, i) => builder.add(m.from, m.to, Decoration.mark({ class: i === idx ? 'cm-searchMatch-selected' : 'cm-searchMatch' })))
-    return builder.finish()
+    const { matches, idx } = tr.state.field(searchStateField);
+    if (!matches.length) return Decoration.none;
+    const builder = new RangeSetBuilder<Decoration>();
+    matches.forEach((m, i) =>
+      builder.add(
+        m.from,
+        m.to,
+        Decoration.mark({
+          class: i === idx ? 'cm-searchMatch-selected' : 'cm-searchMatch',
+        })
+      )
+    );
+    return builder.finish();
   },
-  provide: f => EditorView.decorations.from(f)
-})
+  provide: f => EditorView.decorations.from(f),
+});
 
-let searchPanel: { dom: HTMLElement; show: () => void } | null = null
+let searchPanel: { dom: HTMLElement; show: () => void } | null = null;
 
 function createSearchPanel(view: EditorView): Panel {
-  const dom = document.createElement('div')
-  dom.style.cssText = 'display:none;align-items:center;padding:8px;background:#f5f5f5;border-top:1px solid #ddd'
+  const dom = document.createElement('div');
+  dom.style.cssText =
+    'display:none;align-items:center;padding:8px;background:#f5f5f5;border-top:1px solid #ddd';
   dom.innerHTML = `
     <input placeholder="查找..." style="width:180px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;outline:none">
     <span style="margin:0 8px;color:#666;font-size:13px"></span>
     <button style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer">↑</button>
     <button style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;margin-left:4px">↓</button>
     <button style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;margin-left:8px">×</button>
-  `
-  const [input, count, prev, next, close] = [dom.querySelector('input')!, dom.querySelector('span')!, ...dom.querySelectorAll('button')] as [HTMLInputElement, HTMLSpanElement, HTMLButtonElement, HTMLButtonElement, HTMLButtonElement]
+  `;
+  const [input, count, prev, next, close] = [
+    dom.querySelector('input')!,
+    dom.querySelector('span')!,
+    ...dom.querySelectorAll('button'),
+  ] as [HTMLInputElement, HTMLSpanElement, HTMLButtonElement, HTMLButtonElement, HTMLButtonElement];
 
   const update = () => {
-    const { matches, idx } = view.state.field(searchStateField)
-    count.textContent = matches.length ? `${idx + 1}/${matches.length}` : input.value ? '无匹配' : ''
-  }
+    const { matches, idx } = view.state.field(searchStateField);
+    count.textContent = matches.length
+      ? `${idx + 1}/${matches.length}`
+      : input.value
+        ? '无匹配'
+        : '';
+  };
 
   const search = () => {
-    view.dispatch({ effects: setSearchQuery.of(input.value) })
-    update()
-  }
+    view.dispatch({ effects: setSearchQuery.of(input.value) });
+    update();
+  };
 
   const go = (d: number) => {
-    const { matches, idx } = view.state.field(searchStateField)
-    if (!matches.length) return
-    const i = (idx + d + matches.length) % matches.length
+    const { matches, idx } = view.state.field(searchStateField);
+    if (!matches.length) return;
+    const i = (idx + d + matches.length) % matches.length;
     view.dispatch({
       effects: setSearchIndex.of(i),
       selection: { anchor: matches[i]!.from, head: matches[i]!.to },
-      scrollIntoView: true
-    })
-    update()
-  }
+      scrollIntoView: true,
+    });
+    update();
+  };
 
-  input.oninput = search
+  input.oninput = search;
   input.onkeydown = e => {
-    if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? -1 : 1) }
-    if (e.key === 'Escape') { view.dispatch({ effects: setSearchQuery.of('') }); input.value = ''; update() }
-  }
-  prev.onclick = () => go(-1)
-  next.onclick = () => go(1)
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      go(e.shiftKey ? -1 : 1);
+    }
+    if (e.key === 'Escape') {
+      view.dispatch({ effects: setSearchQuery.of('') });
+      input.value = '';
+      update();
+    }
+  };
+  prev.onclick = () => go(-1);
+  next.onclick = () => go(1);
   close.onclick = () => {
-    view.dispatch({ effects: setSearchQuery.of('') })
-    input.value = ''
-    dom.style.display = 'none'
-  }
+    view.dispatch({ effects: setSearchQuery.of('') });
+    input.value = '';
+    dom.style.display = 'none';
+  };
 
-  searchPanel = { dom, show: () => { dom.style.display = 'flex'; input.focus(); input.select() } }
-  return { dom, top: false }
+  searchPanel = {
+    dom,
+    show: () => {
+      dom.style.display = 'flex';
+      input.focus();
+      input.select();
+    },
+  };
+  return { dom, top: false };
 }
 
 function openSearchPanelCustom() {
-  searchPanel?.show()
-  return true
+  searchPanel?.show();
+  return true;
 }
 
 // 类型定义
 interface ToolbarItem {
-  type?: 'divider' | 'spacer'
-  icon?: string
-  label?: string
-  title?: string
-  action?: () => void
-  isActive?: () => boolean
-  mobileOnly?: boolean
+  type?: 'divider' | 'spacer';
+  icon?: string;
+  label?: string;
+  title?: string;
+  action?: () => void;
+  isActive?: () => boolean;
+  mobileOnly?: boolean;
 }
 
 interface PreviewAnchor {
-  startOffset: number
-  endOffset: number
-  top: number
-  height: number
-  depth: number
-  kind: 'block' | 'text'
+  startOffset: number;
+  endOffset: number;
+  top: number;
+  height: number;
+  depth: number;
+  kind: 'block' | 'text';
 }
 
-type ViewMode = 'split' | 'editor' | 'preview' | 'html'
+type ViewMode = 'split' | 'editor' | 'preview' | 'html';
 
 // 常量
-const SCROLL_EPSILON = 1
-const PREVIEW_SYNC_DURATION = 90
+const SCROLL_EPSILON = 1;
+const PREVIEW_SYNC_DURATION = 90;
 
-const props = withDefaults(defineProps<{ modelValue: string }>(), { modelValue: '' })
-const emit = defineEmits<{ 'update:modelValue': [value: string], 'save': [content: string] }>()
+const props = withDefaults(defineProps<{ modelValue: string }>(), {
+  modelValue: '',
+});
+const emit = defineEmits<{
+  'update:modelValue': [value: string];
+  save: [content: string];
+}>();
 
 // Refs
-const editorRef = ref<HTMLElement>()
-const previewPaneRef = ref<HTMLElement>()
-const imageInputRef = ref<HTMLInputElement>()
-const viewMode = ref<ViewMode>('split')
-const isBrowserFullscreen = ref(false)
-const isPageFullscreen = ref(false)
-const showToc = ref(false)
-const onlineImageUrl = ref('')
-const downloadingImage = ref(false)
+const editorRef = ref<HTMLElement>();
+const previewPaneRef = ref<HTMLElement>();
+const imageInputRef = ref<HTMLInputElement>();
+const viewMode = ref<ViewMode>('split');
+const isBrowserFullscreen = ref(false);
+const isPageFullscreen = ref(false);
+const showToc = ref(false);
+const onlineImageUrl = ref('');
+const downloadingImage = ref(false);
 
 // 表情选择器状态
 const emojiState = reactive({
   visible: false,
-  groups: [] as Array<{ name: string; type: 'emoji' | 'image' | 'emoticon'; items: Array<{ key: string; val: string }> }>,
+  groups: [] as Array<{
+    name: string;
+    type: 'emoji' | 'image' | 'emoticon';
+    items: Array<{ key: string; val: string }>;
+  }>,
   activeTab: 0,
-  emojiMap: new Map<string, string>()
-})
+  emojiMap: new Map<string, string>(),
+});
 
 // 编辑器实例
-const editorViewRef = shallowRef<EditorView | null>(null)
+const editorViewRef = shallowRef<EditorView | null>(null);
 
 // ==================== Mermaid 图表渲染 ====================
 const initMermaid = () => {
   mermaid.initialize({
     startOnLoad: false,
     theme: 'default',
-    securityLevel: 'loose'
-  })
-}
+    securityLevel: 'loose',
+  });
+};
 
 const renderMermaidDiagrams = async () => {
-  const preview = previewPaneRef.value
-  if (!preview) return
+  const preview = previewPaneRef.value;
+  if (!preview) return;
 
-  const elements = preview.querySelectorAll('.mermaid:not(:has(svg))')
+  const elements = preview.querySelectorAll('.mermaid:not(:has(svg))');
 
   for (const element of elements) {
     try {
-      const { svg } = await mermaid.render(`mermaid-${Date.now()}`, element.textContent || '')
-      element.innerHTML = svg
+      const { svg } = await mermaid.render(`mermaid-${Date.now()}`, element.textContent || '');
+      element.innerHTML = svg;
     } catch (error) {
-      console.error('Mermaid 渲染失败:', error)
+      console.error('Mermaid 渲染失败:', error);
     }
   }
-}
+};
 
 // ==================== 滚动同步 ====================
-let cachedPreviewAnchors: PreviewAnchor[] | null = null
-let editorScrollFrame: number | null = null
-let boundEditorScroller: HTMLElement | null = null
-let previewResizeObserver: ResizeObserver | null = null
-let previewProgrammaticScrollFrame: number | null = null
-let previewTweenFrame: number | null = null
-let previewTargetScrollTop: number | null = null
-let isProgrammaticPreviewScroll = false
-let isPreviewManualScrollActive = false
+let cachedPreviewAnchors: PreviewAnchor[] | null = null;
+let editorScrollFrame: number | null = null;
+let boundEditorScroller: HTMLElement | null = null;
+let previewResizeObserver: ResizeObserver | null = null;
+let previewProgrammaticScrollFrame: number | null = null;
+let previewTweenFrame: number | null = null;
+let previewTargetScrollTop: number | null = null;
+let isProgrammaticPreviewScroll = false;
+let isPreviewManualScrollActive = false;
 
-const getEditorScroller = () => editorViewRef.value?.scrollDOM ?? null
+const getEditorScroller = () => editorViewRef.value?.scrollDOM ?? null;
 
 const invalidateScrollCache = () => {
-  cachedPreviewAnchors = null
-}
+  cachedPreviewAnchors = null;
+};
 
-const clampNumber = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+const clampNumber = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 const getPreviewElementTop = (element: HTMLElement, container: HTMLElement) => {
-  const elementRect = element.getBoundingClientRect()
-  const containerRect = container.getBoundingClientRect()
-  const paddingTop = Number.parseFloat(getComputedStyle(container).paddingTop || '0') || 0
-  return elementRect.top - containerRect.top + container.scrollTop - paddingTop
-}
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const paddingTop = Number.parseFloat(getComputedStyle(container).paddingTop || '0') || 0;
+  return elementRect.top - containerRect.top + container.scrollTop - paddingTop;
+};
 
 const getPreviewElementDepth = (element: HTMLElement, container: HTMLElement) => {
-  let depth = 0
-  let current = element.parentElement
+  let depth = 0;
+  let current = element.parentElement;
 
   while (current && current !== container) {
-    depth += 1
-    current = current.parentElement
+    depth += 1;
+    current = current.parentElement;
   }
 
-  return depth
-}
+  return depth;
+};
 
 const getPreviewAnchors = (): PreviewAnchor[] => {
-  if (cachedPreviewAnchors) return cachedPreviewAnchors
+  if (cachedPreviewAnchors) return cachedPreviewAnchors;
 
-  const preview = previewPaneRef.value
-  if (!preview) return []
+  const preview = previewPaneRef.value;
+  if (!preview) return [];
 
-  const anchors = Array.from(preview.querySelectorAll<HTMLElement>('[data-source-start-offset][data-source-end-offset]'))
-    .map((element) => {
-      const startOffset = Number.parseInt(element.dataset.sourceStartOffset || '', 10)
-      const endOffset = Number.parseInt(element.dataset.sourceEndOffset || '', 10)
-      if (Number.isNaN(startOffset) || Number.isNaN(endOffset)) return null
+  const anchors = Array.from(
+    preview.querySelectorAll<HTMLElement>('[data-source-start-offset][data-source-end-offset]')
+  )
+    .map(element => {
+      const startOffset = Number.parseInt(element.dataset.sourceStartOffset || '', 10);
+      const endOffset = Number.parseInt(element.dataset.sourceEndOffset || '', 10);
+      if (Number.isNaN(startOffset) || Number.isNaN(endOffset)) return null;
 
-      const rect = element.getBoundingClientRect()
+      const rect = element.getBoundingClientRect();
       return {
         startOffset,
         endOffset,
         top: Math.max(0, getPreviewElementTop(element, preview)),
         height: Math.max(1, rect.height, element.offsetHeight),
         depth: getPreviewElementDepth(element, preview),
-        kind: (element.dataset.syncKind === 'text' ? 'text' : 'block') as 'block' | 'text'
-      } satisfies PreviewAnchor
+        kind: (element.dataset.syncKind === 'text' ? 'text' : 'block') as 'block' | 'text',
+      } satisfies PreviewAnchor;
     })
     .filter((anchor): anchor is PreviewAnchor => !!anchor)
     .sort((left, right) => {
-      if (left.startOffset !== right.startOffset) return left.startOffset - right.startOffset
-      const leftSourceSpan = left.endOffset - left.startOffset
-      const rightSourceSpan = right.endOffset - right.startOffset
-      if (leftSourceSpan !== rightSourceSpan) return leftSourceSpan - rightSourceSpan
-      if (left.top !== right.top) return left.top - right.top
-      if (left.depth !== right.depth) return right.depth - left.depth
-      if (left.kind === right.kind) return 0
-      return left.kind === 'text' ? -1 : 1
-    })
+      if (left.startOffset !== right.startOffset) return left.startOffset - right.startOffset;
+      const leftSourceSpan = left.endOffset - left.startOffset;
+      const rightSourceSpan = right.endOffset - right.startOffset;
+      if (leftSourceSpan !== rightSourceSpan) return leftSourceSpan - rightSourceSpan;
+      if (left.top !== right.top) return left.top - right.top;
+      if (left.depth !== right.depth) return right.depth - left.depth;
+      if (left.kind === right.kind) return 0;
+      return left.kind === 'text' ? -1 : 1;
+    });
 
-  cachedPreviewAnchors = anchors
-  return anchors
-}
+  cachedPreviewAnchors = anchors;
+  return anchors;
+};
 
 const getEditorTopSourceOffset = () => {
-  const editor = editorViewRef.value
-  const editorScroller = getEditorScroller()
-  if (!editor || !editorScroller) return 0
+  const editor = editorViewRef.value;
+  const editorScroller = getEditorScroller();
+  if (!editor || !editorScroller) return 0;
 
-  const scrollerRect = editorScroller.getBoundingClientRect()
-  const contentRect = editor.contentDOM.getBoundingClientRect()
+  const scrollerRect = editorScroller.getBoundingClientRect();
+  const contentRect = editor.contentDOM.getBoundingClientRect();
   const pos = editor.posAtCoords({
     x: Math.max(contentRect.left + 4, scrollerRect.left + 4),
-    y: scrollerRect.top + 2
-  })
+    y: scrollerRect.top + 2,
+  });
 
-  if (pos !== null) return pos
-  return editor.lineBlockAtHeight(editorScroller.scrollTop).from
-}
+  if (pos !== null) return pos;
+  return editor.lineBlockAtHeight(editorScroller.scrollTop).from;
+};
 
-const getAnchorSourceSpan = (anchor: PreviewAnchor) => Math.max(0, anchor.endOffset - anchor.startOffset)
+const getAnchorSourceSpan = (anchor: PreviewAnchor) =>
+  Math.max(0, anchor.endOffset - anchor.startOffset);
 
 const compareAnchorSpecificity = (left: PreviewAnchor, right: PreviewAnchor) => {
-  if (left.kind !== right.kind) return left.kind === 'text' ? 1 : -1
+  if (left.kind !== right.kind) return left.kind === 'text' ? 1 : -1;
 
-  const leftSourceSpan = getAnchorSourceSpan(left)
-  const rightSourceSpan = getAnchorSourceSpan(right)
-  if (leftSourceSpan !== rightSourceSpan) return rightSourceSpan - leftSourceSpan
+  const leftSourceSpan = getAnchorSourceSpan(left);
+  const rightSourceSpan = getAnchorSourceSpan(right);
+  if (leftSourceSpan !== rightSourceSpan) return rightSourceSpan - leftSourceSpan;
 
-  if (left.depth !== right.depth) return left.depth - right.depth
-  if (left.height !== right.height) return right.height - left.height
-  return right.top - left.top
-}
+  if (left.depth !== right.depth) return left.depth - right.depth;
+  if (left.height !== right.height) return right.height - left.height;
+  return right.top - left.top;
+};
 
 const findBestContainingAnchor = (sourceOffset: number, anchors: PreviewAnchor[]) => {
-  let bestAnchor: PreviewAnchor | null = null
-  let bestIndex = -1
+  let bestAnchor: PreviewAnchor | null = null;
+  let bestIndex = -1;
 
   anchors.forEach((anchor, index) => {
-    if (sourceOffset < anchor.startOffset || sourceOffset > anchor.endOffset) return
+    if (sourceOffset < anchor.startOffset || sourceOffset > anchor.endOffset) return;
 
     if (!bestAnchor || compareAnchorSpecificity(anchor, bestAnchor) > 0) {
-      bestAnchor = anchor
-      bestIndex = index
+      bestAnchor = anchor;
+      bestIndex = index;
     }
-  })
+  });
 
-  return bestAnchor ? { anchor: bestAnchor, index: bestIndex } : null
-}
+  return bestAnchor ? { anchor: bestAnchor, index: bestIndex } : null;
+};
 
-const getAnchorVisualSpan = (anchor: PreviewAnchor, anchors: PreviewAnchor[], anchorIndex: number) => {
-  let visualSpan = Math.max(1, anchor.height)
+const getAnchorVisualSpan = (
+  anchor: PreviewAnchor,
+  anchors: PreviewAnchor[],
+  anchorIndex: number
+) => {
+  let visualSpan = Math.max(1, anchor.height);
 
   for (let index = anchorIndex + 1; index < anchors.length; index++) {
-    const candidate = anchors[index]!
-    if (candidate.top + SCROLL_EPSILON < anchor.top) continue
-    if (candidate.startOffset < anchor.endOffset) continue
-    visualSpan = Math.max(visualSpan, candidate.top - anchor.top)
-    break
+    const candidate = anchors[index]!;
+    if (candidate.top + SCROLL_EPSILON < anchor.top) continue;
+    if (candidate.startOffset < anchor.endOffset) continue;
+    visualSpan = Math.max(visualSpan, candidate.top - anchor.top);
+    break;
   }
 
-  return visualSpan
-}
+  return visualSpan;
+};
 
-const mapWithinAnchor = (sourceOffset: number, anchor: PreviewAnchor, anchors: PreviewAnchor[], anchorIndex: number) => {
-  const sourceSpan = getAnchorSourceSpan(anchor)
-  if (sourceSpan <= 0) return anchor.top
+const mapWithinAnchor = (
+  sourceOffset: number,
+  anchor: PreviewAnchor,
+  anchors: PreviewAnchor[],
+  anchorIndex: number
+) => {
+  const sourceSpan = getAnchorSourceSpan(anchor);
+  if (sourceSpan <= 0) return anchor.top;
 
-  const progress = clampNumber((sourceOffset - anchor.startOffset) / sourceSpan, 0, 1)
-  return anchor.top + getAnchorVisualSpan(anchor, anchors, anchorIndex) * progress
-}
+  const progress = clampNumber((sourceOffset - anchor.startOffset) / sourceSpan, 0, 1);
+  return anchor.top + getAnchorVisualSpan(anchor, anchors, anchorIndex) * progress;
+};
 
 const mapSourceOffsetToPreviewTop = (sourceOffset: number, anchors: PreviewAnchor[]) => {
-  if (!anchors.length) return 0
-  const containingAnchor = findBestContainingAnchor(sourceOffset, anchors)
+  if (!anchors.length) return 0;
+  const containingAnchor = findBestContainingAnchor(sourceOffset, anchors);
   if (containingAnchor) {
-    return mapWithinAnchor(sourceOffset, containingAnchor.anchor, anchors, containingAnchor.index)
+    return mapWithinAnchor(sourceOffset, containingAnchor.anchor, anchors, containingAnchor.index);
   }
 
-  let previousIndex = -1
-  let nextIndex = -1
+  let previousIndex = -1;
+  let nextIndex = -1;
 
   anchors.forEach((anchor, index) => {
-    if (anchor.endOffset <= sourceOffset) previousIndex = index
-    if (nextIndex === -1 && anchor.startOffset >= sourceOffset) nextIndex = index
-  })
+    if (anchor.endOffset <= sourceOffset) previousIndex = index;
+    if (nextIndex === -1 && anchor.startOffset >= sourceOffset) nextIndex = index;
+  });
 
-  if (previousIndex === -1) return mapWithinAnchor(sourceOffset, anchors[0]!, anchors, 0)
-  if (nextIndex === -1) return mapWithinAnchor(sourceOffset, anchors[anchors.length - 1]!, anchors, anchors.length - 1)
+  if (previousIndex === -1) return mapWithinAnchor(sourceOffset, anchors[0]!, anchors, 0);
+  if (nextIndex === -1)
+    return mapWithinAnchor(sourceOffset, anchors[anchors.length - 1]!, anchors, anchors.length - 1);
 
-  const previous = anchors[previousIndex]!
-  const next = anchors[nextIndex]!
-  const previousTop = mapWithinAnchor(previous.endOffset, previous, anchors, previousIndex)
-  const nextTop = mapWithinAnchor(next.startOffset, next, anchors, nextIndex)
-  const sourceGap = next.startOffset - previous.endOffset
-  if (sourceGap <= 0) return nextTop
+  const previous = anchors[previousIndex]!;
+  const next = anchors[nextIndex]!;
+  const previousTop = mapWithinAnchor(previous.endOffset, previous, anchors, previousIndex);
+  const nextTop = mapWithinAnchor(next.startOffset, next, anchors, nextIndex);
+  const sourceGap = next.startOffset - previous.endOffset;
+  if (sourceGap <= 0) return nextTop;
 
-  const progress = clampNumber((sourceOffset - previous.endOffset) / sourceGap, 0, 1)
-  return previousTop + (nextTop - previousTop) * progress
-}
+  const progress = clampNumber((sourceOffset - previous.endOffset) / sourceGap, 0, 1);
+  return previousTop + (nextTop - previousTop) * progress;
+};
 
 const schedulePreviewProgrammaticUnlock = () => {
   if (previewProgrammaticScrollFrame !== null) {
-    cancelAnimationFrame(previewProgrammaticScrollFrame)
+    cancelAnimationFrame(previewProgrammaticScrollFrame);
   }
   previewProgrammaticScrollFrame = requestAnimationFrame(() => {
-    isProgrammaticPreviewScroll = false
-    previewProgrammaticScrollFrame = null
-  })
-}
+    isProgrammaticPreviewScroll = false;
+    previewProgrammaticScrollFrame = null;
+  });
+};
 
 const setPreviewScrollTop = (preview: HTMLElement, nextTop: number) => {
-  isProgrammaticPreviewScroll = true
-  preview.scrollTop = nextTop
-  schedulePreviewProgrammaticUnlock()
-}
+  isProgrammaticPreviewScroll = true;
+  preview.scrollTop = nextTop;
+  schedulePreviewProgrammaticUnlock();
+};
 
 const stopPreviewTween = () => {
   if (previewTweenFrame !== null) {
-    cancelAnimationFrame(previewTweenFrame)
-    previewTweenFrame = null
+    cancelAnimationFrame(previewTweenFrame);
+    previewTweenFrame = null;
   }
-}
+};
 
-const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3)
+const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3);
 
 const startPreviewTween = (preview: HTMLElement, targetTop: number) => {
-  const startTop = preview.scrollTop
+  const startTop = preview.scrollTop;
   if (Math.abs(startTop - targetTop) <= SCROLL_EPSILON) {
-    stopPreviewTween()
-    if (Math.abs(startTop - targetTop) > 0) setPreviewScrollTop(preview, targetTop)
-    return
+    stopPreviewTween();
+    if (Math.abs(startTop - targetTop) > 0) setPreviewScrollTop(preview, targetTop);
+    return;
   }
 
-  stopPreviewTween()
-  const startTime = performance.now()
+  stopPreviewTween();
+  const startTime = performance.now();
 
   const animate = (now: number) => {
     if (viewMode.value !== 'split' || isPreviewManualScrollActive) {
-      previewTweenFrame = null
-      return
+      previewTweenFrame = null;
+      return;
     }
 
-    const currentPreview = previewPaneRef.value
-    const latestTargetTop = previewTargetScrollTop
+    const currentPreview = previewPaneRef.value;
+    const latestTargetTop = previewTargetScrollTop;
     if (!currentPreview || latestTargetTop === null) {
-      previewTweenFrame = null
-      return
+      previewTweenFrame = null;
+      return;
     }
 
-    const maxScrollTop = Math.max(0, currentPreview.scrollHeight - currentPreview.clientHeight)
-    const clampedTargetTop = clampNumber(latestTargetTop, 0, maxScrollTop)
-    const progress = clampNumber((now - startTime) / PREVIEW_SYNC_DURATION, 0, 1)
-    const nextTop = startTop + (clampedTargetTop - startTop) * easeOutCubic(progress)
-    setPreviewScrollTop(currentPreview, progress >= 1 ? clampedTargetTop : nextTop)
+    const maxScrollTop = Math.max(0, currentPreview.scrollHeight - currentPreview.clientHeight);
+    const clampedTargetTop = clampNumber(latestTargetTop, 0, maxScrollTop);
+    const progress = clampNumber((now - startTime) / PREVIEW_SYNC_DURATION, 0, 1);
+    const nextTop = startTop + (clampedTargetTop - startTop) * easeOutCubic(progress);
+    setPreviewScrollTop(currentPreview, progress >= 1 ? clampedTargetTop : nextTop);
 
     if (progress < 1 && Math.abs(clampedTargetTop - currentPreview.scrollTop) > SCROLL_EPSILON) {
-      previewTweenFrame = requestAnimationFrame(animate)
-      return
+      previewTweenFrame = requestAnimationFrame(animate);
+      return;
     }
 
-    previewTweenFrame = null
-  }
+    previewTweenFrame = null;
+  };
 
-  previewTweenFrame = requestAnimationFrame(animate)
-}
+  previewTweenFrame = requestAnimationFrame(animate);
+};
 
 const syncPreviewToEditorTop = () => {
-  if (viewMode.value !== 'split') return
-  if (isPreviewManualScrollActive) return
+  if (viewMode.value !== 'split') return;
+  if (isPreviewManualScrollActive) return;
 
-  const preview = previewPaneRef.value
-  if (!preview) return
+  const preview = previewPaneRef.value;
+  if (!preview) return;
 
-  const anchors = getPreviewAnchors()
-  if (!anchors.length) return
+  const anchors = getPreviewAnchors();
+  if (!anchors.length) return;
 
-  const targetTop = mapSourceOffsetToPreviewTop(getEditorTopSourceOffset(), anchors)
-  const maxScrollTop = Math.max(0, preview.scrollHeight - preview.clientHeight)
-  previewTargetScrollTop = Math.max(0, Math.min(targetTop, maxScrollTop))
-  startPreviewTween(preview, previewTargetScrollTop)
-}
+  const targetTop = mapSourceOffsetToPreviewTop(getEditorTopSourceOffset(), anchors);
+  const maxScrollTop = Math.max(0, preview.scrollHeight - preview.clientHeight);
+  previewTargetScrollTop = Math.max(0, Math.min(targetTop, maxScrollTop));
+  startPreviewTween(preview, previewTargetScrollTop);
+};
 
 const requestPreviewSync = () => {
-  if (editorScrollFrame !== null) return
+  if (editorScrollFrame !== null) return;
   editorScrollFrame = requestAnimationFrame(() => {
-    editorScrollFrame = null
-    syncPreviewToEditorTop()
-  })
-}
+    editorScrollFrame = null;
+    syncPreviewToEditorTop();
+  });
+};
 
 const cancelPreviewSync = () => {
   if (editorScrollFrame !== null) {
-    cancelAnimationFrame(editorScrollFrame)
-    editorScrollFrame = null
+    cancelAnimationFrame(editorScrollFrame);
+    editorScrollFrame = null;
   }
-  stopPreviewTween()
-  previewTargetScrollTop = null
-}
+  stopPreviewTween();
+  previewTargetScrollTop = null;
+};
 
 const resumePreviewSync = () => {
-  if (!isPreviewManualScrollActive) return
-  isPreviewManualScrollActive = false
-  requestPreviewSync()
-}
+  if (!isPreviewManualScrollActive) return;
+  isPreviewManualScrollActive = false;
+  requestPreviewSync();
+};
 
 const handleEditorScroll = () => {
   if (isPreviewManualScrollActive) {
-    isPreviewManualScrollActive = false
+    isPreviewManualScrollActive = false;
   }
-  requestPreviewSync()
-}
+  requestPreviewSync();
+};
 
 const handlePreviewInteraction = () => {
-  if (isProgrammaticPreviewScroll) return
-  isPreviewManualScrollActive = true
-  cancelPreviewSync()
-}
+  if (isProgrammaticPreviewScroll) return;
+  isPreviewManualScrollActive = true;
+  cancelPreviewSync();
+};
 
 const bindPreviewObservers = () => {
-  const preview = previewPaneRef.value
-  if (!preview) return
+  const preview = previewPaneRef.value;
+  if (!preview) return;
 
-  previewResizeObserver?.disconnect()
+  previewResizeObserver?.disconnect();
   previewResizeObserver = new ResizeObserver(() => {
-    invalidateScrollCache()
-    requestPreviewSync()
-  })
+    invalidateScrollCache();
+    requestPreviewSync();
+  });
 
-  const markdownContent = preview.querySelector('.markdown-content')
+  const markdownContent = preview.querySelector('.markdown-content');
   if (markdownContent) {
-    previewResizeObserver.observe(markdownContent)
+    previewResizeObserver.observe(markdownContent);
   }
-}
+};
 
 const bindScrollEvents = () => {
-  const editorScroller = getEditorScroller()
-  const preview = previewPaneRef.value
+  const editorScroller = getEditorScroller();
+  const preview = previewPaneRef.value;
 
   if (boundEditorScroller && boundEditorScroller !== editorScroller) {
-    boundEditorScroller.removeEventListener('scroll', handleEditorScroll)
-    boundEditorScroller = null
+    boundEditorScroller.removeEventListener('scroll', handleEditorScroll);
+    boundEditorScroller = null;
   }
 
   if (editorScroller && boundEditorScroller !== editorScroller) {
-    editorScroller.addEventListener('scroll', handleEditorScroll, { passive: true })
-    boundEditorScroller = editorScroller
+    editorScroller.addEventListener('scroll', handleEditorScroll, {
+      passive: true,
+    });
+    boundEditorScroller = editorScroller;
   }
 
-  preview?.removeEventListener('scroll', handlePreviewInteraction)
-  preview?.removeEventListener('click', handlePreviewInteraction)
-  preview?.removeEventListener('click', togglePreviewImage)
-  preview?.removeEventListener('wheel', handlePreviewInteraction)
-  preview?.addEventListener('scroll', handlePreviewInteraction, { passive: true })
-  preview?.addEventListener('click', handlePreviewInteraction, { passive: true })
-  preview?.addEventListener('click', togglePreviewImage)
-  preview?.addEventListener('wheel', handlePreviewInteraction, { passive: true })
-  bindPreviewObservers()
-}
+  preview?.removeEventListener('scroll', handlePreviewInteraction);
+  preview?.removeEventListener('click', handlePreviewInteraction);
+  preview?.removeEventListener('click', togglePreviewImage);
+  preview?.removeEventListener('wheel', handlePreviewInteraction);
+  preview?.addEventListener('scroll', handlePreviewInteraction, {
+    passive: true,
+  });
+  preview?.addEventListener('click', handlePreviewInteraction, {
+    passive: true,
+  });
+  preview?.addEventListener('click', togglePreviewImage);
+  preview?.addEventListener('wheel', handlePreviewInteraction, {
+    passive: true,
+  });
+  bindPreviewObservers();
+};
 
 const unbindScrollEvents = () => {
-  boundEditorScroller?.removeEventListener('scroll', handleEditorScroll)
-  boundEditorScroller = null
-  previewPaneRef.value?.removeEventListener('scroll', handlePreviewInteraction)
-  previewPaneRef.value?.removeEventListener('click', handlePreviewInteraction)
-  previewPaneRef.value?.removeEventListener('click', togglePreviewImage)
-  previewPaneRef.value?.removeEventListener('wheel', handlePreviewInteraction)
-  previewResizeObserver?.disconnect()
-  previewResizeObserver = null
-  cancelPreviewSync()
+  boundEditorScroller?.removeEventListener('scroll', handleEditorScroll);
+  boundEditorScroller = null;
+  previewPaneRef.value?.removeEventListener('scroll', handlePreviewInteraction);
+  previewPaneRef.value?.removeEventListener('click', handlePreviewInteraction);
+  previewPaneRef.value?.removeEventListener('click', togglePreviewImage);
+  previewPaneRef.value?.removeEventListener('wheel', handlePreviewInteraction);
+  previewResizeObserver?.disconnect();
+  previewResizeObserver = null;
+  cancelPreviewSync();
   if (previewProgrammaticScrollFrame !== null) {
-    cancelAnimationFrame(previewProgrammaticScrollFrame)
-    previewProgrammaticScrollFrame = null
+    cancelAnimationFrame(previewProgrammaticScrollFrame);
+    previewProgrammaticScrollFrame = null;
   }
-  isProgrammaticPreviewScroll = false
-  isPreviewManualScrollActive = false
-}
+  isProgrammaticPreviewScroll = false;
+  isPreviewManualScrollActive = false;
+};
 
-const isPreviewVisible = computed(() => viewMode.value !== 'editor')
+const isPreviewVisible = computed(() => viewMode.value !== 'editor');
 
 const renderedHtml = computed(() => {
-  if (!isPreviewVisible.value) return ''
+  if (!isPreviewVisible.value) return '';
 
-  const html = viewMode.value === 'html'
-    ? renderMarkdownWithStyles(props.modelValue)
-    : renderMarkdownWithSourceMap(props.modelValue)
+  const html =
+    viewMode.value === 'html'
+      ? renderMarkdownWithStyles(props.modelValue)
+      : renderMarkdownWithSourceMap(props.modelValue);
 
   if (emojiState.emojiMap.size > 0) {
     return html.replace(/:([^:\s]+):/g, (match, key) => {
-      const url = emojiState.emojiMap.get(key)
+      const url = emojiState.emojiMap.get(key);
       if (url) {
-        return `<img src="${url}" alt="${key}" class="emoji-image" title="${key}" />`
+        return `<img src="${url}" alt="${key}" class="emoji-image" title="${key}" />`;
       }
-      return match
-    })
+      return match;
+    });
   }
 
-  return html
-})
+  return html;
+});
 
-const wordCount = computed(() => countWords(props.modelValue))
+const wordCount = computed(() => countWords(props.modelValue));
 
-const readingTime = computed(() => estimateReadingTime(props.modelValue))
+const readingTime = computed(() => estimateReadingTime(props.modelValue));
 
 const tableOfContents = computed<TocItem[]>(() => {
-  return extractToc(props.modelValue)
-})
+  return extractToc(props.modelValue);
+});
 
 // ==================== 编辑器操作 ====================
 
@@ -706,49 +841,70 @@ const saveArticle = () => {
   emit('save', content);
 
   ElMessage.success('文章保存成功');
-}
+};
 
 // 插入文本到光标位置
 const insertText = (before: string, after = '') => {
-  if (!editorViewRef.value) return
-  const { from, to } = editorViewRef.value.state.selection.main
-  const text = editorViewRef.value.state.doc.sliceString(from, to)
+  if (!editorViewRef.value) return;
+  const { from, to } = editorViewRef.value.state.selection.main;
+  const text = editorViewRef.value.state.doc.sliceString(from, to);
 
   // 如果有选中文本，用语法包裹；否则只插入语法，光标定位在中间
   editorViewRef.value.dispatch({
     changes: { from, to, insert: `${before}${text}${after}` },
     // 如果有选中文本，保持选中状态；否则光标定位在中间
-    selection: text ? { anchor: from + before.length, head: from + before.length + text.length } : { anchor: from + before.length, head: from + before.length }
-  })
-  editorViewRef.value.focus()
-}
+    selection: text
+      ? {
+          anchor: from + before.length,
+          head: from + before.length + text.length,
+        }
+      : { anchor: from + before.length, head: from + before.length },
+  });
+  editorViewRef.value.focus();
+};
 
 // 插入标题
-const insertHeading = (level: string) => insertText(`${'#'.repeat(+level)} `)
+const insertHeading = (level: string) => insertText(`${'#'.repeat(+level)} `);
 
 // 滚动到指定标题
 const scrollToHeading = (heading: TocItem) => {
-  if (!editorViewRef.value) return
-  const lines = editorViewRef.value.state.doc.toString().split('\n')
-  const index = lines.findIndex(line => line.includes(heading.text) && line.startsWith('#'))
+  if (!editorViewRef.value) return;
+  const lines = editorViewRef.value.state.doc.toString().split('\n');
+  const index = lines.findIndex(line => line.includes(heading.text) && line.startsWith('#'));
 
   if (index !== -1) {
-    const pos = editorViewRef.value.state.doc.line(index + 1).from
+    const pos = editorViewRef.value.state.doc.line(index + 1).from;
     editorViewRef.value.dispatch({
       selection: { anchor: pos, head: pos },
-      effects: EditorView.scrollIntoView(pos, { y: 'start' })
-    })
-    editorViewRef.value.focus()
+      effects: EditorView.scrollIntoView(pos, { y: 'start' }),
+    });
+    editorViewRef.value.focus();
   }
-}
+};
 
 // 工具栏配置
 const toolbarItems: ToolbarItem[] = [
   // 第一组：基本文本格式
-  { icon: 'ri-bold', title: '粗体 (Ctrl+B)', action: () => insertText('**', '**') },
-  { icon: 'ri-underline', title: '下划线', action: () => insertText('++', '++') },
-  { icon: 'ri-italic', title: '斜体 (Ctrl+I)', action: () => insertText('*', '*') },
-  { icon: 'ri-strikethrough', title: '删除线', action: () => insertText('~~', '~~') },
+  {
+    icon: 'ri-bold',
+    title: '粗体 (Ctrl+B)',
+    action: () => insertText('**', '**'),
+  },
+  {
+    icon: 'ri-underline',
+    title: '下划线',
+    action: () => insertText('++', '++'),
+  },
+  {
+    icon: 'ri-italic',
+    title: '斜体 (Ctrl+I)',
+    action: () => insertText('*', '*'),
+  },
+  {
+    icon: 'ri-strikethrough',
+    title: '删除线',
+    action: () => insertText('~~', '~~'),
+  },
   { type: 'divider' },
 
   // 第二组：标题
@@ -762,31 +918,104 @@ const toolbarItems: ToolbarItem[] = [
   { icon: 'ri-subscript', title: '下标', action: () => insertText('~', '~') },
   { icon: 'ri-superscript', title: '上标', action: () => insertText('^', '^') },
   { icon: 'ri-double-quotes-l', title: '引用', action: () => insertText('> ') },
-  { icon: 'ri-list-unordered', title: '无序列表', action: () => insertText('- ') },
-  { icon: 'ri-list-ordered', title: '有序列表', action: () => insertText('1. ') },
-  { icon: 'ri-list-check', title: '任务列表', action: () => insertText('- [ ] ') },
+  {
+    icon: 'ri-list-unordered',
+    title: '无序列表',
+    action: () => insertText('- '),
+  },
+  {
+    icon: 'ri-list-ordered',
+    title: '有序列表',
+    action: () => insertText('1. '),
+  },
+  {
+    icon: 'ri-list-check',
+    title: '任务列表',
+    action: () => insertText('- [ ] '),
+  },
   { type: 'divider' },
 
   // 第三组：代码和插入元素
-  { icon: 'ri-code-line', title: '行内代码', action: () => insertText('`', '`') },
-  { icon: 'ri-code-box-line', title: '块级代码', action: () => insertText('\n```', '\n```\n') },
-  { icon: 'ri-link', title: '链接', action: () => insertText('[', '](https://)') },
-  { icon: 'ri-image-add-line', title: '上传本地图片', action: () => imageInputRef.value?.click() },
-  { icon: 'ri-image-download-line', title: '下载在线图片', action: () => { } },
+  {
+    icon: 'ri-code-line',
+    title: '行内代码',
+    action: () => insertText('`', '`'),
+  },
+  {
+    icon: 'ri-code-box-line',
+    title: '块级代码',
+    action: () => insertText('\n```', '\n```\n'),
+  },
+  {
+    icon: 'ri-link',
+    title: '链接',
+    action: () => insertText('[', '](https://)'),
+  },
+  {
+    icon: 'ri-image-add-line',
+    title: '上传本地图片',
+    action: () => imageInputRef.value?.click(),
+  },
+  { icon: 'ri-image-download-line', title: '下载在线图片', action: () => {} },
   { icon: 'ri-emotion-line', title: '表情', action: () => toggleEmojiPicker() },
-  { icon: 'ri-table-2', title: '表格', action: () => insertText('\n| 列1 | 列2 | 列3 |\n|:---:|:---:|:---:|\n|  ', '  |    |    |\n') },
-  { icon: 'ri-mark-pen-line', title: '高亮', action: () => insertText('==', '==') },
-  { icon: 'ri-superscript-2', title: '行内公式', action: () => insertText('$', '$') },
-  { icon: 'ri-functions', title: '块级公式', action: () => insertText('\n$$\n', '\n$$\n') },
+  {
+    icon: 'ri-table-2',
+    title: '表格',
+    action: () => insertText('\n| 列1 | 列2 | 列3 |\n|:---:|:---:|:---:|\n|  ', '  |    |    |\n'),
+  },
+  {
+    icon: 'ri-mark-pen-line',
+    title: '高亮',
+    action: () => insertText('==', '=='),
+  },
+  {
+    icon: 'ri-superscript-2',
+    title: '行内公式',
+    action: () => insertText('$', '$'),
+  },
+  {
+    icon: 'ri-functions',
+    title: '块级公式',
+    action: () => insertText('\n$$\n', '\n$$\n'),
+  },
   { type: 'divider' },
 
   // 第四组：自定义块
-  { icon: 'ri-information-line', title: '提示框', action: () => insertText('\n:::note info 提示标题\ninfo/warning/success/error', '\n:::endnote\n') },
-  { icon: 'ri-layout-grid-line', title: '标签页', action: () => insertText('\n:::tabs\n:::tab 标签1\n内容1', '\n:::endtab\n:::tab 标签2\n内容2\n:::endtab\n:::endtabs\n') },
-  { icon: 'ri-increase-decrease-line', title: '折叠面板', action: () => insertText('\n:::fold 点击展开\n', '\n:::endfold\n') },
-  { icon: 'ri-external-link-line', title: '链接卡片', action: () => insertText('\n:::link 标题', ' https://example.com 描述信息 :::\n') },
-  { icon: 'ri-multi-image-line', title: '照片墙', action: () => insertText('\n:::photo\n图片1\n图片2\n:::n\n图片3\n图片4\n:::endphoto\n') },
-  { icon: 'ri-video-line', title: '在线视频', action: () => insertText('\n:::video bilibili ', 'BV号 :::\n') },
+  {
+    icon: 'ri-information-line',
+    title: '提示框',
+    action: () =>
+      insertText('\n:::note info 提示标题\ninfo/warning/success/error', '\n:::endnote\n'),
+  },
+  {
+    icon: 'ri-layout-grid-line',
+    title: '标签页',
+    action: () =>
+      insertText(
+        '\n:::tabs\n:::tab 标签1\n内容1',
+        '\n:::endtab\n:::tab 标签2\n内容2\n:::endtab\n:::endtabs\n'
+      ),
+  },
+  {
+    icon: 'ri-increase-decrease-line',
+    title: '折叠面板',
+    action: () => insertText('\n:::fold 点击展开\n', '\n:::endfold\n'),
+  },
+  {
+    icon: 'ri-external-link-line',
+    title: '链接卡片',
+    action: () => insertText('\n:::link 标题', ' https://example.com 描述信息 :::\n'),
+  },
+  {
+    icon: 'ri-multi-image-line',
+    title: '照片墙',
+    action: () => insertText('\n:::photo\n图片1\n图片2\n:::n\n图片3\n图片4\n:::endphoto\n'),
+  },
+  {
+    icon: 'ri-video-line',
+    title: '在线视频',
+    action: () => insertText('\n:::video bilibili ', 'BV号 :::\n'),
+  },
 
   // 弹性空间，将后续按钮推到右侧
   { type: 'spacer' },
@@ -795,216 +1024,224 @@ const toolbarItems: ToolbarItem[] = [
   {
     icon: 'ri-fullscreen-line',
     title: '浏览器全屏',
-    action: () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(),
-    isActive: () => isBrowserFullscreen.value
+    action: () =>
+      document.fullscreenElement
+        ? document.exitFullscreen()
+        : document.documentElement.requestFullscreen(),
+    isActive: () => isBrowserFullscreen.value,
   },
   {
     icon: 'ri-picture-in-picture-2-line',
     title: '页面全屏',
-    action: () => isPageFullscreen.value = !isPageFullscreen.value,
-    isActive: () => isPageFullscreen.value
+    action: () => (isPageFullscreen.value = !isPageFullscreen.value),
+    isActive: () => isPageFullscreen.value,
   },
   {
     icon: 'ri-code-s-slash-line',
     title: 'HTML 代码预览',
-    action: () => viewMode.value = viewMode.value === 'html' ? 'split' : 'html',
-    isActive: () => viewMode.value === 'html'
+    action: () => (viewMode.value = viewMode.value === 'html' ? 'split' : 'html'),
+    isActive: () => viewMode.value === 'html',
   },
   {
     icon: 'ri-eye-line',
     title: '切换预览',
-    action: () => viewMode.value = viewMode.value === 'preview' ? 'editor' : 'preview',
+    action: () => (viewMode.value = viewMode.value === 'preview' ? 'editor' : 'preview'),
     isActive: () => viewMode.value === 'preview',
-    mobileOnly: true
+    mobileOnly: true,
   },
   {
     icon: 'ri-list-unordered',
     title: '目录',
-    action: () => showToc.value = !showToc.value,
-    isActive: () => showToc.value
+    action: () => (showToc.value = !showToc.value),
+    isActive: () => showToc.value,
   },
-]
+];
 
 const uploadArticleImages = async (files: File[], onFinally?: () => void) => {
   const imageFiles = files.filter(file => {
     if (!file.type.startsWith('image/')) {
-      ElMessage.error(`${file.name} 不是图片格式`)
-      return false
+      ElMessage.error(`${file.name} 不是图片格式`);
+      return false;
     }
-    return true
-  })
+    return true;
+  });
 
   if (!imageFiles.length) {
-    onFinally?.()
-    return []
+    onFinally?.();
+    return [];
   }
 
-  const loading = ElMessage.info({ message: `正在上传 ${imageFiles.length} 张图片...`, duration: 0 })
+  const loading = ElMessage.info({
+    message: `正在上传 ${imageFiles.length} 张图片...`,
+    duration: 0,
+  });
   try {
-    const results = await Promise.all(imageFiles.map(file => uploadFile(file, '文章图片')))
-    insertText(results.map(result => `![图片](${result.file_url})`).join('\n'))
-    ElMessage.success(`成功上传 ${imageFiles.length} 张图片`)
-    return results
+    const results = await Promise.all(imageFiles.map(file => uploadFile(file, '文章图片')));
+    insertText(results.map(result => `![图片](${result.file_url})`).join('\n'));
+    ElMessage.success(`成功上传 ${imageFiles.length} 张图片`);
+    return results;
   } catch (error: any) {
-    ElMessage.error(error.message || '图片上传失败')
-    return []
+    ElMessage.error(error.message || '图片上传失败');
+    return [];
   } finally {
-    loading.close()
-    onFinally?.()
+    loading.close();
+    onFinally?.();
   }
-}
+};
 
 // ==================== 图片上传 ====================
 const handleImageSelect = async (event: Event) => {
-  const input = event.target as HTMLInputElement
+  const input = event.target as HTMLInputElement;
   await uploadArticleImages(Array.from(input.files || []), () => {
-    input.value = ''
-  })
-}
+    input.value = '';
+  });
+};
 
 // 处理粘贴图片
 const handlePasteImage = async (files: File[]) => {
-  await uploadArticleImages(files)
-}
+  await uploadArticleImages(files);
+};
 
 function base64ToFile(base64Data: string, contentType: string, fileName: string): File {
-  const byteCharacters = atob(base64Data)
-  const byteNumbers = new Array(byteCharacters.length)
+  const byteCharacters = atob(base64Data);
+  const byteNumbers = new Array(byteCharacters.length);
   for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i)
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
   }
-  return new File([new Uint8Array(byteNumbers)], fileName, { type: contentType })
+  return new File([new Uint8Array(byteNumbers)], fileName, {
+    type: contentType,
+  });
 }
 
 // 处理下载在线图片
 const handleOnlineImageDownload = async () => {
   if (!onlineImageUrl.value.trim()) {
-    ElMessage.error('请输入图片URL')
-    return
+    ElMessage.error('请输入图片URL');
+    return;
   }
 
-  const url = onlineImageUrl.value.trim()
+  const url = onlineImageUrl.value.trim();
   if (!url.match(/^https?:\/\/.+/)) {
-    ElMessage.error('请输入有效的HTTP/HTTPS图片URL')
-    return
+    ElMessage.error('请输入有效的HTTP/HTTPS图片URL');
+    return;
   }
 
-  downloadingImage.value = true
+  downloadingImage.value = true;
   try {
-    const { downloadImage } = await import('@/api/tools')
-    const downloadResult = await downloadImage({ url })
-    const file = base64ToFile(downloadResult.data, downloadResult.content_type, 'image.jpg')
-    const [uploadResult] = await uploadArticleImages([file])
+    const { downloadImage } = await import('@/api/tools');
+    const downloadResult = await downloadImage({ url });
+    const file = base64ToFile(downloadResult.data, downloadResult.content_type, 'image.jpg');
+    const [uploadResult] = await uploadArticleImages([file]);
 
     if (uploadResult) {
-      onlineImageUrl.value = ''
-      ElMessage.success('图片下载并上传成功')
-      document.body.click()
+      onlineImageUrl.value = '';
+      ElMessage.success('图片下载并上传成功');
+      document.body.click();
     }
   } catch (error: any) {
-    ElMessage.error(error.message || '图片下载失败')
+    ElMessage.error(error.message || '图片下载失败');
   } finally {
-    downloadingImage.value = false
+    downloadingImage.value = false;
   }
-}
+};
 
 // 表情选择器
 const loadEmojis = async () => {
-  if (emojiState.groups.length) return
+  if (emojiState.groups.length) return;
 
-  const blogSettings = await getSettingGroup('blog')
-  const emojisUrl = blogSettings.emojis || blogSettings['blog.emojis'] || ''
-  if (!emojisUrl) return
+  const blogSettings = await getSettingGroup('blog');
+  const emojisUrl = blogSettings.emojis || blogSettings['blog.emojis'] || '';
+  if (!emojisUrl) return;
 
-  const response = await fetch(emojisUrl)
-  const groups = await response.json()
-  emojiState.groups = groups
+  const response = await fetch(emojisUrl);
+  const groups = await response.json();
+  emojiState.groups = groups;
 
   // 构建 image 类型表情映射
   for (const group of groups) {
     if (group.type === 'image') {
       for (const item of group.items) {
-        emojiState.emojiMap.set(item.key, item.val)
+        emojiState.emojiMap.set(item.key, item.val);
       }
     }
   }
-}
+};
 
 const selectEmoji = (item: { key: string; val: string }, type: string) => {
-  const emoji = type === 'image' ? `:${item.key}:` : item.val
-  insertText(emoji)
-  emojiState.visible = false
-}
+  const emoji = type === 'image' ? `:${item.key}:` : item.val;
+  insertText(emoji);
+  emojiState.visible = false;
+};
 
 // 表情选择器显示时加载数据
 const handleEmojiPickerShow = () => {
   if (!emojiState.groups.length) {
-    loadEmojis()
+    loadEmojis();
   }
-}
+};
 
 const toggleEmojiPicker = () => {
-  emojiState.visible = !emojiState.visible
+  emojiState.visible = !emojiState.visible;
   if (emojiState.visible && !emojiState.groups.length) {
-    loadEmojis()
+    loadEmojis();
   }
-}
+};
 
 // ==================== 编辑器初始化 ====================
 const initEditor = () => {
-  if (!editorRef.value) return
+  if (!editorRef.value) return;
 
   // 创建粘贴事件处理器
   const pasteHandler = EditorView.domEventHandlers({
     paste: (event: ClipboardEvent, view) => {
       // 先检查是否有图片
-      const items = event.clipboardData?.items
+      const items = event.clipboardData?.items;
       if (items) {
-        const files: File[] = []
-        const textItems: DataTransferItem[] = []
+        const files: File[] = [];
+        const textItems: DataTransferItem[] = [];
 
         for (let i = 0; i < items.length; i++) {
-          const item = items[i]
+          const item = items[i];
           if (item && item.type) {
             if (item.type.startsWith('image/')) {
-              const file = item.getAsFile()
+              const file = item.getAsFile();
               if (file) {
-                files.push(file)
+                files.push(file);
               }
             } else if (item.kind === 'string' && item.type === 'text/plain') {
-              textItems.push(item)
+              textItems.push(item);
             }
           }
         }
 
         // 如果有图片，处理图片上传
         if (files.length > 0) {
-          event.preventDefault()
-          handlePasteImage(files)
+          event.preventDefault();
+          handlePasteImage(files);
 
           // 如果还有文本，在图片处理完后再处理文本
           if (textItems.length > 0) {
             textItems.forEach(item => {
-              item.getAsString((text) => {
+              item.getAsString(text => {
                 // 使用默认的粘贴行为来正确替换选中文本
                 view.dispatch({
                   changes: {
                     from: view.state.selection.main.from,
                     to: view.state.selection.main.to,
-                    insert: text
-                  }
-                })
-              })
-            })
+                    insert: text,
+                  },
+                });
+              });
+            });
           }
-          return
+          return;
         }
       }
 
       // 如果没有图片，让默认行为处理（这样能正确替换选中文本）
       // 不调用 event.preventDefault()
-    }
-  })
+    },
+  });
 
   editorViewRef.value = new EditorView({
     state: EditorState.create({
@@ -1016,142 +1253,166 @@ const initEditor = () => {
         searchDecorations,
         showPanel.of(createSearchPanel),
         keymap.of([
-          { key: 'Mod-b', run: () => (insertText('**', '**'), true), preventDefault: true },
-          { key: 'Mod-i', run: () => (insertText('*', '*'), true), preventDefault: true },
-          { key: 'Mod-s', run: () => { saveArticle(); return true; }, preventDefault: true },
+          {
+            key: 'Mod-b',
+            run: () => (insertText('**', '**'), true),
+            preventDefault: true,
+          },
+          {
+            key: 'Mod-i',
+            run: () => (insertText('*', '*'), true),
+            preventDefault: true,
+          },
+          {
+            key: 'Mod-s',
+            run: () => {
+              saveArticle();
+              return true;
+            },
+            preventDefault: true,
+          },
           { key: 'Mod-f', run: openSearchPanelCustom, preventDefault: true },
           ...defaultKeymap,
-          ...historyKeymap
+          ...historyKeymap,
         ]),
         EditorView.updateListener.of(update => {
           if (update.docChanged) {
-            emit('update:modelValue', update.state.doc.toString())
-            invalidateScrollCache()
-            requestPreviewSync()
+            emit('update:modelValue', update.state.doc.toString());
+            invalidateScrollCache();
+            requestPreviewSync();
           }
         }),
         EditorView.lineWrapping,
-        pasteHandler
-      ]
+        pasteHandler,
+      ],
     }),
-    parent: editorRef.value
-  })
+    parent: editorRef.value,
+  });
 
   // 编辑器初始化完成后，绑定滚动同步事件
   nextTick(() => {
-    bindScrollEvents()
-    requestPreviewSync()
-  })
-}
+    bindScrollEvents();
+    requestPreviewSync();
+  });
+};
 
 // 监听外部内容变化
-watch(() => props.modelValue, (newValue) => {
-  if (editorViewRef.value && newValue !== editorViewRef.value.state.doc.toString()) {
-    editorViewRef.value.dispatch({
-      changes: { from: 0, to: editorViewRef.value.state.doc.length, insert: newValue }
-    })
-    invalidateScrollCache()
-    requestPreviewSync()
+watch(
+  () => props.modelValue,
+  newValue => {
+    if (editorViewRef.value && newValue !== editorViewRef.value.state.doc.toString()) {
+      editorViewRef.value.dispatch({
+        changes: {
+          from: 0,
+          to: editorViewRef.value.state.doc.length,
+          insert: newValue,
+        },
+      });
+      invalidateScrollCache();
+      requestPreviewSync();
+    }
   }
-})
+);
 
 // 监听预览区图片加载完成，使缓存失效
-watch(renderedHtml, async (html) => {
-  if (!html || !isPreviewVisible.value || viewMode.value === 'html') return
+watch(renderedHtml, async html => {
+  if (!html || !isPreviewVisible.value || viewMode.value === 'html') return;
 
-  await nextTick()
-  const preview = previewPaneRef.value
-  if (!preview) return
+  await nextTick();
+  const preview = previewPaneRef.value;
+  if (!preview) return;
 
-  const images = preview.querySelectorAll('img')
-  images.forEach((img) => {
-    if (img.complete) return
-    img.addEventListener('load', () => {
-      invalidateScrollCache()
-      requestPreviewSync()
-    }, { once: true })
-  })
+  const images = preview.querySelectorAll('img');
+  images.forEach(img => {
+    if (img.complete) return;
+    img.addEventListener(
+      'load',
+      () => {
+        invalidateScrollCache();
+        requestPreviewSync();
+      },
+      { once: true }
+    );
+  });
 
-  invalidateScrollCache()
-  await renderMermaidDiagrams()
-  invalidateScrollCache()
-  bindPreviewObservers()
-  requestPreviewSync()
-})
-
+  invalidateScrollCache();
+  await renderMermaidDiagrams();
+  invalidateScrollCache();
+  bindPreviewObservers();
+  requestPreviewSync();
+});
 
 // 监听视图模式变化
-watch(viewMode, (newMode) => {
+watch(viewMode, newMode => {
   if (newMode === 'split') {
     nextTick(() => {
-      invalidateScrollCache()
-      bindScrollEvents()
-      requestPreviewSync()
-    })
+      invalidateScrollCache();
+      bindScrollEvents();
+      requestPreviewSync();
+    });
   } else {
-    unbindScrollEvents()
+    unbindScrollEvents();
   }
 
   if (newMode !== 'editor') {
-    loadEmojis()
+    loadEmojis();
   }
-})
+});
 
 // ==================== 生命周期 ====================
-const handleFullscreenChange = () => isBrowserFullscreen.value = !!document.fullscreenElement
+const handleFullscreenChange = () => (isBrowserFullscreen.value = !!document.fullscreenElement);
 const handleWindowResize = () => {
-  invalidateScrollCache()
-  requestPreviewSync()
-}
+  invalidateScrollCache();
+  requestPreviewSync();
+};
 
 const togglePreviewImage = (event: MouseEvent) => {
-  const target = event.target as HTMLElement | null
-  const image = target?.closest('.preview-collapsible-image') as HTMLImageElement | null
-  if (!image) return
-  if (image.closest('.custom-photo-wall')) return
-  if (image.classList.contains('emoji-image')) return
+  const target = event.target as HTMLElement | null;
+  const image = target?.closest('.preview-collapsible-image') as HTMLImageElement | null;
+  if (!image) return;
+  if (image.closest('.custom-photo-wall')) return;
+  if (image.classList.contains('emoji-image')) return;
 
-  image.classList.toggle('is-expanded')
-  invalidateScrollCache()
-  requestPreviewSync()
-}
+  image.classList.toggle('is-expanded');
+  invalidateScrollCache();
+  requestPreviewSync();
+};
 
 const handleEditorPaneMouseDown = (event: MouseEvent) => {
-  if (event.button !== 0) return
-  if (!editorViewRef.value) return
+  if (event.button !== 0) return;
+  if (!editorViewRef.value) return;
 
-  resumePreviewSync()
+  resumePreviewSync();
 
-  const target = event.target as HTMLElement | null
-  if (target?.closest('.cm-editor')) return
+  const target = event.target as HTMLElement | null;
+  if (target?.closest('.cm-editor')) return;
 
-  editorViewRef.value.focus()
-}
-
+  editorViewRef.value.focus();
+};
 
 onMounted(() => {
-  initMermaid()
-  initEditor()
+  initMermaid();
+  initEditor();
   if (viewMode.value !== 'editor') {
-    loadEmojis()
+    loadEmojis();
   }
-  document.addEventListener('fullscreenchange', handleFullscreenChange)
-  window.addEventListener('resize', handleWindowResize)
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  window.addEventListener('resize', handleWindowResize);
 
   // 移动端默认为纯编辑模式
   if (window.innerWidth <= 768) {
-    viewMode.value = 'editor'
+    viewMode.value = 'editor';
   }
-})
+});
 
 onBeforeUnmount(() => {
   // 解绑滚动同步事件
-  unbindScrollEvents()
+  unbindScrollEvents();
   // 销毁编辑器实例
-  editorViewRef.value?.destroy()
-  window.removeEventListener('resize', handleWindowResize)
-  document.removeEventListener('fullscreenchange', handleFullscreenChange)
-})
+  editorViewRef.value?.destroy();
+  window.removeEventListener('resize', handleWindowResize);
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+});
 </script>
 
 <style lang="scss">
@@ -1401,7 +1662,9 @@ onBeforeUnmount(() => {
           max-height: 160px;
           width: auto;
           cursor: zoom-in;
-          transition: max-height 0.2s ease, transform 0.2s ease;
+          transition:
+            max-height 0.2s ease,
+            transform 0.2s ease;
         }
 
         img.preview-collapsible-image.is-expanded {

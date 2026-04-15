@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-const { basicConfig } = useSysConfig()
+const { basicConfig } = useSysConfig();
 
-const contactEmail = computed(() => basicConfig.value.author_email || '')
+const contactEmail = computed(() => basicConfig.value.author_email || '');
 
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '版权协议',
-  description: '了解本站内容的版权归属和使用许可，包括 CC BY-NC-ND 4.0 协议'
-})
+  description: '了解本站内容的版权归属和使用许可，包括 CC BY-NC-ND 4.0 协议',
+});
 </script>
 
 <template>
@@ -20,19 +20,31 @@ useSeoMeta({
     <div class="content">
       <p>本页面说明本站内容的版权归属和使用许可。</p>
 
-      <p>本站所有原创内容采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank"
-          rel="noopener noreferrer">知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>（CC BY-NC-ND 4.0）进行许可。</p>
+      <p>
+        本站所有原创内容采用
+        <a
+          href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh"
+          target="_blank"
+          rel="noopener noreferrer"
+          >知识共享 署名-非商业性使用-禁止演绎 4.0 国际许可协议</a
+        >（CC BY-NC-ND 4.0）进行许可。
+      </p>
 
       <h1>版权所有者</h1>
 
-      <p>本站所有原创文章、图片、设计的版权归本站所有。用户发表的评论版权归用户本人所有，但授予本站展示和使用的权利。</p>
+      <p>
+        本站所有原创文章、图片、设计的版权归本站所有。用户发表的评论版权归用户本人所有，但授予本站展示和使用的权利。
+      </p>
 
       <h1>许可协议说明</h1>
 
       <p>CC BY-NC-ND 4.0 协议包含以下限制：</p>
 
       <h2>署名（BY）</h2>
-      <p>转载时必须注明作者和原文链接。建议在文章开头或明显位置添加超链接，格式如："本文转载自 [原文标题](原文链接)"。</p>
+      <p>
+        转载时必须注明作者和原文链接。建议在文章开头或明显位置添加超链接，格式如："本文转载自
+        [原文标题](原文链接)"。
+      </p>
 
       <h2>非商业性使用（NC）</h2>
       <p>禁止将本站内容用于商业目的，包括但不限于：</p>
@@ -66,7 +78,10 @@ useSeoMeta({
         <li>原创图标和素材</li>
       </ul>
 
-      <p><strong>不受保护的内容：</strong>用户发表的评论归用户本人所有，但用户授予本站展示和使用的权利。</p>
+      <p>
+        <strong>不受保护的内容：</strong
+        >用户发表的评论归用户本人所有，但用户授予本站展示和使用的权利。
+      </p>
 
       <h1>特殊许可</h1>
 
@@ -78,15 +93,21 @@ useSeoMeta({
         <li><strong>个别授权</strong>：如有其他特殊需求，可通过评论或邮件联系协商</li>
       </ul>
 
-      <p>联系方式：<strong>{{ contactEmail }}</strong></p>
+      <p>
+        联系方式：<strong>{{ contactEmail }}</strong>
+      </p>
 
       <h1>侵权处理</h1>
 
-      <p>如发现未经授权的使用，我们保留追究法律责任的权利。同时，我们也尊重他人的版权，如认为本站内容侵犯了你的权利，请联系我们删除。</p>
+      <p>
+        如发现未经授权的使用，我们保留追究法律责任的权利。同时，我们也尊重他人的版权，如认为本站内容侵犯了你的权利，请联系我们删除。
+      </p>
 
       <h1>免责声明</h1>
 
-      <p>本站内容仅供学习和参考，不对内容的准确性、完整性和时效性做任何保证。因使用本站内容造成的任何损失，本站不承担责任。</p>
+      <p>
+        本站内容仅供学习和参考，不对内容的准确性、完整性和时效性做任何保证。因使用本站内容造成的任何损失，本站不承担责任。
+      </p>
 
       <p class="update-time">最后更新时间：2025年10月</p>
     </div>

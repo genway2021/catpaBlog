@@ -81,8 +81,8 @@ func (c *CategoryController) GetBySlug(ctx *gin.Context) {
 
 // List 获取分类列表
 //
-//	@Summary		分类列表（管理）
-//	@Description	获取所有分类用于管理
+//	@Summary		分类列表
+//	@Description	获取所有分类
 //	@Tags			分类管理
 //	@Accept			json
 //	@Produce		json
@@ -111,8 +111,8 @@ func (c *CategoryController) List(ctx *gin.Context) {
 
 // Get 获取分类信息
 //
-//	@Summary		分类详情（管理）
-//	@Description	通过 ID 获取分类信息
+//	@Summary		分类详情
+//	@Description	获取分类的详细信息
 //	@Tags			分类管理
 //	@Accept			json
 //	@Produce		json
@@ -221,7 +221,7 @@ func (c *CategoryController) Update(ctx *gin.Context) {
 // Delete 删除分类
 //
 //	@Summary		删除分类
-//	@Description	软删除分类
+//	@Description	硬删除分类，不可恢复
 //	@Tags			分类管理
 //	@Accept			json
 //	@Produce		json

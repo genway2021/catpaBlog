@@ -1,58 +1,63 @@
 <script setup lang="ts">
-const { basicConfig } = useSysConfig()
-const avatarUrl = computed(() => basicConfig.value.author_avatar || '/avatar.webp')
+const { basicConfig } = useSysConfig();
+const avatarUrl = computed(() => basicConfig.value.author_avatar || '/avatar.webp');
 
 interface Props {
-  modelValue: boolean
+  modelValue: boolean;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
+const props = defineProps<Props>();
+const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
 
-const { navigationMenus, aggregateMenus } = useMenus()
-const { total: articleCount } = useArticles()
-const { total: categoryCount } = useCategories()
-const { total: tagCount } = useTags()
-const expandedMenus = ref<Set<number>>(new Set())
-const currentSlide = ref(0)
-const slideWrapper = ref<HTMLElement>()
+const { navigationMenus, aggregateMenus } = useMenus();
+const { total: articleCount } = useArticles();
+const { total: categoryCount } = useCategories();
+const { total: tagCount } = useTags();
+const expandedMenus = ref<Set<number>>(new Set());
+const currentSlide = ref(0);
+const slideWrapper = ref<HTMLElement>();
 
 const topAggregateMenus = computed(() =>
-  aggregateMenus.value.filter((menu: { parent_id: any; }) => !menu.parent_id)
-)
+  aggregateMenus.value.filter((menu: { parent_id: any }) => !menu.parent_id)
+);
 
 const isIconUrl = (icon: string) => {
-  return icon && (icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('/'))
-}
+  return (
+    icon && (icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('/'))
+  );
+};
 
-const close = () => emit('update:modelValue', false)
+const close = () => emit('update:modelValue', false);
 
 const toggleSubmenu = (menuId: number) => {
   if (expandedMenus.value.has(menuId)) {
-    expandedMenus.value.delete(menuId)
+    expandedMenus.value.delete(menuId);
   } else {
-    expandedMenus.value.add(menuId)
+    expandedMenus.value.add(menuId);
   }
-}
+};
 
 const switchSlide = (index: number) => {
-  currentSlide.value = index
-}
+  currentSlide.value = index;
+};
 
 const { direction } = useSwipe(slideWrapper, {
   threshold: 50,
   onSwipeEnd() {
     if (direction.value === 'left' && currentSlide.value < 1) {
-      currentSlide.value++
+      currentSlide.value++;
     } else if (direction.value === 'right' && currentSlide.value > 0) {
-      currentSlide.value--
+      currentSlide.value--;
     }
-  }
-})
+  },
+});
 
-watch(() => props.modelValue, (isOpen) => {
-  document.body.style.overflow = isOpen ? 'hidden' : ''
-})
+watch(
+  () => props.modelValue,
+  isOpen => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+);
 </script>
 
 <template>
@@ -84,7 +89,11 @@ watch(() => props.modelValue, (isOpen) => {
           <!-- 滑动菜单容器 -->
           <div class="sidebar-menu">
             <div class="slide-wrapper">
-              <div ref="slideWrapper" class="slide-box" :style="{ transform: `translateX(-${currentSlide * 50}%)` }">
+              <div
+                ref="slideWrapper"
+                class="slide-box"
+                :style="{ transform: `translateX(-${currentSlide * 50}%)` }"
+              >
                 <!-- 第一页：导航菜单 -->
                 <div class="menus-wrapper">
                   <template v-for="menu in navigationMenus" :key="menu.id">
@@ -92,12 +101,20 @@ watch(() => props.modelValue, (isOpen) => {
                       <div class="nav-item parent-item" @click="toggleSubmenu(menu.id)">
                         <i v-if="menu.icon && !isIconUrl(menu.icon)" :class="menu.icon"></i>
                         <span>{{ menu.title }}</span>
-                        <i class="ri-arrow-right-s-line" :class="{ rotate: expandedMenus.has(menu.id) }"></i>
+                        <i
+                          class="ri-arrow-right-s-line"
+                          :class="{ rotate: expandedMenus.has(menu.id) }"
+                        ></i>
                       </div>
                       <Transition name="submenu">
                         <div v-show="expandedMenus.has(menu.id)" class="submenu">
-                          <a v-for="child in menu.children" :key="child.id" :href="child.url" class="nav-item"
-                            @click="close">
+                          <a
+                            v-for="child in menu.children"
+                            :key="child.id"
+                            :href="child.url"
+                            class="nav-item"
+                            @click="close"
+                          >
                             <span>{{ child.title }}</span>
                           </a>
                         </div>
@@ -112,13 +129,26 @@ watch(() => props.modelValue, (isOpen) => {
 
                 <!-- 第二页：聚合菜单 -->
                 <div class="aggregate-wrapper">
-                  <div v-for="menu in topAggregateMenus" :key="menu.id" v-show="menu.children?.length">
+                  <div
+                    v-for="menu in topAggregateMenus"
+                    :key="menu.id"
+                    v-show="menu.children?.length"
+                  >
                     <div class="section-title">{{ menu.title }}</div>
                     <div class="aggregate-grid">
-                      <a v-for="child in menu.children" :key="child.id" :href="child.url" class="aggregate-item"
-                        @click="close">
-                        <NuxtImg v-if="child.icon && isIconUrl(child.icon)" :src="child.icon" :alt="child.title"
-                          loading="lazy" />
+                      <a
+                        v-for="child in menu.children"
+                        :key="child.id"
+                        :href="child.url"
+                        class="aggregate-item"
+                        @click="close"
+                      >
+                        <NuxtImg
+                          v-if="child.icon && isIconUrl(child.icon)"
+                          :src="child.icon"
+                          :alt="child.title"
+                          loading="lazy"
+                        />
                         <i v-else-if="child.icon" :class="child.icon"></i>
                         <span>{{ child.title }}</span>
                       </a>
@@ -129,8 +159,16 @@ watch(() => props.modelValue, (isOpen) => {
 
               <!-- 滑动指示器 -->
               <div class="slide-indicator">
-                <div class="indicator-dot" :class="{ active: currentSlide === 0 }" @click="switchSlide(0)"></div>
-                <div class="indicator-dot" :class="{ active: currentSlide === 1 }" @click="switchSlide(1)"></div>
+                <div
+                  class="indicator-dot"
+                  :class="{ active: currentSlide === 0 }"
+                  @click="switchSlide(0)"
+                ></div>
+                <div
+                  class="indicator-dot"
+                  :class="{ active: currentSlide === 1 }"
+                  @click="switchSlide(1)"
+                ></div>
               </div>
             </div>
           </div>
@@ -203,7 +241,7 @@ watch(() => props.modelValue, (isOpen) => {
     margin: 20px;
     padding: 15px;
     background: var(--flec-card-bg);
-    box-shadow: 0 0 1px 1px rgba(7, 17, 27, .05);
+    box-shadow: 0 0 1px 1px rgba(7, 17, 27, 0.05);
     border-radius: 10px;
 
     .slide-wrapper {

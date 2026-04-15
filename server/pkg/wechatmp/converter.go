@@ -511,7 +511,7 @@ func ConvertCustomBlocks(markdown string) string {
 				result.WriteString("\n\n")
 			}
 			// 用 section 标签实现类似 h4 的样式（不带渐变背景）
-			result.WriteString(fmt.Sprintf("<section style=\"font-size:16px;font-weight:bold;line-height:1.5;margin:16px 0 10px;\">%s</section>\n\n%s", tabTitle, tabContent))
+			fmt.Fprintf(&result, "<section style=\"font-size:16px;font-weight:bold;line-height:1.5;margin:16px 0 10px;\">%s</section>\n\n%s", tabTitle, tabContent)
 		}
 
 		return result.String()

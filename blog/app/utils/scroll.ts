@@ -1,15 +1,15 @@
 interface ScrollOptions {
-  behavior?: ScrollBehavior
-  block?: ScrollLogicalPosition
+  behavior?: ScrollBehavior;
+  block?: ScrollLogicalPosition;
 }
 
 /**
  * 平滑滚动到顶部
  */
 export function scrollToTop(): void {
-  if (!process.client) return
+  if (!process.client) return;
 
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -18,15 +18,15 @@ export function scrollToTop(): void {
  * @param options 滚动选项
  */
 export function scrollToElement(selector: string, options?: ScrollOptions): void {
-  if (!process.client) return
+  if (!process.client) return;
 
-  const { behavior = 'smooth', block = 'center' } = options || {}
+  const { behavior = 'smooth', block = 'center' } = options || {};
   // # 开头用 getElementById 支持特殊字符，否则用 querySelector
   const element = selector.startsWith('#')
     ? document.getElementById(selector.slice(1))
-    : document.querySelector(selector)
+    : document.querySelector(selector);
 
   if (element) {
-    element.scrollIntoView({ behavior, block })
+    element.scrollIntoView({ behavior, block });
   }
 }

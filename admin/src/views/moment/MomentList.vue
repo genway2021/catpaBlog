@@ -1,7 +1,17 @@
 <template>
-  <common-list title="动态列表" :data="momentList" :loading="loading" :total="total" v-model:page="queryParams.page"
-    v-model:page-size="queryParams.page_size" create-text="新增动态" @create="handleCreate" @refresh="fetchMoments"
-    @update:page="fetchMoments" @update:pageSize="fetchMoments">
+  <common-list
+    title="动态列表"
+    :data="momentList"
+    :loading="loading"
+    :total="total"
+    v-model:page="queryParams.page"
+    v-model:page-size="queryParams.page_size"
+    create-text="新增动态"
+    @create="handleCreate"
+    @refresh="fetchMoments"
+    @update:page="fetchMoments"
+    @update:pageSize="fetchMoments"
+  >
     <!-- 表格列 -->
     <el-table-column label="内容" min-width="400">
       <template #default="{ row }">
@@ -13,8 +23,13 @@
 
           <!-- 图片 -->
           <div v-if="row.content.images?.length" class="images-content">
-            <el-image v-for="(image, index) in row.content.images.slice(0, 3)" :key="index" :src="image" fit="cover"
-              style="width: 60px; height: 60px; border-radius: 4px; margin-right: 8px" />
+            <el-image
+              v-for="(image, index) in row.content.images.slice(0, 3)"
+              :key="index"
+              :src="image"
+              fit="cover"
+              style="width: 60px; height: 60px; border-radius: 4px; margin-right: 8px"
+            />
             <span v-if="row.content.images.length > 3" class="more-images">
               +{{ row.content.images.length - 3 }}
             </span>
@@ -22,8 +37,15 @@
 
           <!-- 所有标签（标签、视频、音乐、链接、位置） -->
           <div
-            v-if="row.content.tags || row.content.video || row.content.music || row.content.link || row.content.location"
-            class="tags-container">
+            v-if="
+              row.content.tags ||
+              row.content.video ||
+              row.content.music ||
+              row.content.link ||
+              row.content.location
+            "
+            class="tags-container"
+          >
             <!-- 标签 -->
             <el-tag v-if="row.content.tags" size="small" type="info">
               {{ row.content.tags }}
@@ -83,94 +105,114 @@
   </common-list>
 
   <!-- 动态表单弹窗 -->
-  <moment-form-dialog v-model="momentDialogVisible" :edit-moment="editingMoment" @success="handleDialogSuccess" />
+  <moment-form-dialog
+    v-model="momentDialogVisible"
+    :edit-moment="editingMoment"
+    @success="handleDialogSuccess"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import CommonList from '@/components/common/CommonList.vue'
-import MomentFormDialog from './components/MomentFormDialog.vue'
-import type { Moment } from '@/types/moment'
-import type { PaginationQuery } from '@/types/request'
-import { getMoments, deleteMoment } from '@/api/moment'
-import { formatDateTime } from '@/utils/date'
+import { ref, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import CommonList from '@/components/common/CommonList.vue';
+import MomentFormDialog from './components/MomentFormDialog.vue';
+import type { Moment } from '@/types/moment';
+import type { PaginationQuery } from '@/types/request';
+import { getMoments, deleteMoment } from '@/api/moment';
+import { formatDateTime } from '@/utils/date';
 
-const loading = ref(false)
-const momentList = ref<Moment[]>([])
-const total = ref(0)
-const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 })
-const momentDialogVisible = ref(false)
-const editingMoment = ref<Moment | null>(null)
+const loading = ref(false);
+const momentList = ref<Moment[]>([]);
+const total = ref(0);
+const queryParams = ref<PaginationQuery>({ page: 1, page_size: 20 });
+const momentDialogVisible = ref(false);
+const editingMoment = ref<Moment | null>(null);
 
 // 音乐平台和类型映射
 const MUSIC_LABELS = {
-  type: { search: '搜索', song: '单曲', album: '专辑', artist: '艺术家', playlist: '歌单' },
-  server: { netease: '网易云', tencent: 'QQ音乐', kugou: '酷狗', xiami: '虾米', baidu: '百度', kuwo: '酷我' }
-}
+  type: {
+    search: '搜索',
+    song: '单曲',
+    album: '专辑',
+    artist: '艺术家',
+    playlist: '歌单',
+  },
+  server: {
+    netease: '网易云',
+    tencent: 'QQ音乐',
+    kugou: '酷狗',
+    xiami: '虾米',
+    baidu: '百度',
+    kuwo: '酷我',
+  },
+};
 
 // 获取视频平台名称
 const getVideoPlatformName = (platform?: string) => {
-  if (!platform) return '本地视频'
+  if (!platform) return '本地视频';
   const platformMap: Record<string, string> = {
-    'bilibili': '哔哩哔哩',
-    'youtube': 'YouTube'
-  }
-  return platformMap[platform.toLowerCase()] || '本地视频'
-}
+    bilibili: '哔哩哔哩',
+    youtube: 'YouTube',
+  };
+  return platformMap[platform.toLowerCase()] || '本地视频';
+};
 
 // 获取音乐标签
 const getMusicLabel = (music: any) => {
-  const serverName = MUSIC_LABELS.server[music.server as keyof typeof MUSIC_LABELS.server] || music.server
-  const typeName = MUSIC_LABELS.type[music.type as keyof typeof MUSIC_LABELS.type] || music.type
-  return `${serverName} - ${typeName}`
-}
+  const serverName =
+    MUSIC_LABELS.server[music.server as keyof typeof MUSIC_LABELS.server] || music.server;
+  const typeName = MUSIC_LABELS.type[music.type as keyof typeof MUSIC_LABELS.type] || music.type;
+  return `${serverName} - ${typeName}`;
+};
 
 const fetchMoments = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const [result] = await Promise.all([
       getMoments(queryParams.value),
-      new Promise(resolve => setTimeout(resolve, 300))
-    ])
-    momentList.value = result.list
-    total.value = result.total
+      new Promise(resolve => setTimeout(resolve, 300)),
+    ]);
+    momentList.value = result.list;
+    total.value = result.total;
   } catch {
-    ElMessage.error('获取动态列表失败')
+    ElMessage.error('获取动态列表失败');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handleCreate = () => {
-  editingMoment.value = null
-  momentDialogVisible.value = true
-}
+  editingMoment.value = null;
+  momentDialogVisible.value = true;
+};
 
 const handleEdit = (id: number) => {
-  const moment = momentList.value.find(item => item.id === id)
+  const moment = momentList.value.find(item => item.id === id);
   if (moment) {
-    editingMoment.value = moment
-    momentDialogVisible.value = true
+    editingMoment.value = moment;
+    momentDialogVisible.value = true;
   }
-}
+};
 
 const handleDialogSuccess = () => {
-  fetchMoments()
-}
+  fetchMoments();
+};
 
 const handleDelete = async (id: number) => {
   try {
-    await ElMessageBox.confirm('确定要删除这条动态吗？', '提示', { type: 'warning' })
-    await deleteMoment(id)
-    ElMessage.success('删除成功')
-    fetchMoments()
+    await ElMessageBox.confirm('确定要删除这条动态吗？', '提示', {
+      type: 'warning',
+    });
+    await deleteMoment(id);
+    ElMessage.success('删除成功');
+    fetchMoments();
   } catch (error) {
-    if (error instanceof Error) ElMessage.error(error.message)
+    if (error instanceof Error) ElMessage.error(error.message);
   }
-}
+};
 
-onMounted(fetchMoments)
+onMounted(fetchMoments);
 </script>
 
 <style scoped lang="scss">

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-const route = useRoute()
-const showHeader = computed(() => !!route.meta.typeHeader)
+const route = useRoute();
+const showHeader = computed(() => !!route.meta.typeHeader);
 
-const { y } = useWindowScroll()
-const isFixed = computed(() => y.value > 0)
-const lastScrollY = ref(0)
-const isScrollingDown = ref(false)
-const showDrawer = ref(false)
+const { y } = useWindowScroll();
+const isFixed = computed(() => y.value > 0);
+const lastScrollY = ref(0);
+const isScrollingDown = ref(false);
+const showDrawer = ref(false);
 
-watch(y, (newY) => {
-  isScrollingDown.value = newY > lastScrollY.value
-  lastScrollY.value = newY
-})
+watch(y, newY => {
+  isScrollingDown.value = newY > lastScrollY.value;
+  lastScrollY.value = newY;
+});
 
 // 切换抽屉
 const toggleDrawer = () => {
-  showDrawer.value = !showDrawer.value
-}
+  showDrawer.value = !showDrawer.value;
+};
 </script>
 
 <template>
@@ -62,7 +62,9 @@ const toggleDrawer = () => {
   right: 0;
   z-index: 50;
   background-color: transparent;
-  transition: background-color 0.5s ease, opacity 0.5s ease-out;
+  transition:
+    background-color 0.5s ease,
+    opacity 0.5s ease-out;
 
   .nav-left {
     flex: 1;
@@ -124,4 +126,3 @@ const toggleDrawer = () => {
   }
 }
 </style>
-

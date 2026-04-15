@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Article } from "@@/types/article";
+import type { Article } from '@@/types/article';
 
 interface Props {
   articles: Article[];
@@ -25,7 +25,7 @@ const groupedArticles = computed(() => {
 
   const groups = new Map<string, Article[]>();
 
-  props.articles.forEach((article) => {
+  props.articles.forEach(article => {
     if (article.publish_time) {
       const year = new Date(article.publish_time).getFullYear().toString();
       if (!groups.has(year)) {
@@ -64,24 +64,18 @@ const groupedArticles = computed(() => {
     <template v-if="groupByYear && groupedArticles">
       <template v-for="group in groupedArticles" :key="group.year">
         <div class="article-sort-item year">{{ group.year }}</div>
-        <div
-          v-for="article in group.articles"
-          :key="article.id"
-          class="article-sort-item"
-        >
-          <NuxtLink
-            v-if="article.cover"
-            :to="article.url"
-            class="article-sort-item-img"
-          >
-            <NuxtImg :src="article.cover" :alt="article.title" loading="lazy"  />
+        <div v-for="article in group.articles" :key="article.id" class="article-sort-item">
+          <NuxtLink v-if="article.cover" :to="article.url" class="article-sort-item-img">
+            <NuxtImg :src="article.cover" :alt="article.title" loading="lazy" />
           </NuxtLink>
           <div class="article-sort-item-info">
             <div class="article-sort-item-time">
               <i class="ri-calendar-2-fill"></i>
               <span>{{ formatDate(article.publish_time) }}</span>
             </div>
-            <NuxtLink :to="article.url" class="article-sort-item-title">{{ article.title }}</NuxtLink>
+            <NuxtLink :to="article.url" class="article-sort-item-title">{{
+              article.title
+            }}</NuxtLink>
           </div>
         </div>
       </template>
@@ -89,17 +83,9 @@ const groupedArticles = computed(() => {
 
     <!-- 直接列表显示 -->
     <template v-else>
-      <div
-        v-for="article in articles"
-        :key="article.id"
-        class="article-sort-item"
-      >
-        <NuxtLink
-          v-if="article.cover"
-          :to="article.url"
-          class="article-sort-item-img"
-        >
-          <NuxtImg :src="article.cover" :alt="article.title" loading="lazy"  />
+      <div v-for="article in articles" :key="article.id" class="article-sort-item">
+        <NuxtLink v-if="article.cover" :to="article.url" class="article-sort-item-img">
+          <NuxtImg :src="article.cover" :alt="article.title" loading="lazy" />
         </NuxtLink>
         <div class="article-sort-item-info">
           <div class="article-sort-item-time">
@@ -227,5 +213,3 @@ const groupedArticles = computed(() => {
   }
 }
 </style>
-
-

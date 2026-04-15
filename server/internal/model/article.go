@@ -16,7 +16,7 @@ type Article struct {
 	Location    string     `gorm:"size:100" json:"location"`        // 发布地点
 	IsPublish   bool       `gorm:"default:false" json:"is_publish"` // 是否发布
 	IsTop       bool       `gorm:"default:false" json:"is_top"`
-	IsEssence   bool       `gorm:"default:false" json:"is_essence"` // 是否精选
+	IsEssence   bool       `gorm:"default:false" json:"is_essence"`  // 是否精选
 	IsOutdated  bool       `gorm:"default:false" json:"is_outdated"` // 是否过时
 	ViewCount   int        `gorm:"default:0" json:"view_count"`
 	PublishTime *time.Time `json:"publish_time"` // 文章发布时间

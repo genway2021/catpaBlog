@@ -1,22 +1,22 @@
 <script setup lang="ts">
-const router = useRouter()
+const router = useRouter();
 
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
 useSeoMeta({
   title: '页面未找到',
-  description: '抱歉，您访问的页面不存在或已被删除'
-})
+  description: '抱歉，您访问的页面不存在或已被删除',
+});
 
 const goHome = () => {
-  navigateTo('/')
-}
+  navigateTo('/');
+};
 
 const goBack = () => {
-  router.back()
-}
+  router.back();
+};
 </script>
 
 <template>
@@ -24,9 +24,7 @@ const goBack = () => {
     <div class="not-found-content">
       <div class="error-code">404</div>
       <h1 class="error-title">页面未找到</h1>
-      <p class="error-description">
-        抱歉，您访问的页面不存在或已被删除。
-      </p>
+      <p class="error-description">抱歉，您访问的页面不存在或已被删除。</p>
       <div class="error-actions">
         <button @click="goBack" class="btn btn-secondary">
           <i class="ri-arrow-left-line"></i>
@@ -157,4 +155,3 @@ const goBack = () => {
   }
 }
 </style>
-

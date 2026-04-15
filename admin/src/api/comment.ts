@@ -1,6 +1,6 @@
-import request from "@/utils/request";
-import type { Comment, CommentListData, ImportCommentsResult } from "@/types/comment";
-import type { PaginationQuery } from "@/types/request";
+import request from '@/utils/request';
+import type { Comment, CommentListData, ImportCommentsResult } from '@/types/comment';
+import type { PaginationQuery } from '@/types/request';
 
 /**
  * 获取评论列表
@@ -8,7 +8,7 @@ import type { PaginationQuery } from "@/types/request";
  * @returns Promise<CommentListData>
  */
 export function getComments(params: PaginationQuery): Promise<CommentListData> {
-  return request.get("/admin/comments", { params });
+  return request.get('/admin/comments', { params });
 }
 
 /**
@@ -22,7 +22,7 @@ export function createComment(data: {
   target_key: string;
   parent_id?: number;
 }): Promise<Comment> {
-  return request.post("/admin/comments", data);
+  return request.post('/admin/comments', data);
 }
 
 /**
@@ -58,9 +58,9 @@ export function restoreComment(id: number): Promise<void> {
  * @returns Promise<ImportCommentsResult>
  */
 export function importComments(formData: FormData): Promise<ImportCommentsResult> {
-  return request.post("/admin/comments/import", formData, {
+  return request.post('/admin/comments/import', formData, {
     headers: {
-      "Content-Type": "multipart/form-data"
-    }
+      'Content-Type': 'multipart/form-data',
+    },
   });
 }

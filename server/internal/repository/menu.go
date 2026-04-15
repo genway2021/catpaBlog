@@ -96,7 +96,6 @@ func (r *MenuRepository) loadChildren(menu *model.Menu, isEnabled *bool) error {
 	return nil
 }
 
-
 // ExistsByIcon 检查是否有菜单图标引用该文件
 func (r *MenuRepository) ExistsByIcon(url string) (bool, error) {
 	var count int64

@@ -30,7 +30,7 @@ func NewFileController(fileService *service.FileService) *FileController {
 // UploadForWeb 文件上传
 //
 //	@Summary		文件上传
-//	@Description	前台用户上传图片、头像等，支持匿名上传
+//	@Description	用户上传文件，存在限制
 //	@Tags			文件
 //	@Accept			multipart/form-data
 //	@Produce		json
@@ -80,7 +80,7 @@ func (ctrl *FileController) UploadForWeb(c *gin.Context) {
 
 // Upload 文件上传
 //
-//	@Summary		文件上传（管理）
+//	@Summary		文件上传
 //	@Description	管理员上传文件，限制相对宽松
 //	@Tags			文件管理
 //	@Accept			multipart/form-data
@@ -132,8 +132,8 @@ func (ctrl *FileController) Upload(c *gin.Context) {
 
 // List 获取文件列表
 //
-//	@Summary		文件列表（管理）
-//	@Description	获取已上传的所有文件，支持按类型筛选
+//	@Summary		文件列表
+//	@Description	获取已上传的所有文件
 //	@Tags			文件管理
 //	@Accept			json
 //	@Produce		json
@@ -163,7 +163,7 @@ func (ctrl *FileController) List(c *gin.Context) {
 
 // Get 获取文件详情
 //
-//	@Summary		文件详情（管理）
+//	@Summary		文件详情
 //	@Description	获取文件详细信息
 //	@Tags			文件管理
 //	@Accept			json
@@ -195,7 +195,7 @@ func (ctrl *FileController) Get(c *gin.Context) {
 // Delete 删除文件
 //
 //	@Summary		删除文件
-//	@Description	删除指定文件
+//	@Description	删除指定文件，不可恢复，若支持也将同步删除存储桶文件
 //	@Tags			文件管理
 //	@Accept			json
 //	@Produce		json

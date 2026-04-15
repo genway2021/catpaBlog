@@ -78,20 +78,20 @@ func Error(c *gin.Context, err *errcode.Error) {
 
 // getHTTPStatus 根据业务错误码获取对应的HTTP状态码
 func getHTTPStatus(code int) int {
-	switch {
-	case code == 0:
+	switch code {
+	case 0:
 		return http.StatusOK // 200
-	case code == 10001: // InvalidParams
+	case 10001: // InvalidParams
 		return http.StatusBadRequest // 400
-	case code == 10003: // Unauthorized
+	case 10003: // Unauthorized
 		return http.StatusUnauthorized // 401
-	case code == 20004: // TokenError (包含 Token错误或已过期)
+	case 20004: // TokenError (包含 Token错误或已过期)
 		return http.StatusUnauthorized // 401
-	case code == 40001 || code == 40006: // FileUploadError, FileProcessError
+	case 40001, 40006: // FileUploadError, FileProcessError
 		return http.StatusBadRequest // 400
-	case code == 40003: // FileNotFound
+	case 40003: // FileNotFound
 		return http.StatusNotFound // 404
-	case code == 429: // 动态创建的限流错误
+	case 429: // 动态创建的限流错误
 		return http.StatusTooManyRequests // 429
 	default:
 		return http.StatusInternalServerError // 500

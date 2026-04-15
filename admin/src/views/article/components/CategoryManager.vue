@@ -16,7 +16,12 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="formVisible" :title="current.id ? '编辑' : '新增'" width="400px" append-to-body>
+    <el-dialog
+      v-model="formVisible"
+      :title="current.id ? '编辑' : '新增'"
+      width="400px"
+      append-to-body
+    >
       <el-form :model="current" label-width="80px">
         <el-form-item label="名称" required>
           <el-input v-model="current.name" placeholder="请输入分类名称" />
@@ -37,79 +42,84 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
-import { getCategories, createCategory, updateCategory, deleteCategory } from '@/api/category'
-import type { Category } from '@/types/category'
-const props = defineProps<{ modelValue: boolean }>()
-const emit = defineEmits(['update:modelValue'])
+import { ref, computed, onMounted } from 'vue';
+import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
+import { getCategories, createCategory, updateCategory, deleteCategory } from '@/api/category';
+import type { Category } from '@/types/category';
+const props = defineProps<{ modelValue: boolean }>();
+const emit = defineEmits(['update:modelValue']);
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
+  set: val => emit('update:modelValue', val),
+});
 
-const list = ref<Category[]>([])
+const list = ref<Category[]>([]);
 
-const formVisible = ref(false)
-const current = ref<Partial<Category>>({ id: 0, name: '', description: '', sort: 0 })
+const formVisible = ref(false);
+const current = ref<Partial<Category>>({
+  id: 0,
+  name: '',
+  description: '',
+  sort: 0,
+});
 
 // 初始化加载数据
 onMounted(() => {
-  loadData()
-})
+  loadData();
+});
 
 // 加载分类列表
 async function loadData() {
-  const loading = ElLoading.service()
+  const loading = ElLoading.service();
   try {
-    const res = await getCategories()
-    list.value = res.list
+    const res = await getCategories();
+    list.value = res.list;
   } catch (err) {
-    ElMessage.error('加载分类列表失败')
+    ElMessage.error('加载分类列表失败');
   } finally {
-    loading.close()
+    loading.close();
   }
 }
 
 // 打开表单
 function openForm(row?: Category) {
   if (row) {
-    current.value = { ...row }
+    current.value = { ...row };
   } else {
-    current.value = { id: 0, name: '', description: '', sort: 0 }
+    current.value = { id: 0, name: '', description: '', sort: 0 };
   }
-  formVisible.value = true
+  formVisible.value = true;
 }
 
 async function remove(row: Category) {
   try {
-    await ElMessageBox.confirm('确定要删除这个分类吗？')
-    await deleteCategory(row.id)
-    await loadData()
-    ElMessage.success('删除成功')
-  } catch { }
+    await ElMessageBox.confirm('确定要删除这个分类吗？');
+    await deleteCategory(row.id);
+    await loadData();
+    ElMessage.success('删除成功');
+  } catch {}
 }
 
 async function save() {
   if (!current.value.name?.trim()) {
-    return ElMessage.warning('请输入分类名称')
+    return ElMessage.warning('请输入分类名称');
   }
 
-  const loading = ElLoading.service()
+  const loading = ElLoading.service();
   try {
     if (current.value.id) {
-      await updateCategory(current.value.id, current.value)
+      await updateCategory(current.value.id, current.value);
     } else {
-      await createCategory(current.value)
+      await createCategory(current.value);
     }
-    await loadData()
-    formVisible.value = false
-    ElMessage.success('保存成功')
+    await loadData();
+    formVisible.value = false;
+    ElMessage.success('保存成功');
   } catch (err) {
-    ElMessage.error('保存失败')
+    ElMessage.error('保存失败');
   } finally {
-    loading.close()
+    loading.close();
   }
 }
 </script>

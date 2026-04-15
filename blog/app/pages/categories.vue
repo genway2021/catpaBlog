@@ -1,32 +1,30 @@
 <script lang="ts" setup>
 definePageMeta({
-  showSidebar: false
-})
+  showSidebar: false,
+});
 
-const { categories } = useCategories()
+const { categories } = useCategories();
 
 useSeoMeta({
   title: '分类',
-  description: '浏览所有文章分类，探索不同主题的技术与生活内容'
-})
+  description: '浏览所有文章分类，探索不同主题的技术与生活内容',
+});
 </script>
 
 <template>
   <!-- 内容区域 -->
   <div id="page">
-      <h1 class="page-title">分类</h1>
-      <div class="category-lists">
-        <ul class="category-list">
-          <li 
-            v-for="category in categories" 
-            :key="category.id" 
-            class="category-list-item"
-          >
-            <router-link class="category-list-link" :to="category.url">{{ category.name }}</router-link>
-            <span class="category-list-count">{{ category.count }}</span>
-          </li>
-        </ul>
-      </div>
+    <h1 class="page-title">分类</h1>
+    <div class="category-lists">
+      <ul class="category-list">
+        <li v-for="category in categories" :key="category.id" class="category-list-item">
+          <router-link class="category-list-link" :to="category.url">{{
+            category.name
+          }}</router-link>
+          <span class="category-list-count">{{ category.count }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -63,7 +61,7 @@ useSeoMeta({
           border: 0.215em solid #49b1f5;
           border-radius: 50%;
           background: transparent;
-          content: "";
+          content: '';
           cursor: pointer;
           transition: all 0.3s ease-out;
         }
@@ -73,11 +71,11 @@ useSeoMeta({
           color: var(--theme-meta-color);
 
           &::after {
-            content: ")";
+            content: ')';
           }
 
           &::before {
-            content: "(";
+            content: '(';
           }
         }
       }

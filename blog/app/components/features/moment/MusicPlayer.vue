@@ -1,89 +1,91 @@
 <script lang="ts" setup>
-import type { MomentMusic } from '@@/types/moment'
+import type { MomentMusic } from '@@/types/moment';
 
 interface AudioTrack {
-  name: string
-  artist: string
-  url: string
-  cover: string
-  lrc?: string
+  name: string;
+  artist: string;
+  url: string;
+  cover: string;
+  lrc?: string;
 }
 
 interface LyricLine {
-  time: number
-  text: string
+  time: number;
+  text: string;
 }
 
 const props = defineProps<{
-  music: MomentMusic
-}>()
+  music: MomentMusic;
+}>();
 
 // 播放器状态
-const audioRef = ref<HTMLAudioElement | null>(null)
-const isPlaying = ref(false)
-const currentTime = ref(0)
-const duration = ref(0)
-const currentIndex = ref(0)
-const isLoading = ref(true)
-const showPlaylist = ref(false)
-const audioList = ref<AudioTrack[]>([])
-const loadError = ref(false)
+const audioRef = ref<HTMLAudioElement | null>(null);
+const isPlaying = ref(false);
+const currentTime = ref(0);
+const duration = ref(0);
+const currentIndex = ref(0);
+const isLoading = ref(true);
+const showPlaylist = ref(false);
+const audioList = ref<AudioTrack[]>([]);
+const loadError = ref(false);
 
 // 歌词相关
-const lyrics = ref<LyricLine[]>([])
-const currentLyricIndex = ref(-1)
+const lyrics = ref<LyricLine[]>([]);
+const currentLyricIndex = ref(-1);
 
 // 计算属性
-const currentTrack = computed(() => audioList.value[currentIndex.value] || null)
-const hasPlaylist = computed(() => audioList.value.length > 1)
-const progress = computed(() => duration.value ? (currentTime.value / duration.value) * 100 : 0)
+const currentTrack = computed(() => audioList.value[currentIndex.value] || null);
+const hasPlaylist = computed(() => audioList.value.length > 1);
+const progress = computed(() => (duration.value ? (currentTime.value / duration.value) * 100 : 0));
 
 // 格式化时间为 mm:ss
 const formatTime = (seconds: number) => {
-  if (!isFinite(seconds) || isNaN(seconds)) return '00:00'
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-}
+  if (!isFinite(seconds) || isNaN(seconds)) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
 
 // 解析 LRC 格式歌词
 const parseLyrics = (lrcText: string): LyricLine[] => {
-  if (!lrcText) return []
-  const lines = lrcText.split('\n')
-  const lyricLines: LyricLine[] = []
+  if (!lrcText) return [];
+  const lines = lrcText.split('\n');
+  const lyricLines: LyricLine[] = [];
 
   for (const line of lines) {
-    const match = line.match(/\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\](.*)/)
+    const match = line.match(/\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\](.*)/);
     if (match && match[1] && match[2] && match[4]) {
-      const minutes = parseInt(match[1])
-      const seconds = parseInt(match[2])
-      const milliseconds = match[3] ? parseInt(match[3].padEnd(3, '0')) : 0
-      const text = match[4].trim()
+      const minutes = parseInt(match[1]);
+      const seconds = parseInt(match[2]);
+      const milliseconds = match[3] ? parseInt(match[3].padEnd(3, '0')) : 0;
+      const text = match[4].trim();
       if (text) {
-        lyricLines.push({ time: minutes * 60 + seconds + milliseconds / 1000, text })
+        lyricLines.push({ time: minutes * 60 + seconds + milliseconds / 1000, text });
       }
     }
   }
-  return lyricLines.sort((a, b) => a.time - b.time)
-}
+  return lyricLines.sort((a, b) => a.time - b.time);
+};
 
 // 获取歌词文本（从 URL）
 const fetchLyrics = async (lrcUrl: string): Promise<string> => {
   try {
-    const response = await fetch(lrcUrl)
-    return await response.text()
+    const response = await fetch(lrcUrl);
+    return await response.text();
   } catch {
-    return ''
+    return '';
   }
-}
+};
 
 // 获取音乐数据
 const fetchMusicData = async () => {
   try {
-    const { server, type, id } = props.music
-    const response = await fetch(`https://api.i-meto.com/meting/api?server=${server}&type=${type}&id=${id}`)
-    const data = await response.json()
-    const list = Array.isArray(data) ? data : [data]
+    const { server, type, id } = props.music;
+    const response = await fetch(
+      `https://api.i-meto.com/meting/api?server=${server}&type=${type}&id=${id}`
+    );
+    const data = await response.json();
+    const list = Array.isArray(data) ? data : [data];
 
     audioList.value = list.map((item: any) => ({
       name: item.name || item.title || '未知歌曲',
@@ -91,90 +93,101 @@ const fetchMusicData = async () => {
       url: item.url,
       cover: item.pic || item.cover || '',
       lrc: item.lrc || '',
-    }))
+    }));
 
     // 获取并解析第一首歌的歌词
     if (audioList.value[0]?.lrc) {
-      const lrcUrl = audioList.value[0].lrc
-      const lrcText = lrcUrl.startsWith('http') ? await fetchLyrics(lrcUrl) : lrcUrl
-      lyrics.value = parseLyrics(lrcText)
+      const lrcUrl = audioList.value[0].lrc;
+      const lrcText = lrcUrl.startsWith('http') ? await fetchLyrics(lrcUrl) : lrcUrl;
+      lyrics.value = parseLyrics(lrcText);
     }
-    loadError.value = false
+    loadError.value = false;
   } catch {
-    loadError.value = true
+    loadError.value = true;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 // 播放/暂停切换
 const togglePlay = () => {
-  if (!audioRef.value || !currentTrack.value?.url) return
-  isPlaying.value ? audioRef.value.pause() : audioRef.value.play().catch(() => loadError.value = true)
-}
+  if (!audioRef.value || !currentTrack.value?.url) return;
+  isPlaying.value
+    ? audioRef.value.pause()
+    : audioRef.value.play().catch(() => (loadError.value = true));
+};
 
 // 播放指定歌曲
 const playTrack = async (index: number) => {
-  if (index < 0 || index >= audioList.value.length) return
-  currentIndex.value = index
-  showPlaylist.value = false
+  if (index < 0 || index >= audioList.value.length) return;
+  currentIndex.value = index;
+  showPlaylist.value = false;
 
   // 更新歌词
-  const track = audioList.value[index]
+  const track = audioList.value[index];
   if (track?.lrc) {
-    const lrcText = track.lrc.startsWith('http') ? await fetchLyrics(track.lrc) : track.lrc
-    lyrics.value = parseLyrics(lrcText)
+    const lrcText = track.lrc.startsWith('http') ? await fetchLyrics(track.lrc) : track.lrc;
+    lyrics.value = parseLyrics(lrcText);
   } else {
-    lyrics.value = []
+    lyrics.value = [];
   }
-  currentLyricIndex.value = -1
-  nextTick(() => audioRef.value?.play().catch(() => { }))
-}
+  currentLyricIndex.value = -1;
+  nextTick(() => audioRef.value?.play().catch(() => {}));
+};
 
 // 进度条点击跳转
 const seekTo = (e: MouseEvent) => {
-  if (!audioRef.value || !duration.value) return
-  const target = e.currentTarget as HTMLElement
-  const rect = target.getBoundingClientRect()
-  audioRef.value.currentTime = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * duration.value
-}
+  if (!audioRef.value || !duration.value) return;
+  const target = e.currentTarget as HTMLElement;
+  const rect = target.getBoundingClientRect();
+  audioRef.value.currentTime =
+    Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * duration.value;
+};
 
 // 更新当前歌词行
 const updateCurrentLyric = (time: number) => {
-  if (lyrics.value.length === 0) return
-  let index = -1
+  if (lyrics.value.length === 0) return;
+  let index = -1;
   for (let i = 0; i < lyrics.value.length; i++) {
-    const lyric = lyrics.value[i]
-    if (lyric && time >= lyric.time) index = i
-    else break
+    const lyric = lyrics.value[i];
+    if (lyric && time >= lyric.time) index = i;
+    else break;
   }
-  if (index !== currentLyricIndex.value) currentLyricIndex.value = index
-}
+  if (index !== currentLyricIndex.value) currentLyricIndex.value = index;
+};
 
 // 音频事件处理
 const onTimeUpdate = () => {
   if (audioRef.value) {
-    currentTime.value = audioRef.value.currentTime
-    updateCurrentLyric(currentTime.value)
+    currentTime.value = audioRef.value.currentTime;
+    updateCurrentLyric(currentTime.value);
   }
-}
+};
 
 const onLoadedMetadata = () => {
-  if (audioRef.value) duration.value = audioRef.value.duration
-}
+  if (audioRef.value) duration.value = audioRef.value.duration;
+};
 
 // 播放结束处理
 const onEnded = () => {
   if (hasPlaylist.value) {
-    playTrack((currentIndex.value + 1) % audioList.value.length)
+    playTrack((currentIndex.value + 1) % audioList.value.length);
   } else {
-    isPlaying.value = false
-    currentTime.value = 0
+    isPlaying.value = false;
+    currentTime.value = 0;
   }
-}
+};
+
+/**
+ * 处理音频加载错误
+ */
+const handleAudioError = () => {
+  loadError.value = true;
+  isPlaying.value = false;
+};
 
 // 初始化
-onMounted(() => fetchMusicData())
+onMounted(() => fetchMusicData());
 </script>
 
 <template>
@@ -190,9 +203,17 @@ onMounted(() => fetchMusicData())
     </div>
 
     <template v-else>
-      <audio ref="audioRef" :src="currentTrack.url" preload="metadata" @timeupdate="onTimeUpdate"
-        @loadedmetadata="onLoadedMetadata" @play="isPlaying = true" @pause="isPlaying = false" @ended="onEnded"
-        @error="loadError = true; isPlaying = false" />
+      <audio
+        ref="audioRef"
+        :src="currentTrack.url"
+        preload="metadata"
+        @timeupdate="onTimeUpdate"
+        @loadedmetadata="onLoadedMetadata"
+        @play="isPlaying = true"
+        @pause="isPlaying = false"
+        @ended="onEnded"
+        @error="handleAudioError"
+      />
 
       <div class="player-main">
         <div class="player-left">
@@ -215,8 +236,15 @@ onMounted(() => fetchMusicData())
           </div>
 
           <div v-if="lyrics.length > 0" class="player-lyrics">
-            <div v-for="(line, index) in lyrics" :key="index" class="lyric-line"
-              :class="{ active: index === currentLyricIndex, next: index === currentLyricIndex + 1 }">
+            <div
+              v-for="(line, index) in lyrics"
+              :key="index"
+              class="lyric-line"
+              :class="{
+                active: index === currentLyricIndex,
+                next: index === currentLyricIndex + 1,
+              }"
+            >
               {{ line.text }}
             </div>
           </div>
@@ -225,7 +253,9 @@ onMounted(() => fetchMusicData())
             <div class="progress-bar" @click="seekTo">
               <div class="progress-played" :style="{ width: `${progress}%` }"></div>
             </div>
-            <div class="progress-time">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</div>
+            <div class="progress-time">
+              {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+            </div>
             <button v-if="hasPlaylist" class="ctrl-btn" @click="showPlaylist = !showPlaylist">
               <i class="ri-menu-fill"></i>
             </button>
@@ -234,8 +264,13 @@ onMounted(() => fetchMusicData())
       </div>
 
       <div v-if="showPlaylist && hasPlaylist" class="player-playlist">
-        <div v-for="(track, index) in audioList" :key="index" class="playlist-item"
-          :class="{ active: index === currentIndex }" @click="playTrack(index)">
+        <div
+          v-for="(track, index) in audioList"
+          :key="index"
+          class="playlist-item"
+          :class="{ active: index === currentIndex }"
+          @click="playTrack(index)"
+        >
           <span class="item-index">
             <i v-if="index === currentIndex && isPlaying" class="ri-equalizer-fill"></i>
             <template v-else>{{ index + 1 }}</template>
@@ -322,7 +357,7 @@ onMounted(() => fetchMusicData())
     border: none;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.9);
-    color: #49B1F5;
+    color: #49b1f5;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -404,7 +439,7 @@ onMounted(() => fetchMusicData())
     padding: 0 4px;
 
     &.active {
-      color: #49B1F5;
+      color: #49b1f5;
       opacity: 1;
       display: block;
       font-weight: 500;
@@ -438,7 +473,7 @@ onMounted(() => fetchMusicData())
   }
 
   &:hover {
-    color: #49B1F5;
+    color: #49b1f5;
   }
 }
 
@@ -456,7 +491,7 @@ onMounted(() => fetchMusicData())
 
     .progress-played {
       height: 100%;
-      background: #49B1F5;
+      background: #49b1f5;
       border-radius: 2px;
       transition: width 0.1s linear;
     }
@@ -506,7 +541,7 @@ onMounted(() => fetchMusicData())
 
       .item-name,
       .item-index {
-        color: #49B1F5;
+        color: #49b1f5;
       }
     }
 

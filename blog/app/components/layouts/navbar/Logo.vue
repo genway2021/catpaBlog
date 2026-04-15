@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { blogConfig } = useSysConfig()
+const { blogConfig } = useSysConfig();
 </script>
 
 <template>

@@ -9,11 +9,21 @@
         <div class="login-form">
           <div class="form-item">
             <i class="ri-user-line"></i>
-            <input type="text" v-model="formState.email" placeholder="请输入邮箱" @keyup.enter="handleLogin" />
+            <input
+              type="text"
+              v-model="formState.email"
+              placeholder="请输入邮箱"
+              @keyup.enter="handleLogin"
+            />
           </div>
           <div class="form-item">
             <i class="ri-lock-line"></i>
-            <input type="password" v-model="formState.password" placeholder="请输入密码" @keyup.enter="handleLogin" />
+            <input
+              type="password"
+              v-model="formState.password"
+              placeholder="请输入密码"
+              @keyup.enter="handleLogin"
+            />
           </div>
           <button class="submit-btn" :disabled="loading" @click="handleLogin">
             <span v-if="!loading">登 录</span>
@@ -29,40 +39,40 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { login } from '@/api/user'
-import { fetchUserInfo, setTokens, clearAuthState } from '@/utils/auth'
-import type { LoginParams } from '@/types/user'
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { login } from '@/api/user';
+import { fetchUserInfo, setTokens, clearAuthState } from '@/utils/auth';
+import type { LoginParams } from '@/types/user';
 
-const router = useRouter()
-const loading = ref(false)
+const router = useRouter();
+const loading = ref(false);
 const formState = reactive<LoginParams>({
   email: '',
-  password: ''
-})
+  password: '',
+});
 
 const handleLogin = async () => {
   if (!formState.email || !formState.password) {
-    ElMessage.warning('请输入邮箱和密码')
-    return
+    ElMessage.warning('请输入邮箱和密码');
+    return;
   }
 
-  loading.value = true
+  loading.value = true;
   try {
-    const { access_token, refresh_token } = await login(formState)
-    setTokens(access_token, refresh_token)
-    await fetchUserInfo()
-    ElMessage.success('登录成功')
-    router.push('/')
+    const { access_token, refresh_token } = await login(formState);
+    setTokens(access_token, refresh_token);
+    await fetchUserInfo();
+    ElMessage.success('登录成功');
+    router.push('/');
   } catch (error) {
-    clearAuthState()
-    ElMessage.error(error instanceof Error ? error.message : '登录失败')
+    clearAuthState();
+    ElMessage.error(error instanceof Error ? error.message : '登录失败');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -226,7 +236,6 @@ const handleLogin = async () => {
 
 @media (max-width: 768px) {
   .admin-login {
-
     &::before,
     &::after {
       display: none;

@@ -68,7 +68,7 @@ func (c *AIController) TestConfig(ctx *gin.Context) {
 // Summary 生成文章摘要
 //
 //	@Summary		生成文章摘要
-//	@Description	基于文章内容自动生成摘要（50-100字，创作者角度）
+//	@Description	基于文章内容和提示词生成文章摘要
 //	@Tags			AI功能
 //	@Accept			json
 //	@Produce		json
@@ -104,7 +104,7 @@ func (c *AIController) Summary(ctx *gin.Context) {
 // AISummary 生成AI摘要
 //
 //	@Summary		生成AI摘要
-//	@Description	基于文章内容生成AI摘要（150-200字，旁观者角度）
+//	@Description	基于文章内容和提示词生成AI摘要
 //	@Tags			AI功能
 //	@Accept			json
 //	@Produce		json
@@ -137,10 +137,10 @@ func (c *AIController) AISummary(ctx *gin.Context) {
 	response.Success(ctx, dto.AIAISummaryResponse{Summary: aiSummary})
 }
 
-// Title 生成标题建议
+// Title 生成标题
 //
-//	@Summary		生成标题建议
-//	@Description	根据内容生成多个标题建议
+//	@Summary		生成标题
+//	@Description	基于文章内容和提示词生成标题
 //	@Tags			AI功能
 //	@Accept			json
 //	@Produce		json

@@ -1,82 +1,88 @@
 <script setup lang="ts">
-import mediumZoom from 'medium-zoom'
-import mermaid from 'mermaid'
-import { loadEmojiMap } from '@/composables/useEmojis'
-import { useSysConfig } from '@/composables/useStores'
+import mediumZoom from 'medium-zoom';
+import mermaid from 'mermaid';
+import { loadEmojiMap } from '@/composables/useEmojis';
+import { useSysConfig } from '@/composables/useStores';
 
-const { blogConfig } = useSysConfig()
+const { blogConfig } = useSysConfig();
 
 interface Props {
-  content: string
+  content: string;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const initMermaid = () => {
   mermaid.initialize({
     startOnLoad: false,
     theme: 'default',
-    securityLevel: 'loose'
-  })
-}
+    securityLevel: 'loose',
+  });
+};
 
 const renderMermaidDiagrams = async () => {
-  const elements = document.querySelectorAll('.mermaid:not(:has(svg))')
+  const elements = document.querySelectorAll('.mermaid:not(:has(svg))');
 
   for (const element of elements) {
     try {
-      const { svg } = await mermaid.render(`mermaid-${Date.now()}`, element.textContent || '')
-      element.innerHTML = svg
+      const { svg } = await mermaid.render(`mermaid-${Date.now()}`, element.textContent || '');
+      element.innerHTML = svg;
     } catch (error) {
-      console.error('Mermaid 渲染失败:', error)
+      console.error('Mermaid 渲染失败:', error);
     }
   }
-}
+};
 
 // 表情数据 ref
-const emojiMap = ref<Map<string, string> | null>(null)
+const emojiMap = ref<Map<string, string> | null>(null);
 
 // 渲染内容
 const renderedContent = computed(() => {
-  if (!props.content) return ''
+  if (!props.content) return '';
   // 引用 emojiMap 触发重新渲染
-  emojiMap.value
-  return renderMarkdown(props.content)
-})
+  emojiMap.value;
+  return renderMarkdown(props.content);
+});
 
-let zoom: ReturnType<typeof mediumZoom> | null = null
+let zoom: ReturnType<typeof mediumZoom> | null = null;
 
 const initZoom = () => {
-  const contentEl = document.querySelector('.markdown-content')
-  if (!contentEl) return
+  const contentEl = document.querySelector('.markdown-content');
+  if (!contentEl) return;
 
-  const images = contentEl.querySelectorAll('img')
-  if (images.length === 0) return
-  if (zoom) zoom.detach()
-  zoom = mediumZoom(images, { margin: 24, background: 'rgba(0, 0, 0, 0.9)', scrollOffset: 48 })
-}
+  const images = contentEl.querySelectorAll('img');
+  if (images.length === 0) return;
+  if (zoom) zoom.detach();
+  zoom = mediumZoom(images, { margin: 24, background: 'rgba(0, 0, 0, 0.9)', scrollOffset: 48 });
+};
 
-watch(() => renderedContent.value, async () => {
-  await nextTick()
-  initZoom()
-  await renderMermaidDiagrams()
-})
+watch(
+  () => renderedContent.value,
+  async () => {
+    await nextTick();
+    initZoom();
+    await renderMermaidDiagrams();
+  }
+);
 
 onMounted(() => {
-  initMermaid()
+  initMermaid();
 
   // 加载表情数据
-  const emojisUrl = blogConfig.value.emojis
-  if (emojisUrl) loadEmojiMap(emojisUrl).then(map => emojiMap.value = map)
+  const emojisUrl = blogConfig.value.emojis;
+  if (emojisUrl) loadEmojiMap(emojisUrl).then(map => (emojiMap.value = map));
   nextTick(async () => {
-    initZoom()
-    await renderMermaidDiagrams()
-  })
-})
+    initZoom();
+    await renderMermaidDiagrams();
+  });
+});
 
 onUnmounted(() => {
-  if (zoom) { zoom.detach(); zoom = null }
-})
+  if (zoom) {
+    zoom.detach();
+    zoom = null;
+  }
+});
 </script>
 
 <template>

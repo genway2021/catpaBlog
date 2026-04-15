@@ -1,59 +1,59 @@
 <script lang="ts" setup>
-import { applyFriend } from '@/composables/api/friend'
-import type { FriendApplyRequest } from '@@/types/friend'
-const activeTab = ref<'yaml' | 'json' | 'html' | 'table'>('yaml')
-const activeApplyTab = ref<'form' | 'format1' | 'format2'>('format1')
-const { success } = useToast()
-const { blogConfig, basicConfig } = useSysConfig()
-const isLoggedIn = useAuth()
-const { open: openLogin } = useLoginModal()
+import { applyFriend } from '@/composables/api/friend';
+import type { FriendApplyRequest } from '@@/types/friend';
+const activeTab = ref<'yaml' | 'json' | 'html' | 'table'>('yaml');
+const activeApplyTab = ref<'form' | 'format1' | 'format2'>('format1');
+const { success } = useToast();
+const { blogConfig, basicConfig } = useSysConfig();
+const isLoggedIn = useAuth();
+const { open: openLogin } = useLoginModal();
 
-const contactEmail = computed(() => basicConfig.value.author_email || '')
+const contactEmail = computed(() => basicConfig.value.author_email || '');
 
 const siteConfig = computed(() => ({
   name: blogConfig.value.title,
   link: process.client ? window.location.origin : '',
   avatar: blogConfig.value.favicon,
   description: blogConfig.value.slogan,
-  screenshot: blogConfig.value.screenshot
-}))
+  screenshot: blogConfig.value.screenshot,
+}));
 
 // 复制到剪贴板
 const copyToClipboard = async (text: string) => {
   try {
-    await navigator.clipboard.writeText(text)
-    success('已复制到剪贴板！')
+    await navigator.clipboard.writeText(text);
+    success('已复制到剪贴板！');
   } catch (err) {
-    console.error('复制失败:', err)
+    console.error('复制失败:', err);
   }
-}
+};
 
 // 站点信息模板 - 使用配置对象动态生成（仅包含非空字段）
 const siteTemplates = computed(() => {
-  const { name, link, avatar, description, screenshot } = siteConfig.value
+  const { name, link, avatar, description, screenshot } = siteConfig.value;
 
   // YAML 格式 - 动态生成
-  const yamlLines = []
-  if (name) yamlLines.push(`- name: ${name}`)
-  if (link) yamlLines.push(`  link: ${link}`)
-  if (avatar) yamlLines.push(`  avatar: ${avatar}`)
-  if (description) yamlLines.push(`  descr: ${description}`)
-  if (screenshot) yamlLines.push(`  screenshot: ${screenshot}`)
+  const yamlLines = [];
+  if (name) yamlLines.push(`- name: ${name}`);
+  if (link) yamlLines.push(`  link: ${link}`);
+  if (avatar) yamlLines.push(`  avatar: ${avatar}`);
+  if (description) yamlLines.push(`  descr: ${description}`);
+  if (screenshot) yamlLines.push(`  screenshot: ${screenshot}`);
 
   // JSON 格式 - 动态生成
-  const jsonObj: Record<string, string> = {}
-  if (name) jsonObj.title = name
-  if (avatar) jsonObj.avatar = avatar
-  if (link) jsonObj.url = link
-  if (description) jsonObj.description = description
-  if (screenshot) jsonObj.screenshot = screenshot
+  const jsonObj: Record<string, string> = {};
+  if (name) jsonObj.title = name;
+  if (avatar) jsonObj.avatar = avatar;
+  if (link) jsonObj.url = link;
+  if (description) jsonObj.description = description;
+  if (screenshot) jsonObj.screenshot = screenshot;
 
   return {
     yaml: yamlLines.join('\n'),
     json: JSON.stringify(jsonObj, null, 4),
-    html: `<a href="${link}">${name}</a>`
-  }
-})
+    html: `<a href="${link}">${name}</a>`,
+  };
+});
 
 // 申请模板
 const applyTemplates = {
@@ -70,51 +70,51 @@ const applyTemplates = {
 头像图片链接：
 站点描述：
 网站截图（可选）：
-\`\`\``
-}
+\`\`\``,
+};
 
 // 复制站点信息
-const copySiteInfo = (type: 'yaml' | 'json' | 'html') => copyToClipboard(siteTemplates.value[type])
+const copySiteInfo = (type: 'yaml' | 'json' | 'html') => copyToClipboard(siteTemplates.value[type]);
 
 // 快速提交到评论框
-const quickSubmit = (format: 'yaml' | 'text') => fillComment(applyTemplates[format])
+const quickSubmit = (format: 'yaml' | 'text') => fillComment(applyTemplates[format]);
 
 // 表单申请相关状态
-const showForm = ref(false)
-const formSubmitting = ref(false)
+const showForm = ref(false);
+const formSubmitting = ref(false);
 const formData = ref<FriendApplyRequest>({
   name: '',
   url: '',
   description: '',
   avatar: '',
-  screenshot: ''
-})
+  screenshot: '',
+});
 
 // 显示申请表单
 const showApplyForm = () => {
-  showForm.value = true
-}
+  showForm.value = true;
+};
 
 // 提交申请表单
 const submitApplyForm = async () => {
   try {
-    formSubmitting.value = true
-    await applyFriend(formData.value)
-    success('友链申请已提交！感谢您的申请，我们会尽快处理。')
+    formSubmitting.value = true;
+    await applyFriend(formData.value);
+    success('友链申请已提交！感谢您的申请，我们会尽快处理。');
 
     // 关闭弹窗（表单会被watch自动重置）
-    showForm.value = false
+    showForm.value = false;
   } catch (error: any) {
-    console.error('申请失败:', error)
+    console.error('申请失败:', error);
     // 这里应该用error toast，暂时用alert
-    alert(error.message || '申请失败，请稍后重试')
+    alert(error.message || '申请失败，请稍后重试');
   } finally {
-    formSubmitting.value = false
+    formSubmitting.value = false;
   }
-}
+};
 
 // 监听弹窗关闭，重置表单数据
-watch(showForm, (newValue) => {
+watch(showForm, newValue => {
   if (!newValue) {
     // 弹窗关闭时重置表单数据
     formData.value = {
@@ -122,10 +122,10 @@ watch(showForm, (newValue) => {
       url: '',
       description: '',
       avatar: '',
-      screenshot: ''
-    }
+      screenshot: '',
+    };
   }
-})
+});
 </script>
 
 <template>
@@ -151,7 +151,9 @@ watch(showForm, (newValue) => {
       </ol>
       <p>
         如果因为从本页跳转给你造成了损失，深表歉意，并且建议用户如果发现存在问题在本页面进行回复。通常会很快处理。如果长时间无法得到处理，建议联系
-        <a v-if="contactEmail" :href="`mailto:${contactEmail}`" class="highlight">{{ contactEmail }}</a>
+        <a v-if="contactEmail" :href="`mailto:${contactEmail}`" class="highlight">{{
+          contactEmail
+        }}</a>
         <span v-else>网站管理员</span>。
       </p>
     </div>
@@ -161,14 +163,15 @@ watch(showForm, (newValue) => {
   <h3>互链规则</h3>
   <ol>
     <li>
-      确保贵站是 <span class="highlight">博客网站</span> 且 <span class="highlight">原创文章在5篇以上</span>。
+      确保贵站是 <span class="highlight">博客网站</span> 且
+      <span class="highlight">原创文章在5篇以上</span>。
     </li>
     <li>为了友链相关页面的统一性和美观性，可能会对你的昵称进行缩短处理。</li>
+    <li>如果贵站使用的是 <span class="highlight">免费</span> 域名，将视站点质量进行添加。</li>
     <li>
-      如果贵站使用的是 <span class="highlight">免费</span> 域名，将视站点质量进行添加。
-    </li>
-    <li>
-      若发现 <span class="highlight">站点三个月以上不进行维护或存在违规内容将会删除友链</span>，若网站恢复正常可联系我重新添加友链。
+      若发现
+      <span class="highlight">站点三个月以上不进行维护或存在违规内容将会删除友链</span
+      >，若网站恢复正常可联系我重新添加友链。
     </li>
   </ol>
 
@@ -177,39 +180,25 @@ watch(showForm, (newValue) => {
 
   <div class="tabs">
     <div class="tab-buttons">
-      <button :class="{ active: activeTab === 'yaml' }" @click="activeTab = 'yaml'">
-        YAML
-      </button>
-      <button :class="{ active: activeTab === 'json' }" @click="activeTab = 'json'">
-        JSON
-      </button>
-      <button :class="{ active: activeTab === 'html' }" @click="activeTab = 'html'">
-        HTML
-      </button>
-      <button :class="{ active: activeTab === 'table' }" @click="activeTab = 'table'">
-        通用
-      </button>
+      <button :class="{ active: activeTab === 'yaml' }" @click="activeTab = 'yaml'">YAML</button>
+      <button :class="{ active: activeTab === 'json' }" @click="activeTab = 'json'">JSON</button>
+      <button :class="{ active: activeTab === 'html' }" @click="activeTab = 'html'">HTML</button>
+      <button :class="{ active: activeTab === 'table' }" @click="activeTab = 'table'">通用</button>
     </div>
 
     <div class="tab-content">
       <div v-show="activeTab === 'yaml'" class="code-block">
-        <button class="copy-btn" @click="copySiteInfo('yaml')">
-          复制
-        </button>
+        <button class="copy-btn" @click="copySiteInfo('yaml')">复制</button>
         <pre><code>{{ siteTemplates.yaml }}</code></pre>
       </div>
 
       <div v-show="activeTab === 'json'" class="code-block">
-        <button class="copy-btn" @click="copySiteInfo('json')">
-          复制
-        </button>
+        <button class="copy-btn" @click="copySiteInfo('json')">复制</button>
         <pre><code>{{ siteTemplates.json }}</code></pre>
       </div>
 
       <div v-show="activeTab === 'html'" class="code-block">
-        <button class="copy-btn" @click="copySiteInfo('html')">
-          复制
-        </button>
+        <button class="copy-btn" @click="copySiteInfo('html')">复制</button>
         <pre><code>&lt;a href="{{ siteConfig.link }}"&gt;{{ siteConfig.name }}&lt;/a&gt;</code></pre>
       </div>
 
@@ -267,9 +256,7 @@ watch(showForm, (newValue) => {
   descr: #网站描述
   screenshot: #网站截图（可选）</code></pre>
         </div>
-        <button class="submit-btn" @click="quickSubmit('yaml')">
-          快速提交
-        </button>
+        <button class="submit-btn" @click="quickSubmit('yaml')">快速提交</button>
       </div>
 
       <div v-show="activeApplyTab === 'format2'" class="apply-format">
@@ -280,9 +267,7 @@ watch(showForm, (newValue) => {
 站点描述：
 网站截图（可选）：</code></pre>
         </div>
-        <button class="submit-btn" @click="quickSubmit('text')">
-          快速提交
-        </button>
+        <button class="submit-btn" @click="quickSubmit('text')">快速提交</button>
       </div>
 
       <div v-show="activeApplyTab === 'form'" class="apply-format">
@@ -292,49 +277,78 @@ watch(showForm, (newValue) => {
             <p>
               使用表单申请更加便捷！只需填写您网站的基本信息，系统会收到您的申请并通知管理员，减少信息填写错误，管理员会尽快处理您的申请。
             </p>
-            <p>
-              友链申请需要<b>登录后</b>才能提交，确保申请的真实性和可追踪性。
-            </p>
+            <p>友链申请需要<b>登录后</b>才能提交，确保申请的真实性和可追踪性。</p>
           </div>
-          <button v-if="isLoggedIn" class="submit-btn" @click="showApplyForm">
-            表单提交
-          </button>
-          <button v-else class="submit-btn" @click="openLogin">
-            注册登录
-          </button>
+          <button v-if="isLoggedIn" class="submit-btn" @click="showApplyForm">表单提交</button>
+          <button v-else class="submit-btn" @click="openLogin">注册登录</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- 友链申请表单弹窗 -->
-  <UiBaseDialog v-model="showForm" title="友链申请" confirm-text="提交申请" :loading="formSubmitting"
-    @confirm="submitApplyForm">
+  <UiBaseDialog
+    v-model="showForm"
+    title="友链申请"
+    confirm-text="提交申请"
+    :loading="formSubmitting"
+    @confirm="submitApplyForm"
+  >
     <form @submit.prevent="submitApplyForm">
       <div class="form-group">
         <label for="site-name">网站名称 *</label>
-        <input id="site-name" v-model="formData.name" type="text" placeholder="请输入网站名称" required maxlength="50" />
+        <input
+          id="site-name"
+          v-model="formData.name"
+          type="text"
+          placeholder="请输入网站名称"
+          required
+          maxlength="50"
+        />
       </div>
 
       <div class="form-group">
         <label for="site-url">网站地址 *</label>
-        <input id="site-url" v-model="formData.url" type="url" placeholder="https://example.com" required />
+        <input
+          id="site-url"
+          v-model="formData.url"
+          type="url"
+          placeholder="https://example.com"
+          required
+        />
       </div>
 
       <div class="form-group">
         <label for="site-description">网站描述 *</label>
-        <textarea id="site-description" v-model="formData.description" placeholder="请简单描述您的网站" required maxlength="500"
-          rows="3"></textarea>
+        <textarea
+          id="site-description"
+          v-model="formData.description"
+          placeholder="请简单描述您的网站"
+          required
+          maxlength="500"
+          rows="3"
+        ></textarea>
       </div>
 
       <div class="form-group">
         <label for="site-avatar">网站头像/Logo *</label>
-        <input id="site-avatar" v-model="formData.avatar" type="url" placeholder="请提供网站头像或Logo的链接地址" required />
+        <input
+          id="site-avatar"
+          v-model="formData.avatar"
+          type="url"
+          placeholder="请提供网站头像或Logo的链接地址"
+          required
+        />
       </div>
 
       <div class="form-group">
         <label for="site-screenshot">网站截图</label>
-        <input id="site-screenshot" v-model="formData.screenshot" type="url" placeholder="可选：提供网站截图链接" />
+        <input
+          id="site-screenshot"
+          v-model="formData.screenshot"
+          type="url"
+          placeholder="可选：提供网站截图链接"
+        />
       </div>
     </form>
   </UiBaseDialog>

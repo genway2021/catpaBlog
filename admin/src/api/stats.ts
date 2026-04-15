@@ -1,13 +1,22 @@
-import request from "@/utils/request";
-import type { DashboardStats, TrendDataItem, TrendQuery, CategoryStats, TagStats, ArticleContribution, VisitListData, ContributionQuery } from "@/types/stats";
-import type { PaginationQuery } from "@/types/request";
+import request from '@/utils/request';
+import type {
+  DashboardStats,
+  TrendDataItem,
+  TrendQuery,
+  CategoryStats,
+  TagStats,
+  ArticleContribution,
+  VisitListData,
+  ContributionQuery,
+} from '@/types/stats';
+import type { PaginationQuery } from '@/types/request';
 
 /**
  * 获取仪表板统计数据
  * @returns Promise<DashboardStats>
  */
 export function getDashboardStats(): Promise<DashboardStats> {
-  return request.get("/admin/stats/dashboard");
+  return request.get('/admin/stats/dashboard');
 }
 
 /**
@@ -16,7 +25,7 @@ export function getDashboardStats(): Promise<DashboardStats> {
  * @returns Promise<TrendDataItem[]>
  */
 export function getTrendData(params: TrendQuery): Promise<TrendDataItem[]> {
-  return request.get("/admin/stats/trend", { params });
+  return request.get('/admin/stats/trend', { params });
 }
 
 /**
@@ -24,7 +33,7 @@ export function getTrendData(params: TrendQuery): Promise<TrendDataItem[]> {
  * @returns Promise<CategoryStats[]>
  */
 export function getCategoryStats(): Promise<CategoryStats[]> {
-  return request.get("/admin/stats/category");
+  return request.get('/admin/stats/category');
 }
 
 /**
@@ -32,7 +41,7 @@ export function getCategoryStats(): Promise<CategoryStats[]> {
  * @returns Promise<TagStats[]>
  */
 export function getTagStats(): Promise<TagStats[]> {
-  return request.get("/admin/stats/tag");
+  return request.get('/admin/stats/tag');
 }
 
 /**
@@ -41,7 +50,7 @@ export function getTagStats(): Promise<TagStats[]> {
  * @returns Promise<ArticleContribution[]>
  */
 export function getArticleContribution(params?: ContributionQuery): Promise<ArticleContribution[]> {
-  return request.get("/admin/stats/contribution", { params });
+  return request.get('/admin/stats/contribution', { params });
 }
 
 /**
@@ -50,5 +59,5 @@ export function getArticleContribution(params?: ContributionQuery): Promise<Arti
  * @returns Promise<VisitListData>
  */
 export function getVisits(params: PaginationQuery): Promise<VisitListData> {
-  return request.get("/admin/stats/visits", { params });
+  return request.get('/admin/stats/visits', { params });
 }

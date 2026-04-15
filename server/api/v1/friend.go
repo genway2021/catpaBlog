@@ -22,10 +22,10 @@ func NewFriendController(friendService *service.FriendService) *FriendController
 
 // ============ 前台接口 ============
 
-// ListForWeb 获取友链分组列表
+// ListForWeb 获取友链列表
 //
 //	@Summary		友链列表
-//	@Description	获取友链列表（按类型分组并排序，包括失效友链，通过 is_invalid 字段标识）
+//	@Description	按类型获取友链列表
 //	@Tags			友链
 //	@Produce		json
 //	@Success		200	{object}	response.Response{data=dto.GroupedFriendsResponse}
@@ -43,7 +43,7 @@ func (c *FriendController) ListForWeb(ctx *gin.Context) {
 // ApplyFriend 申请友链
 //
 //	@Summary		申请友链
-//	@Description	用户提交友链申请，系统将通知管理员审核（需要登录）
+//	@Description	用户提交友链申请，需登录
 //	@Tags			友链
 //	@Accept			json
 //	@Produce		json
@@ -109,7 +109,7 @@ func (c *FriendController) ListTypes(ctx *gin.Context) {
 // GetType 获取友链类型详情
 //
 //	@Summary		友链类型详情 [类型]
-//	@Description	通过 ID 获取友链类型信息
+//	@Description	获取友链类型详细信息
 //	@Tags			友链管理
 //	@Produce		json
 //	@Security		BearerAuth
@@ -205,7 +205,7 @@ func (c *FriendController) UpdateType(ctx *gin.Context) {
 // DeleteType 删除友链类型
 //
 //	@Summary		删除友链类型 [类型]
-//	@Description	删除友链类型（关联的友链 type_id 会被设置为 NULL）
+//	@Description	删除友链类型，关联友链的类型会被设置为 NULL
 //	@Tags			友链管理
 //	@Produce		json
 //	@Security		BearerAuth
@@ -266,7 +266,7 @@ func (c *FriendController) List(ctx *gin.Context) {
 // Get 获取友链信息
 //
 //	@Summary		友链详情
-//	@Description	通过 ID 获取友链信息
+//	@Description	获取友链详细信息
 //	@Tags			友链管理
 //	@Accept			json
 //	@Produce		json
@@ -363,7 +363,7 @@ func (c *FriendController) Update(ctx *gin.Context) {
 // Delete 删除友链
 //
 //	@Summary		删除友链
-//	@Description	软删除友链
+//	@Description	硬删除友链，不可恢复
 //	@Tags			友链管理
 //	@Accept			json
 //	@Produce		json

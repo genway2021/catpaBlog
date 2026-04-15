@@ -5,7 +5,12 @@
       <div class="toolbar">
         <h2>系统设置</h2>
         <div class="actions">
-          <el-button type="primary" :loading="saving" :disabled="!canEditSettings" @click="handleSave">
+          <el-button
+            type="primary"
+            :loading="saving"
+            :disabled="!canEditSettings"
+            @click="handleSave"
+          >
             保存配置
           </el-button>
           <el-button @click="loadAllConfigs">重置</el-button>
@@ -16,17 +21,28 @@
       <el-tabs v-model="activeTab" class="setting-tabs">
         <!-- 基本配置标签页 -->
         <el-tab-pane label="基本配置" name="basic">
-          <BasicSettingsTab ref="basicTabRef" v-model:form="basicForm" :loading="loading || !canEditSettings" />
+          <BasicSettingsTab
+            ref="basicTabRef"
+            v-model:form="basicForm"
+            :loading="loading || !canEditSettings"
+          />
         </el-tab-pane>
 
         <!-- 博客配置标签页 -->
         <el-tab-pane label="博客配置" name="blog">
-          <BlogSettingsTab ref="blogTabRef" v-model:form="blogForm" :loading="loading || !canEditSettings" />
+          <BlogSettingsTab
+            ref="blogTabRef"
+            v-model:form="blogForm"
+            :loading="loading || !canEditSettings"
+          />
         </el-tab-pane>
 
         <!-- 通知配置标签页 -->
         <el-tab-pane label="通知配置" name="notification">
-          <NotificationSettingsTab v-model:form="notificationForm" :loading="loading || !canEditSettings" />
+          <NotificationSettingsTab
+            v-model:form="notificationForm"
+            :loading="loading || !canEditSettings"
+          />
         </el-tab-pane>
 
         <!-- 上传配置标签页 -->
@@ -54,32 +70,32 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { getSettingGroup, updateSettingGroup } from '@/api/sysconfig'
-import { isSuperAdmin } from '@/utils/auth'
-import BasicSettingsTab from './components/BasicSettingsTab.vue'
-import BlogSettingsTab from './components/BlogSettingsTab.vue'
-import NotificationSettingsTab from './components/NotificationSettingsTab.vue'
-import UploadSettingsTab from './components/UploadSettingsTab.vue'
-import AISettingsTab from './components/AISettingsTab.vue'
-import OAuthSettingsTab from './components/OAuthSettingsTab.vue'
-import ImportExportTab from './components/ImportExportTab.vue'
-import type { SettingGroupType } from '@/types/sysconfig'
-import type { NotificationForm } from './components/NotificationSettingsTab.vue'
-import type { UploadForm } from './components/UploadSettingsTab.vue'
+import { computed, ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { getSettingGroup, updateSettingGroup } from '@/api/sysconfig';
+import { isSuperAdmin } from '@/utils/auth';
+import BasicSettingsTab from './components/BasicSettingsTab.vue';
+import BlogSettingsTab from './components/BlogSettingsTab.vue';
+import NotificationSettingsTab from './components/NotificationSettingsTab.vue';
+import UploadSettingsTab from './components/UploadSettingsTab.vue';
+import AISettingsTab from './components/AISettingsTab.vue';
+import OAuthSettingsTab from './components/OAuthSettingsTab.vue';
+import ImportExportTab from './components/ImportExportTab.vue';
+import type { SettingGroupType } from '@/types/sysconfig';
+import type { NotificationForm } from './components/NotificationSettingsTab.vue';
+import type { UploadForm } from './components/UploadSettingsTab.vue';
 
 // 页面状态
-const activeTab = ref('basic')
-const route = useRoute()
-const loading = ref(false)
-const saving = ref(false)
-const canEditSettings = computed(() => isSuperAdmin())
+const activeTab = ref('basic');
+const route = useRoute();
+const loading = ref(false);
+const saving = ref(false);
+const canEditSettings = computed(() => isSuperAdmin());
 
 // 标签页引用
-const blogTabRef = ref<InstanceType<typeof BlogSettingsTab>>()
-const basicTabRef = ref<InstanceType<typeof BasicSettingsTab>>()
+const blogTabRef = ref<InstanceType<typeof BlogSettingsTab>>();
+const basicTabRef = ref<InstanceType<typeof BasicSettingsTab>>();
 
 // 基本配置表单
 const basicForm = ref({
@@ -92,8 +108,8 @@ const basicForm = ref({
   police_record: '',
   admin_url: '',
   blog_url: '',
-  home_url: ''
-})
+  home_url: '',
+});
 
 // 通知配置表单
 const notificationForm = ref<NotificationForm>({
@@ -103,8 +119,8 @@ const notificationForm = ref<NotificationForm>({
   email_password: '',
   feishu_app_id: '',
   feishu_secret: '',
-  feishu_chat_id: ''
-})
+  feishu_chat_id: '',
+});
 
 // 博客配置表单
 const blogForm = ref({
@@ -125,7 +141,12 @@ const blogForm = ref({
 
   // 社交媒体
   sidebarSocialList: [] as Array<{ name: string; url: string; icon: string }>,
-  footerSocialList: [] as Array<{ name: string; url: string; icon: string; position: string }>,
+  footerSocialList: [] as Array<{
+    name: string;
+    url: string;
+    icon: string;
+    position: string;
+  }>,
 
   // 页脚链接
   footerLinksList: [] as Array<{ name: string; url: string }>,
@@ -151,8 +172,8 @@ const blogForm = ref({
   custom_head: '',
   custom_body: '',
   emojis: '',
-  font: ''
-})
+  font: '',
+});
 
 // 上传配置表单
 const uploadForm = ref<UploadForm>({
@@ -165,8 +186,8 @@ const uploadForm = ref<UploadForm>({
   bucket: '',
   endpoint: '',
   domain: '',
-  use_ssl: true
-})
+  use_ssl: true,
+});
 
 // AI 配置表单
 const aiForm = ref({
@@ -176,8 +197,8 @@ const aiForm = ref({
   summary_prompt: '',
   ai_summary_prompt: '',
   title_prompt: '',
-  mcp_secret: ''
-})
+  mcp_secret: '',
+});
 
 // OAuth 配置表单
 const oauthForm = ref({
@@ -196,28 +217,28 @@ const oauthForm = ref({
   'microsoft.enabled': 'false',
   'microsoft.client_id': '',
   'microsoft.client_secret': '',
-  'microsoft.redirect_url': ''
-})
+  'microsoft.redirect_url': '',
+});
 
 // 通用配置加载函数
 const loadConfigs = async (group: SettingGroupType) => {
-  const data = await getSettingGroup(group)
-  const configs: Record<string, string> = {}
+  const data = await getSettingGroup(group);
+  const configs: Record<string, string> = {};
 
   // 适配新的扁平化数据格式
   Object.entries(data).forEach(([key, value]) => {
     // 将键名中的分组前缀去掉，例如将 'basic.author' 转换为 'author'
-    const shortKey = key.replace(`${group}.`, '')
-    configs[shortKey] = value
-  })
+    const shortKey = key.replace(`${group}.`, '');
+    configs[shortKey] = value;
+  });
 
-  return configs
-}
+  return configs;
+};
 
 // 加载基本配置
 const loadBasicConfigs = async () => {
   try {
-    const configs = await loadConfigs('basic')
+    const configs = await loadConfigs('basic');
     Object.assign(basicForm.value, {
       author: configs.author || '',
       author_email: configs.author_email || '',
@@ -228,17 +249,17 @@ const loadBasicConfigs = async () => {
       police_record: configs.police_record || '',
       admin_url: configs.admin_url || '',
       blog_url: configs.blog_url || '',
-      home_url: configs.home_url || ''
-    })
+      home_url: configs.home_url || '',
+    });
   } catch {
-    ElMessage.error('获取基本配置失败')
+    ElMessage.error('获取基本配置失败');
   }
-}
+};
 
 // 加载博客配置
 const loadBlogConfigs = async () => {
   try {
-    const configs = await loadConfigs('blog')
+    const configs = await loadConfigs('blog');
 
     // 博客网站信息
     Object.assign(blogForm.value, {
@@ -264,48 +285,61 @@ const loadBlogConfigs = async () => {
       about_story: configs.about_story || '',
       moments_size: Number(configs.moments_size) || 30,
       message_content: configs.message_content || '',
-      home_layout: configs.home_layout || 'waterfall'
-    })
+      home_layout: configs.home_layout || 'waterfall',
+    });
 
     // 解析 JSON 字段
-    const parsed = parseJSON(configs.typing_texts || '', [])
+    const parsed = parseJSON(configs.typing_texts || '', []);
     blogForm.value.typingTextsList = parsed.map((item: any) =>
       typeof item === 'string' ? { value: item } : item
-    )
+    );
 
-    blogForm.value.sidebarSocialList = parseJSON(configs.sidebar_social || '', [])
-    blogForm.value.footerSocialList = parseJSON(configs.footer_social || '', [])
-    blogForm.value.footerLinksList = parseJSON(configs.footer_links || '', [])
+    blogForm.value.sidebarSocialList = parseJSON(configs.sidebar_social || '', []);
+    blogForm.value.footerSocialList = parseJSON(configs.footer_social || '', []);
+    blogForm.value.footerLinksList = parseJSON(configs.footer_links || '', []);
 
-    blogForm.value.profileList = Array(6).fill(null).map((_, i) =>
-      parseJSON(configs.about_profile || '', [])[i] || { label: '', value: '', color: '#43a6c6' }
-    )
+    blogForm.value.profileList = Array(6)
+      .fill(null)
+      .map(
+        (_, i) =>
+          parseJSON(configs.about_profile || '', [])[i] || {
+            label: '',
+            value: '',
+            color: '#43a6c6',
+          }
+      );
 
-    blogForm.value.mottoMainList = Array(2).fill(null).map((_, i) =>
-      parseJSON(configs.about_motto_main || '', [])[i] || ''
-    )
+    blogForm.value.mottoMainList = Array(2)
+      .fill(null)
+      .map((_, i) => parseJSON(configs.about_motto_main || '', [])[i] || '');
 
-    blogForm.value.socializeList = parseJSON(configs.about_socialize || '', [])
-    blogForm.value.creationList = parseJSON(configs.about_creation || '', [])
+    blogForm.value.socializeList = parseJSON(configs.about_socialize || '', []);
+    blogForm.value.creationList = parseJSON(configs.about_creation || '', []);
 
-    blogForm.value.versionsList = Array(3).fill(null).map((_, i) =>
-      parseJSON(configs.about_versions || '', [])[i] || { name: '', version: '' }
-    )
+    blogForm.value.versionsList = Array(3)
+      .fill(null)
+      .map(
+        (_, i) =>
+          parseJSON(configs.about_versions || '', [])[i] || {
+            name: '',
+            version: '',
+          }
+      );
 
-    blogForm.value.unionsList = parseJSON(configs.about_unions || '', [])
-    blogForm.value.custom_head = configs.custom_head || ''
-    blogForm.value.custom_body = configs.custom_body || ''
-    blogForm.value.emojis = configs.emojis || ''
-    blogForm.value.font = configs.font || ''
+    blogForm.value.unionsList = parseJSON(configs.about_unions || '', []);
+    blogForm.value.custom_head = configs.custom_head || '';
+    blogForm.value.custom_body = configs.custom_body || '';
+    blogForm.value.emojis = configs.emojis || '';
+    blogForm.value.font = configs.font || '';
   } catch {
-    ElMessage.error('获取博客配置失败')
+    ElMessage.error('获取博客配置失败');
   }
-}
+};
 
 // 加载通知配置
 const loadNotificationConfigs = async () => {
   try {
-    const configs = await loadConfigs('notification')
+    const configs = await loadConfigs('notification');
     Object.assign(notificationForm.value, {
       email_host: configs.email_host || '',
       email_port: configs.email_port || '465',
@@ -313,17 +347,17 @@ const loadNotificationConfigs = async () => {
       email_password: configs.email_password || '',
       feishu_app_id: configs.feishu_app_id || '',
       feishu_secret: configs.feishu_secret || '',
-      feishu_chat_id: configs.feishu_chat_id || ''
-    })
+      feishu_chat_id: configs.feishu_chat_id || '',
+    });
   } catch {
-    ElMessage.error('获取通知配置失败')
+    ElMessage.error('获取通知配置失败');
   }
-}
+};
 
 // 加载上传配置
 const loadUploadConfigs = async () => {
   try {
-    const configs = await loadConfigs('upload')
+    const configs = await loadConfigs('upload');
     Object.assign(uploadForm.value, {
       storage_type: configs.storage_type || 'local',
       max_file_size: Number(configs.max_file_size || 10),
@@ -334,26 +368,26 @@ const loadUploadConfigs = async () => {
       bucket: configs.bucket || '',
       endpoint: configs.endpoint || '',
       domain: configs.domain || '',
-      use_ssl: (configs.use_ssl || 'true') === 'true'
-    })
+      use_ssl: (configs.use_ssl || 'true') === 'true',
+    });
   } catch {
-    ElMessage.error('获取上传配置失败')
+    ElMessage.error('获取上传配置失败');
   }
-}
+};
 
 // JSON 解析辅助函数
-const parseJSON = <T>(jsonStr: string, fallback: T): T => {
+const parseJSON = <T,>(jsonStr: string, fallback: T): T => {
   try {
-    return jsonStr ? JSON.parse(jsonStr) : fallback
+    return jsonStr ? JSON.parse(jsonStr) : fallback;
   } catch {
-    return fallback
+    return fallback;
   }
-}
+};
 
 // 加载 AI 配置
 const loadAIConfigs = async () => {
   try {
-    const configs = await loadConfigs('ai')
+    const configs = await loadConfigs('ai');
     Object.assign(aiForm.value, {
       base_url: configs.base_url || '',
       api_key: configs.api_key || '',
@@ -361,17 +395,17 @@ const loadAIConfigs = async () => {
       summary_prompt: configs.summary_prompt || '',
       ai_summary_prompt: configs.ai_summary_prompt || '',
       title_prompt: configs.title_prompt || '',
-      mcp_secret: configs.mcp_secret || ''
-    })
+      mcp_secret: configs.mcp_secret || '',
+    });
   } catch {
-    ElMessage.error('获取 AI 配置失败')
+    ElMessage.error('获取 AI 配置失败');
   }
-}
+};
 
 // 加载 OAuth 配置
 const loadOAuthConfigs = async () => {
   try {
-    const configs = await loadConfigs('oauth')
+    const configs = await loadConfigs('oauth');
     Object.assign(oauthForm.value, {
       'github.enabled': configs['github.enabled'] || 'false',
       'github.client_id': configs['github.client_id'] || '',
@@ -388,16 +422,16 @@ const loadOAuthConfigs = async () => {
       'microsoft.enabled': configs['microsoft.enabled'] || 'false',
       'microsoft.client_id': configs['microsoft.client_id'] || '',
       'microsoft.client_secret': configs['microsoft.client_secret'] || '',
-      'microsoft.redirect_url': configs['microsoft.redirect_url'] || ''
-    })
+      'microsoft.redirect_url': configs['microsoft.redirect_url'] || '',
+    });
   } catch {
-    ElMessage.error('获取 OAuth 配置失败')
+    ElMessage.error('获取 OAuth 配置失败');
   }
-}
+};
 
 // 加载所有配置
 const loadAllConfigs = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     await Promise.all([
       loadBasicConfigs(),
@@ -405,77 +439,83 @@ const loadAllConfigs = async () => {
       loadNotificationConfigs(),
       loadUploadConfigs(),
       loadAIConfigs(),
-      loadOAuthConfigs()
-    ])
+      loadOAuthConfigs(),
+    ]);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 统一保存配置
 const handleSave = async () => {
   if (!canEditSettings.value) {
-    ElMessage.warning('仅超级管理员可修改系统配置')
-    return
+    ElMessage.warning('仅超级管理员可修改系统配置');
+    return;
   }
 
-  saving.value = true
+  saving.value = true;
   try {
-    const uploadPromises: Promise<void>[] = []
+    const uploadPromises: Promise<void>[] = [];
 
     // 收集所有待上传的图片（并行上传）
-    const basicUploaders = basicTabRef.value
+    const basicUploaders = basicTabRef.value;
     if (basicUploaders) {
       if (basicUploaders.authorAvatarUploaderRef?.getPendingCount()) {
         uploadPromises.push(
-          basicUploaders.authorAvatarUploaderRef.uploadPendingFile()
-            .then(url => { if (url) basicForm.value.author_avatar = url })
-        )
+          basicUploaders.authorAvatarUploaderRef.uploadPendingFile().then(url => {
+            if (url) basicForm.value.author_avatar = url;
+          })
+        );
       }
       if (basicUploaders.authorPhotoUploaderRef?.getPendingCount()) {
         uploadPromises.push(
-          basicUploaders.authorPhotoUploaderRef.uploadPendingFile()
-            .then(url => { if (url) basicForm.value.author_photo = url })
-        )
+          basicUploaders.authorPhotoUploaderRef.uploadPendingFile().then(url => {
+            if (url) basicForm.value.author_photo = url;
+          })
+        );
       }
     }
 
-    const blogUploaders = blogTabRef.value
+    const blogUploaders = blogTabRef.value;
     if (blogUploaders) {
       if (blogUploaders.faviconUploaderRef?.getPendingCount()) {
         uploadPromises.push(
-          blogUploaders.faviconUploaderRef.uploadPendingFile()
-            .then(url => { if (url) blogForm.value.favicon = url })
-        )
+          blogUploaders.faviconUploaderRef.uploadPendingFile().then(url => {
+            if (url) blogForm.value.favicon = url;
+          })
+        );
       }
       if (blogUploaders.backgroundUploaderRef?.getPendingCount()) {
         uploadPromises.push(
-          blogUploaders.backgroundUploaderRef.uploadPendingFile()
-            .then(url => { if (url) blogForm.value.background_image = url })
-        )
+          blogUploaders.backgroundUploaderRef.uploadPendingFile().then(url => {
+            if (url) blogForm.value.background_image = url;
+          })
+        );
       }
       if (blogUploaders.screenshotUploaderRef?.getPendingCount()) {
         uploadPromises.push(
-          blogUploaders.screenshotUploaderRef.uploadPendingFile()
-            .then(url => { if (url) blogForm.value.screenshot = url })
-        )
+          blogUploaders.screenshotUploaderRef.uploadPendingFile().then(url => {
+            if (url) blogForm.value.screenshot = url;
+          })
+        );
       }
       if (blogUploaders.aboutExhibitionUploaderRef?.getPendingCount()) {
         uploadPromises.push(
-          blogUploaders.aboutExhibitionUploaderRef.uploadPendingFile()
-            .then(url => { if (url) blogForm.value.about_exhibition = url })
-        )
+          blogUploaders.aboutExhibitionUploaderRef.uploadPendingFile().then(url => {
+            if (url) blogForm.value.about_exhibition = url;
+          })
+        );
       }
     }
 
     // 等待所有上传完成（使用 allSettled 确保即使部分失败也继续）
     if (uploadPromises.length > 0) {
-      const results = await Promise.allSettled(uploadPromises)
-      const failedUploads = results.filter(r => r.status === 'rejected')
+      const results = await Promise.allSettled(uploadPromises);
+      const failedUploads = results.filter(r => r.status === 'rejected');
       if (failedUploads.length > 0) {
-        saving.value = false
-        ElMessage.error(`${failedUploads.length} 个文件上传失败，请重试`)
-        return
+        saving.value = false;
+        ElMessage.error(`${failedUploads.length} 个文件上传失败，请重试`);
+        return;
       }
     }
 
@@ -490,8 +530,8 @@ const handleSave = async () => {
       'basic.police_record': basicForm.value.police_record,
       'basic.admin_url': basicForm.value.admin_url,
       'basic.blog_url': basicForm.value.blog_url,
-      'basic.home_url': basicForm.value.home_url
-    }
+      'basic.home_url': basicForm.value.home_url,
+    };
 
     // 博客配置
     const blogPayload: Record<string, string> = {
@@ -527,8 +567,8 @@ const handleSave = async () => {
       'blog.font': blogForm.value.font,
       'blog.moments_size': String(blogForm.value.moments_size),
       'blog.message_content': blogForm.value.message_content,
-      'blog.home_layout': blogForm.value.home_layout
-    }
+      'blog.home_layout': blogForm.value.home_layout,
+    };
 
     // 通知配置
     const notificationPayload: Record<string, string> = {
@@ -538,8 +578,8 @@ const handleSave = async () => {
       'notification.email_password': notificationForm.value.email_password,
       'notification.feishu_app_id': notificationForm.value.feishu_app_id,
       'notification.feishu_secret': notificationForm.value.feishu_secret,
-      'notification.feishu_chat_id': notificationForm.value.feishu_chat_id
-    }
+      'notification.feishu_chat_id': notificationForm.value.feishu_chat_id,
+    };
 
     // 上传配置
     const uploadPayload: Record<string, string> = {
@@ -552,8 +592,8 @@ const handleSave = async () => {
       'upload.bucket': uploadForm.value.bucket,
       'upload.endpoint': uploadForm.value.endpoint,
       'upload.domain': uploadForm.value.domain,
-      'upload.use_ssl': uploadForm.value.use_ssl ? 'true' : 'false'
-    }
+      'upload.use_ssl': uploadForm.value.use_ssl ? 'true' : 'false',
+    };
 
     // AI 配置
     const aiPayload: Record<string, string> = {
@@ -562,8 +602,8 @@ const handleSave = async () => {
       'ai.model': aiForm.value.model,
       'ai.summary_prompt': aiForm.value.summary_prompt,
       'ai.ai_summary_prompt': aiForm.value.ai_summary_prompt,
-      'ai.title_prompt': aiForm.value.title_prompt
-    }
+      'ai.title_prompt': aiForm.value.title_prompt,
+    };
 
     // OAuth 配置
     const oauthPayload: Record<string, string> = {
@@ -582,8 +622,8 @@ const handleSave = async () => {
       'oauth.microsoft.enabled': oauthForm.value['microsoft.enabled'],
       'oauth.microsoft.client_id': oauthForm.value['microsoft.client_id'],
       'oauth.microsoft.client_secret': oauthForm.value['microsoft.client_secret'],
-      'oauth.microsoft.redirect_url': oauthForm.value['microsoft.redirect_url']
-    }
+      'oauth.microsoft.redirect_url': oauthForm.value['microsoft.redirect_url'],
+    };
 
     // 构建需要保存的配置组列表
     const savePromises = [
@@ -592,20 +632,20 @@ const handleSave = async () => {
       updateSettingGroup('notification', notificationPayload),
       updateSettingGroup('upload', uploadPayload),
       updateSettingGroup('ai', aiPayload),
-      updateSettingGroup('oauth', oauthPayload)
-    ]
+      updateSettingGroup('oauth', oauthPayload),
+    ];
 
     // 并行保存所有配置组
-    await Promise.all(savePromises)
+    await Promise.all(savePromises);
 
-    ElMessage.success('配置保存成功')
+    ElMessage.success('配置保存成功');
   } catch (e) {
-    if (e instanceof Error) ElMessage.error(e.message)
-    else ElMessage.error('保存失败')
+    if (e instanceof Error) ElMessage.error(e.message);
+    else ElMessage.error('保存失败');
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
 
 const validTabs = new Set<SettingGroupType | 'import-export'>([
   'basic',
@@ -614,27 +654,27 @@ const validTabs = new Set<SettingGroupType | 'import-export'>([
   'upload',
   'ai',
   'oauth',
-  'import-export'
-])
+  'import-export',
+]);
 
 watch(
   () => route.query.tab,
-  (tab) => {
+  tab => {
     if (typeof tab === 'string' && validTabs.has(tab as SettingGroupType | 'import-export')) {
-      activeTab.value = tab
+      activeTab.value = tab;
     }
   },
   { immediate: true }
-)
+);
 
 // 导入成功回调
 const handleImportSuccess = () => {
   // 可以在这里添加导入成功后的逻辑
-}
+};
 
 onMounted(() => {
-  loadAllConfigs()
-})
+  loadAllConfigs();
+});
 </script>
 
 <style lang="scss" scoped>

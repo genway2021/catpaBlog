@@ -1,24 +1,33 @@
 <script setup lang="ts">
-import { getMenus } from '@/composables/api/menu'
-import { getCategories } from '@/composables/api/category'
-import { getTags } from '@/composables/api/tag'
-import { getSiteStats } from '@/composables/api/stats'
-import { getSettingGroup } from '@/composables/api/sysconfig'
+import { getMenus } from '@/composables/api/menu';
+import { getCategories } from '@/composables/api/category';
+import { getTags } from '@/composables/api/tag';
+import { getSiteStats } from '@/composables/api/stats';
+import { getSettingGroup } from '@/composables/api/sysconfig';
 
-const { toasts } = useToast()
-const { showLoginModal } = useLoginModal()
-const { showBindEmailModal, triggerGlobal, onBindSuccess } = useBindEmail()
+const { toasts } = useToast();
+const { showLoginModal } = useLoginModal();
+const { showBindEmailModal, triggerGlobal, onBindSuccess } = useBindEmail();
 
 // 全局数据
-const { blogConfig, basicConfig, oauthConfig, uploadConfig } = useSysConfig()
-const { menus } = useMenus()
-const { categories, total: categoriesTotal } = useCategories()
-const { tags, total: tagsTotal } = useTags()
-const { siteStats } = useStats()
+const { blogConfig, basicConfig, oauthConfig, uploadConfig } = useSysConfig();
+const { menus } = useMenus();
+const { categories, total: categoriesTotal } = useCategories();
+const { tags, total: tagsTotal } = useTags();
+const { siteStats } = useStats();
 
 // 使用SSR获取全局数据
 const { data: globalData } = await useAsyncData('global-data', async () => {
-  const [basicConfigData, blogConfigData, oauthConfigData, uploadConfigData, menusData, categoriesData, tagsData, statsData] = await Promise.all([
+  const [
+    basicConfigData,
+    blogConfigData,
+    oauthConfigData,
+    uploadConfigData,
+    menusData,
+    categoriesData,
+    tagsData,
+    statsData,
+  ] = await Promise.all([
     getSettingGroup('basic'),
     getSettingGroup('blog'),
     getSettingGroup('oauth'),
@@ -26,19 +35,19 @@ const { data: globalData } = await useAsyncData('global-data', async () => {
     getMenus(),
     getCategories(),
     getTags(),
-    getSiteStats()
-  ])
+    getSiteStats(),
+  ]);
 
   // 处理配置数据
   const processConfig = (config: any, prefix: string) => {
-    const processed: Record<string, string> = {}
+    const processed: Record<string, string> = {};
     Object.entries(config).forEach(([key, value]) => {
       if (key.startsWith(`${prefix}.`)) {
-        processed[key.substring(prefix.length + 1)] = value as string
+        processed[key.substring(prefix.length + 1)] = value as string;
       }
-    })
-    return processed
-  }
+    });
+    return processed;
+  };
 
   return {
     basicConfig: processConfig(basicConfigData, 'basic'),
@@ -50,53 +59,60 @@ const { data: globalData } = await useAsyncData('global-data', async () => {
     categoriesTotal: categoriesData.total,
     tags: tagsData.list,
     tagsTotal: tagsData.total,
-    stats: statsData
-  }
-})
+    stats: statsData,
+  };
+});
 
 // 初始化全局数据
 if (globalData.value) {
-  basicConfig.value = globalData.value.basicConfig
-  blogConfig.value = globalData.value.blogConfig
-  oauthConfig.value = globalData.value.oauthConfig
-  uploadConfig.value = globalData.value.uploadConfig
-  menus.value = globalData.value.menus
-  categories.value = globalData.value.categories
-  tags.value = globalData.value.tags
-  siteStats.value = globalData.value.stats
+  basicConfig.value = globalData.value.basicConfig;
+  blogConfig.value = globalData.value.blogConfig;
+  oauthConfig.value = globalData.value.oauthConfig;
+  uploadConfig.value = globalData.value.uploadConfig;
+  menus.value = globalData.value.menus;
+  categories.value = globalData.value.categories;
+  tags.value = globalData.value.tags;
+  siteStats.value = globalData.value.stats;
   if (globalData.value.categoriesTotal !== undefined) {
-    categoriesTotal.value = globalData.value.categoriesTotal
+    categoriesTotal.value = globalData.value.categoriesTotal;
   }
   if (globalData.value.tagsTotal !== undefined) {
-    tagsTotal.value = globalData.value.tagsTotal
+    tagsTotal.value = globalData.value.tagsTotal;
   }
 }
 
 // 全局路由切换时触发邮箱绑定提示
-const router = useRouter()
+const router = useRouter();
 router.afterEach(() => {
-  triggerGlobal()
-})
+  triggerGlobal();
+});
 
 // 背景图片
-const bgImage = computed(() => blogConfig.value.background_image || '/bg.webp')
+const bgImage = computed(() => blogConfig.value.background_image || '/bg.webp');
 
 // 刷新时恢复滚动位置
 onMounted(() => {
-  const key = 'scroll-y'
-  const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+  const key = 'scroll-y';
+  const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
   if (nav?.type === 'reload') {
-    const y = +(sessionStorage.getItem(key) || 0)
-    if (y > 0) setTimeout(() => window.scrollTo(0, y), 100)
+    const y = +(sessionStorage.getItem(key) || 0);
+    if (y > 0) setTimeout(() => window.scrollTo(0, y), 100);
   }
-  let t: ReturnType<typeof setTimeout>
-  const save = () => sessionStorage.setItem(key, '' + window.scrollY)
-  window.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(save, 200) }, { passive: true })
-  window.addEventListener('pagehide', save)
+  let t: ReturnType<typeof setTimeout>;
+  const save = () => sessionStorage.setItem(key, '' + window.scrollY);
+  window.addEventListener(
+    'scroll',
+    () => {
+      clearTimeout(t);
+      t = setTimeout(save, 200);
+    },
+    { passive: true }
+  );
+  window.addEventListener('pagehide', save);
 
   // 异步加载 remixicon，避免阻塞首屏渲染
-  import('remixicon/fonts/remixicon.css')
-})
+  import('remixicon/fonts/remixicon.css');
+});
 
 // SEO Meta
 useSeoMeta({
@@ -114,24 +130,24 @@ useSeoMeta({
   twitterTitle: () => blogConfig.value.title,
   twitterDescription: () => blogConfig.value.description,
   twitterImage: () => blogConfig.value.favicon,
-})
+});
 
 // 页面标题模板和 favicon
-const route = useRoute()
-const siteTitle = computed(() => blogConfig.value.title)
+const route = useRoute();
+const siteTitle = computed(() => blogConfig.value.title);
 
 useHead({
   titleTemplate: (title): string | null => {
     // 首页特殊处理：显示"网站标题 - 网站副标题"
     if (route.path === '/') {
-      const subtitle = blogConfig.value.subtitle
-      return subtitle ? `${siteTitle.value} - ${subtitle}` : siteTitle.value || null
+      const subtitle = blogConfig.value.subtitle;
+      return subtitle ? `${siteTitle.value} - ${subtitle}` : siteTitle.value || null;
     }
 
     // 其他页面：显示"页面标题 | 网站标题"
-    const pageTitle = title || (route.meta.title as string)
-    if (pageTitle) return `${pageTitle} | ${siteTitle.value}`
-    return siteTitle.value || null
+    const pageTitle = title || (route.meta.title as string);
+    if (pageTitle) return `${pageTitle} | ${siteTitle.value}`;
+    return siteTitle.value || null;
   },
   link: [
     { rel: 'icon', href: blogConfig.value.favicon || '/favicon.ico' },
@@ -142,14 +158,14 @@ useHead({
       rel: 'alternate',
       type: 'application/rss+xml',
       title: `${blogConfig.value.title} - RSS 2.0 Feed`,
-      href: '/rss.xml'
+      href: '/rss.xml',
     },
     {
       rel: 'alternate',
       type: 'application/atom+xml',
       title: `${blogConfig.value.title} - Atom Feed`,
-      href: '/atom.xml'
-    }
+      href: '/atom.xml',
+    },
   ],
   meta: computed(() => [
     { name: 'description', content: blogConfig.value.description },
@@ -158,7 +174,7 @@ useHead({
     // PWA 主题色
     { name: 'theme-color', content: '#f7f7f7' },
     { name: 'apple-mobile-web-app-capable', content: 'yes' },
-    { name: 'apple-mobile-web-app-status-bar-style', content: 'default' }
+    { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
   ]),
   script: [
     {
@@ -168,10 +184,10 @@ useHead({
         '@type': 'WebSite',
         name: blogConfig.value.title,
         description: blogConfig.value.description,
-      })
-    }
-  ]
-})
+      }),
+    },
+  ],
+});
 </script>
 
 <template>

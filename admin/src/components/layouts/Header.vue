@@ -37,53 +37,53 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { User, SwitchButton, ArrowDown } from '@element-plus/icons-vue'
-import NotificationBell from '@/components/common/NotificationBell.vue'
-import { logout as logoutApi } from '@/api/user'
-import { clearAuthState, getUserInfo } from '@/utils/auth'
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { User, SwitchButton, ArrowDown } from '@element-plus/icons-vue';
+import NotificationBell from '@/components/common/NotificationBell.vue';
+import { logout as logoutApi } from '@/api/user';
+import { clearAuthState, getUserInfo } from '@/utils/auth';
 
-const router = useRouter()
-const DEFAULT_AVATAR = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
-const nickname = computed(() => getUserInfo()?.nickname || 'Admin')
-const userAvatar = computed(() => getUserInfo()?.avatar || DEFAULT_AVATAR)
+const router = useRouter();
+const DEFAULT_AVATAR = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
+const nickname = computed(() => getUserInfo()?.nickname || 'Admin');
+const userAvatar = computed(() => getUserInfo()?.avatar || DEFAULT_AVATAR);
 
 // 接收 props
 interface Props {
-  layoutMode: 'drawer' | 'fixed'
-  sidebarCollapsed: boolean
+  layoutMode: 'drawer' | 'fixed';
+  sidebarCollapsed: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 // 定义事件
-const emit = defineEmits(['toggle-sidebar'])
+const emit = defineEmits(['toggle-sidebar']);
 
 const handleToggleSidebar = () => {
-  emit('toggle-sidebar')
-}
+  emit('toggle-sidebar');
+};
 
 const handleLogout = async () => {
   try {
     await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
       type: 'warning',
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
-    })
+      cancelButtonText: '取消',
+    });
 
     try {
-      await logoutApi()
+      await logoutApi();
     } catch (error) {
-      console.error('登出 API 调用失败:', error)
+      console.error('登出 API 调用失败:', error);
     }
 
-    clearAuthState()
-    ElMessage.success('已退出登录')
-    router.push('/login')
+    clearAuthState();
+    ElMessage.success('已退出登录');
+    router.push('/login');
   } catch {}
-}
+};
 </script>
 
 <style scoped lang="scss">

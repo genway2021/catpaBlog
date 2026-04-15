@@ -7,9 +7,9 @@ import (
 // FriendType 友链类型模型
 type FriendType struct {
 	ID        uint      `gorm:"primarykey" json:"id"`
-	Name      string    `gorm:"size:50;not null" json:"name"`    // 类型名称
-	Sort      int       `gorm:"default:0" json:"sort"`           // 排序权重
-	IsVisible bool      `gorm:"default:true" json:"is_visible"`  // 是否展示
+	Name      string    `gorm:"size:50;not null" json:"name"`   // 类型名称
+	Sort      int       `gorm:"default:0" json:"sort"`          // 排序权重
+	IsVisible bool      `gorm:"default:true" json:"is_visible"` // 是否展示
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

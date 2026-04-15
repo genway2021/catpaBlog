@@ -1,32 +1,32 @@
 <script setup lang="ts">
 interface Props {
-  modelValue: boolean
-  title?: string
-  confirmText?: string
-  loading?: boolean
-  closeOnClickOutside?: boolean
+  modelValue: boolean;
+  title?: string;
+  confirmText?: string;
+  loading?: boolean;
+  closeOnClickOutside?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   title: '',
   confirmText: '确定',
   loading: false,
-  closeOnClickOutside: true
-})
+  closeOnClickOutside: true,
+});
 
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  'confirm': []
-}>()
+  'update:modelValue': [value: boolean];
+  confirm: [];
+}>();
 
 const handleClose = () => {
-  if (props.loading || !props.closeOnClickOutside) return
-  emit('update:modelValue', false)
-}
+  if (props.loading || !props.closeOnClickOutside) return;
+  emit('update:modelValue', false);
+};
 
 const handleConfirm = () => {
-  emit('confirm')
-}
+  emit('confirm');
+};
 </script>
 
 <template>
@@ -37,11 +37,7 @@ const handleConfirm = () => {
           <!-- 头部 -->
           <div v-if="title" class="dialog-header">
             <h3 class="dialog-title">{{ title }}</h3>
-            <button 
-              class="dialog-close" 
-              @click="handleClose"
-              :disabled="loading"
-            >
+            <button class="dialog-close" @click="handleClose" :disabled="loading">
               <i class="ri-close-line"></i>
             </button>
           </div>
@@ -224,7 +220,11 @@ const handleConfirm = () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

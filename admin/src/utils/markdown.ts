@@ -1,23 +1,23 @@
-import MarkdownIt from 'markdown-it'
-import anchor from 'markdown-it-anchor'
+import MarkdownIt from 'markdown-it';
+import anchor from 'markdown-it-anchor';
 // @ts-ignore - 没有类型定义
-import taskLists from 'markdown-it-task-lists'
+import taskLists from 'markdown-it-task-lists';
 // @ts-ignore - 没有类型定义
-import mark from 'markdown-it-mark'
+import mark from 'markdown-it-mark';
 // @ts-ignore - 没有类型定义
-import linkAttributes from 'markdown-it-link-attributes'
+import linkAttributes from 'markdown-it-link-attributes';
 // @ts-ignore - 没有类型定义
-import kbd from 'markdown-it-kbd'
+import kbd from 'markdown-it-kbd';
 // @ts-ignore - 没有类型定义
-import sub from 'markdown-it-sub'
+import sub from 'markdown-it-sub';
 // @ts-ignore - 没有类型定义
-import sup from 'markdown-it-sup'
+import sup from 'markdown-it-sup';
 // @ts-ignore - 没有类型定义
-import underline from 'markdown-it-plugin-underline'
+import underline from 'markdown-it-plugin-underline';
 // @ts-ignore - 没有类型定义
-import katex from '@traptitech/markdown-it-katex'
-import DOMPurify from 'dompurify'
-import hljs from 'highlight.js'
+import katex from '@traptitech/markdown-it-katex';
+import DOMPurify from 'dompurify';
+import hljs from 'highlight.js';
 
 // ========== 属性解析函数 ==========
 
@@ -27,19 +27,19 @@ import hljs from 'highlight.js'
  * @returns 标签名和参数数组
  */
 function extractTagAndParams(line: string): { tag: string; params: string[] } {
-  const match = line.match(/^:::(\w+)(.*)$/)
+  const match = line.match(/^:::(\w+)(.*)$/);
 
   if (!match) {
-    return { tag: '', params: [] }
+    return { tag: '', params: [] };
   }
 
-  const tag = match[1] || ''
-  const paramsString = match[2]?.trim() || ''
+  const tag = match[1] || '';
+  const paramsString = match[2]?.trim() || '';
 
   // 简单按空格分割参数
-  const params = paramsString ? paramsString.split(/\s+/).filter(p => p && p !== ':::') : []
+  const params = paramsString ? paramsString.split(/\s+/).filter(p => p && p !== ':::') : [];
 
-  return { tag, params }
+  return { tag, params };
 }
 
 /**
@@ -48,102 +48,128 @@ function extractTagAndParams(line: string): { tag: string; params: string[] } {
  * @returns 是否为自闭合标签
  */
 function isSelfClosing(line: string): boolean {
-  return /:::$/.test(line.trim())
+  return /:::$/.test(line.trim());
 }
 
 // 生成标题 ID（支持中文）
 function generateHeadingId(text: string): string {
-  const id = text.toLowerCase()
+  const id = text
+    .toLowerCase()
     .replace(/[^\u4e00-\u9fa5a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-  return id || `heading-${Math.random().toString(36).slice(2, 9)}`
+    .replace(/^-+|-+$/g, '');
+  return id || `heading-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-const INLINE_ANCHOR_CHUNK_SIZE = 24
+const INLINE_ANCHOR_CHUNK_SIZE = 24;
 
 function escapeHtmlContent(value: string): string {
   return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/"/g, '&quot;');
 }
 
 function getLineStartOffsets(source: string): number[] {
-  const offsets = [0]
+  const offsets = [0];
   for (let index = 0; index < source.length; index++) {
-    if (source[index] === '\n') offsets.push(index + 1)
+    if (source[index] === '\n') offsets.push(index + 1);
   }
-  return offsets
+  return offsets;
 }
 
 function getOffsetForLine(lineStarts: number[], line: number, sourceLength: number): number {
-  if (line <= 0) return 0
-  if (line >= lineStarts.length) return sourceLength
-  return lineStarts[line] ?? sourceLength
+  if (line <= 0) return 0;
+  if (line >= lineStarts.length) return sourceLength;
+  return lineStarts[line] ?? sourceLength;
 }
 
-function setTokenSourceMeta(token: any, sourceStartLine: number, sourceEndLine: number, sourceStartOffset: number, sourceEndOffset: number) {
+function setTokenSourceMeta(
+  token: any,
+  sourceStartLine: number,
+  sourceEndLine: number,
+  sourceStartOffset: number,
+  sourceEndOffset: number
+) {
   token.meta = {
     ...(token.meta || {}),
     sourceStartLine,
     sourceEndLine,
     sourceStartOffset,
-    sourceEndOffset
-  }
+    sourceEndOffset,
+  };
 }
 
-function buildSourceAttrs(meta?: {
-  sourceStartLine?: number
-  sourceEndLine?: number
-  sourceStartOffset?: number
-  sourceEndOffset?: number
-}, kind: 'block' | 'text' = 'block'): string {
-  if (!meta) return ''
+function buildSourceAttrs(
+  meta?: {
+    sourceStartLine?: number;
+    sourceEndLine?: number;
+    sourceStartOffset?: number;
+    sourceEndOffset?: number;
+  },
+  kind: 'block' | 'text' = 'block'
+): string {
+  if (!meta) return '';
 
-  const attrs: string[] = [`data-sync-kind="${kind}"`]
+  const attrs: string[] = [`data-sync-kind="${kind}"`];
   if (meta.sourceStartLine !== undefined) {
-    attrs.push(`data-source-line="${meta.sourceStartLine}"`)
-    attrs.push(`data-source-start-line="${meta.sourceStartLine}"`)
+    attrs.push(`data-source-line="${meta.sourceStartLine}"`);
+    attrs.push(`data-source-start-line="${meta.sourceStartLine}"`);
   }
-  if (meta.sourceEndLine !== undefined) attrs.push(`data-source-end-line="${meta.sourceEndLine}"`)
-  if (meta.sourceStartOffset !== undefined) attrs.push(`data-source-start-offset="${meta.sourceStartOffset}"`)
-  if (meta.sourceEndOffset !== undefined) attrs.push(`data-source-end-offset="${meta.sourceEndOffset}"`)
-  return attrs.length ? ` ${attrs.join(' ')}` : ''
+  if (meta.sourceEndLine !== undefined) attrs.push(`data-source-end-line="${meta.sourceEndLine}"`);
+  if (meta.sourceStartOffset !== undefined)
+    attrs.push(`data-source-start-offset="${meta.sourceStartOffset}"`);
+  if (meta.sourceEndOffset !== undefined)
+    attrs.push(`data-source-end-offset="${meta.sourceEndOffset}"`);
+  return attrs.length ? ` ${attrs.join(' ')}` : '';
 }
 
 function splitTextIntoChunks(text: string): Array<{ text: string; start: number; end: number }> {
-  const chunks: Array<{ text: string; start: number; end: number }> = []
-  let start = 0
+  const chunks: Array<{ text: string; start: number; end: number }> = [];
+  let start = 0;
 
   while (start < text.length) {
-    let end = Math.min(start + INLINE_ANCHOR_CHUNK_SIZE, text.length)
+    let end = Math.min(start + INLINE_ANCHOR_CHUNK_SIZE, text.length);
     if (end < text.length) {
-      const boundary = text.lastIndexOf(' ', end)
-      if (boundary > start + 8) end = boundary + 1
+      const boundary = text.lastIndexOf(' ', end);
+      if (boundary > start + 8) end = boundary + 1;
     }
-    if (end <= start) end = Math.min(start + INLINE_ANCHOR_CHUNK_SIZE, text.length)
-    chunks.push({ text: text.slice(start, end), start, end })
-    start = end
+    if (end <= start) end = Math.min(start + INLINE_ANCHOR_CHUNK_SIZE, text.length);
+    chunks.push({ text: text.slice(start, end), start, end });
+    start = end;
   }
 
-  return chunks
+  return chunks;
 }
 
-function renderAnchoredText(text: string, sourceStartOffset?: number, sourceEndOffset?: number, escapeHtml: (value: string) => string = escapeHtmlContent): string {
-  const escapedText = escapeHtml(text)
-  if (sourceStartOffset === undefined || sourceEndOffset === undefined || sourceEndOffset <= sourceStartOffset) {
-    return escapedText
+function renderAnchoredText(
+  text: string,
+  sourceStartOffset?: number,
+  sourceEndOffset?: number,
+  escapeHtml: (value: string) => string = escapeHtmlContent
+): string {
+  const escapedText = escapeHtml(text);
+  if (
+    sourceStartOffset === undefined ||
+    sourceEndOffset === undefined ||
+    sourceEndOffset <= sourceStartOffset
+  ) {
+    return escapedText;
   }
-  if (!text.trim()) return escapedText
+  if (!text.trim()) return escapedText;
 
-  return splitTextIntoChunks(text).map(chunk => {
-    const attrs = buildSourceAttrs({
-      sourceStartOffset: sourceStartOffset + chunk.start,
-      sourceEndOffset: sourceStartOffset + chunk.end
-    }, 'text')
-    return `<span class="sync-text-anchor"${attrs}>${escapeHtml(chunk.text)}</span>`
-  }).join('')
+  return splitTextIntoChunks(text)
+    .map(chunk => {
+      const attrs = buildSourceAttrs(
+        {
+          sourceStartOffset: sourceStartOffset + chunk.start,
+          sourceEndOffset: sourceStartOffset + chunk.end,
+        },
+        'text'
+      );
+      return `<span class="sync-text-anchor"${attrs}>${escapeHtml(chunk.text)}</span>`;
+    })
+    .join('');
 }
 
 // ========== 自定义块渲染函数 ==========
@@ -155,12 +181,12 @@ function renderAnchoredText(text: string, sourceStartOffset?: number, sourceEndO
  * @param lineNum - 源码行号（可选，用于滚动同步）
  */
 function renderNote(content: string, params: string[], sourceAttrs = ''): string {
-  const type = params[0] || 'info'
-  const title = params[1] || ''
+  const type = params[0] || 'info';
+  const title = params[1] || '';
 
-  const titleHtml = title ? `<div class="custom-note-title">${title}</div>` : ''
+  const titleHtml = title ? `<div class="custom-note-title">${title}</div>` : '';
 
-  return `<div class="custom-note custom-note-${type}"${sourceAttrs}>${titleHtml}<div class="custom-note-content">${content}</div></div>`
+  return `<div class="custom-note custom-note-${type}"${sourceAttrs}>${titleHtml}<div class="custom-note-content">${content}</div></div>`;
 }
 
 /**
@@ -169,25 +195,33 @@ function renderNote(content: string, params: string[], sourceAttrs = ''): string
  * @param params - [默认标签名(可选)]
  * @param lineNum - 源码行号（可选，用于滚动同步）
  */
-function renderTabs(tabsData: Array<{ name: string; content: string }>, params: string[], sourceAttrs = ''): string {
-  if (tabsData.length === 0) return ''
+function renderTabs(
+  tabsData: Array<{ name: string; content: string }>,
+  params: string[],
+  sourceAttrs = ''
+): string {
+  if (tabsData.length === 0) return '';
 
-  const tabsId = `tabs-${Math.random().toString(36).slice(2, 9)}`
-  const activeTab = params[0] || tabsData[0]?.name || ''
+  const tabsId = `tabs-${Math.random().toString(36).slice(2, 9)}`;
+  const activeTab = params[0] || tabsData[0]?.name || '';
 
   // 生成标签头
-  const tabHeaders = tabsData.map(tab => {
-    const isActive = tab.name === activeTab ? 'active' : ''
-    return `<button class="custom-tab-btn ${isActive}" onclick="switchTab('${tabsId}', '${tab.name}')">${tab.name}</button>`
-  }).join('')
+  const tabHeaders = tabsData
+    .map(tab => {
+      const isActive = tab.name === activeTab ? 'active' : '';
+      return `<button class="custom-tab-btn ${isActive}" onclick="switchTab('${tabsId}', '${tab.name}')">${tab.name}</button>`;
+    })
+    .join('');
 
   // 生成标签内容
-  const tabContents = tabsData.map(tab => {
-    const isActive = tab.name === activeTab ? 'active' : ''
-    return `<div class="custom-tab-panel ${isActive}" data-tab="${tab.name}">${tab.content}</div>`
-  }).join('')
+  const tabContents = tabsData
+    .map(tab => {
+      const isActive = tab.name === activeTab ? 'active' : '';
+      return `<div class="custom-tab-panel ${isActive}" data-tab="${tab.name}">${tab.content}</div>`;
+    })
+    .join('');
 
-  return `<div class="custom-tabs" id="${tabsId}"${sourceAttrs}><div class="custom-tabs-header">${tabHeaders}</div><div class="custom-tabs-content">${tabContents}</div></div>`
+  return `<div class="custom-tabs" id="${tabsId}"${sourceAttrs}><div class="custom-tabs-header">${tabHeaders}</div><div class="custom-tabs-content">${tabContents}</div></div>`;
 }
 
 /**
@@ -197,12 +231,12 @@ function renderTabs(tabsData: Array<{ name: string; content: string }>, params: 
  * @param lineNum - 源码行号（可选，用于滚动同步）
  */
 function renderFold(content: string, params: string[], sourceAttrs = ''): string {
-  const title = params[0] || '点击展开'
-  const open = params[1] === 'true' || params[1] === 'open'
-  const foldId = `fold-${Math.random().toString(36).slice(2, 9)}`
-  const openClass = open ? 'open' : ''
+  const title = params[0] || '点击展开';
+  const open = params[1] === 'true' || params[1] === 'open';
+  const foldId = `fold-${Math.random().toString(36).slice(2, 9)}`;
+  const openClass = open ? 'open' : '';
 
-  return `<div class="custom-fold ${openClass}" id="${foldId}"${sourceAttrs}><div class="custom-fold-header" onclick="toggleFold('${foldId}')"><i class="ri-arrow-right-s-line"></i><span>${title}</span></div><div class="custom-fold-content"><div>${content}</div></div></div>`
+  return `<div class="custom-fold ${openClass}" id="${foldId}"${sourceAttrs}><div class="custom-fold-header" onclick="toggleFold('${foldId}')"><i class="ri-arrow-right-s-line"></i><span>${title}</span></div><div class="custom-fold-content"><div>${content}</div></div></div>`;
 }
 
 /**
@@ -211,16 +245,16 @@ function renderFold(content: string, params: string[], sourceAttrs = ''): string
  * @param lineNum - 源码行号（可选，用于滚动同步）
  */
 function renderLinkCard(params: string[], sourceAttrs = ''): string {
-  const title = params[0] || ''
-  const link = params[1] || ''
-  const description = params.slice(2).join(' ')
+  const title = params[0] || '';
+  const link = params[1] || '';
+  const description = params.slice(2).join(' ');
 
-  if (!link) return ''
+  if (!link) return '';
 
   // 判断是否为外部链接
-  const isExternal = link.startsWith('http://') || link.startsWith('https://')
-  const linkType = isExternal ? '引用站外链接' : '站内链接'
-  const linkTypeClass = isExternal ? 'external' : 'internal'
+  const isExternal = link.startsWith('http://') || link.startsWith('https://');
+  const linkType = isExternal ? '引用站外链接' : '站内链接';
+  const linkTypeClass = isExternal ? 'external' : 'internal';
 
   return `<div class="custom-link-card ${linkTypeClass}"${sourceAttrs}>
     <div class="custom-link-type">${linkType}</div>
@@ -236,7 +270,7 @@ function renderLinkCard(params: string[], sourceAttrs = ''): string {
         <i class="ri-arrow-right-up-line"></i>
       </div>
     </a>
-  </div>`
+  </div>`;
 }
 
 /**
@@ -245,26 +279,30 @@ function renderLinkCard(params: string[], sourceAttrs = ''): string {
  * @param lineNum - 源码行号（可选，用于滚动同步）
  */
 function renderVideo(params: string[], sourceAttrs = ''): string {
-  if (params.length === 0) return ''
-  const platformOrUrl = params[0] || ''
-  const videoId = params[1] || ''
+  if (params.length === 0) return '';
+  const platformOrUrl = params[0] || '';
+  const videoId = params[1] || '';
 
   // B站视频
   if (platformOrUrl === 'bilibili' && videoId) {
-    return `<div class="custom-video"${sourceAttrs}><iframe src="//player.bilibili.com/player.html?bvid=${videoId}&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" sandbox="allow-scripts allow-same-origin allow-popups" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`
+    return `<div class="custom-video"${sourceAttrs}><iframe src="//player.bilibili.com/player.html?bvid=${videoId}&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" sandbox="allow-scripts allow-same-origin allow-popups" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
   }
 
   // YouTube视频
   if (platformOrUrl === 'youtube' && videoId) {
-    return `<div class="custom-video"${sourceAttrs}><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`
+    return `<div class="custom-video"${sourceAttrs}><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
   }
 
   // 本地/在线视频URL
-  if (platformOrUrl.startsWith('http://') || platformOrUrl.startsWith('https://') || platformOrUrl.startsWith('/')) {
-    return `<div class="custom-video"${sourceAttrs}><video src="${platformOrUrl}" controls preload="metadata"></video></div>`
+  if (
+    platformOrUrl.startsWith('http://') ||
+    platformOrUrl.startsWith('https://') ||
+    platformOrUrl.startsWith('/')
+  ) {
+    return `<div class="custom-video"${sourceAttrs}><video src="${platformOrUrl}" controls preload="metadata"></video></div>`;
   }
 
-  return ''
+  return '';
 }
 
 /**
@@ -273,498 +311,706 @@ function renderVideo(params: string[], sourceAttrs = ''): string {
  * @param lineNum - 源码行号（可选，用于滚动同步）
  */
 function renderPhotoWall(rows: string[][], sourceAttrs = ''): string {
-  if (rows.length === 0) return ''
+  if (rows.length === 0) return '';
 
   // 生成每一行的图片
-  const rowsHtml = rows.map(row => {
-    const imagesHtml = row.map(img => {
-      // 处理图片语法：支持 markdown 图片语法和直接 URL
-      let imgSrc = img
-      let imgAlt = ''
+  const rowsHtml = rows
+    .map(row => {
+      const imagesHtml = row
+        .map(img => {
+          // 处理图片语法：支持 markdown 图片语法和直接 URL
+          let imgSrc = img;
+          let imgAlt = '';
 
-      // 检查是否为 markdown 图片语法 ![alt](url)
-      const imgMatch = img.match(/^!\[(.*?)\]\((.*?)\)$/)
-      if (imgMatch) {
-        imgAlt = imgMatch[1] || ''
-        imgSrc = imgMatch[2] || img
-      }
+          // 检查是否为 markdown 图片语法 ![alt](url)
+          const imgMatch = img.match(/^!\[(.*?)\]\((.*?)\)$/);
+          if (imgMatch) {
+            imgAlt = imgMatch[1] || '';
+            imgSrc = imgMatch[2] || img;
+          }
 
-      return `<div class="custom-photo-wall-item"><img src="${imgSrc}" alt="${imgAlt || '图片'}" loading="lazy" /></div>`
-    }).join('')
+          return `<div class="custom-photo-wall-item"><img src="${imgSrc}" alt="${imgAlt || '图片'}" loading="lazy" /></div>`;
+        })
+        .join('');
 
-    return `<div class="custom-photo-wall-row">${imagesHtml}</div>`
-  }).join('')
+      return `<div class="custom-photo-wall-row">${imagesHtml}</div>`;
+    })
+    .join('');
 
-  return `<div class="custom-photo-wall"${sourceAttrs}><div class="custom-photo-wall-container">${rowsHtml}</div></div>`
+  return `<div class="custom-photo-wall"${sourceAttrs}><div class="custom-photo-wall-container">${rowsHtml}</div></div>`;
 }
 
 function stripNestedSyncAttrs(content: string): string {
-  return content.replace(/\s*data-(?:source|sync)-[\w-]+="[^"]*"/g, '')
+  return content.replace(/\s*data-(?:source|sync)-[\w-]+="[^"]*"/g, '');
 }
 
 function createMarkdownRenderer(): MarkdownIt {
   const instance = new MarkdownIt({
     html: false,
     breaks: true,
-    linkify: true
-  })
+    linkify: true,
+  });
 
   instance.use(anchor, {
     slugify: generateHeadingId,
     permalink: false,
-    level: [1, 2, 3, 4, 5, 6]
-  })
+    level: [1, 2, 3, 4, 5, 6],
+  });
 
   instance.use(taskLists, {
     enabled: true,
     label: true,
-    labelAfter: false
-  })
+    labelAfter: false,
+  });
 
-  instance.use(mark)
+  instance.use(mark);
   instance.use(linkAttributes, {
     matcher(href: string) {
-      return href.startsWith('http://') || href.startsWith('https://')
+      return href.startsWith('http://') || href.startsWith('https://');
     },
     attrs: {
       target: '_blank',
-      rel: 'noopener noreferrer'
-    }
-  })
-  instance.use(kbd)
-  instance.use(sup)
-  instance.use(sub)
-  instance.use(underline)
-  instance.use(katex, { throwOnError: false, errorColor: '#cc0000' })
-  instance.use(customBlocksPlugin)
+      rel: 'noopener noreferrer',
+    },
+  });
+  instance.use(kbd);
+  instance.use(sup);
+  instance.use(sub);
+  instance.use(underline);
+  instance.use(katex, { throwOnError: false, errorColor: '#cc0000' });
+  instance.use(customBlocksPlugin);
 
-  return instance
+  return instance;
 }
 
 function renderFence(token: any, escapeHtml: (value: string) => string, sourceAttrs = ''): string {
-  const code = token.content
-  const lang = token.info.trim()
+  const code = token.content;
+  const lang = token.info.trim();
 
   if (lang === 'mermaid') {
-    return `<pre class="mermaid"${sourceAttrs}><code>${escapeHtml(code)}</code></pre>`
+    return `<pre class="mermaid"${sourceAttrs}><code>${escapeHtml(code)}</code></pre>`;
   }
 
-  let highlightedCode = ''
-  const displayLang = (lang || 'text').toUpperCase()
+  let highlightedCode = '';
+  const displayLang = (lang || 'text').toUpperCase();
 
   if (lang && hljs.getLanguage(lang)) {
     try {
-      highlightedCode = hljs.highlight(code, { language: lang, ignoreIllegals: true }).value
+      highlightedCode = hljs.highlight(code, {
+        language: lang,
+        ignoreIllegals: true,
+      }).value;
     } catch {
-      highlightedCode = escapeHtml(code)
+      highlightedCode = escapeHtml(code);
     }
   } else {
-    highlightedCode = escapeHtml(code)
+    highlightedCode = escapeHtml(code);
   }
 
   const numberedLines = highlightedCode
     .replace(/\n$/, '')
     .split('\n')
-    .map((line, index) => `<span class="line-number" data-line="${index + 1}"></span><span class="line-content">${line}</span>`)
-    .join('\n')
+    .map(
+      (line, index) =>
+        `<span class="line-number" data-line="${index + 1}"></span><span class="line-content">${line}</span>`
+    )
+    .join('\n');
 
-  return `<div class="code-block-container"${sourceAttrs}><div class="code-toolbar"><button class="code-fold-btn" onclick="this.closest('.code-block-container').classList.toggle('collapsed')" title="折叠/展开"><i class="ri-arrow-down-s-line"></i></button><span class="code-lang">${displayLang}</span><button class="code-copy-btn" onclick="copyCodeBlock(this)" title="复制代码"><i class="ri-file-copy-fill"></i></button></div><pre><code>${numberedLines}</code></pre></div>`
+  return `<div class="code-block-container"${sourceAttrs}><div class="code-toolbar"><button class="code-fold-btn" onclick="this.closest('.code-block-container').classList.toggle('collapsed')" title="折叠/展开"><i class="ri-arrow-down-s-line"></i></button><span class="code-lang">${displayLang}</span><button class="code-copy-btn" onclick="copyCodeBlock(this)" title="复制代码"><i class="ri-file-copy-fill"></i></button></div><pre><code>${numberedLines}</code></pre></div>`;
 }
 
 // 创建 markdown-it 实例
-const md = createMarkdownRenderer()
+const md = createMarkdownRenderer();
 md.renderer.rules.fence = (tokens, idx) => {
-  const token = tokens[idx]
-  if (!token) return ''
-  return renderFence(token, md.utils.escapeHtml)
-}
+  const token = tokens[idx];
+  if (!token) return '';
+  return renderFence(token, md.utils.escapeHtml);
+};
 function customBlocksPlugin(md: MarkdownIt) {
   // 块级规则
   md.block.ruler.before('fence', 'custom_blocks', (state, startLine, endLine, silent) => {
     const buildBlockSourceAttrs = (fromLine: number, toLine: number) => {
-      const sourceStartOffset = state.bMarks[fromLine] ?? 0
-      const sourceEndOffset = toLine < state.bMarks.length ? (state.bMarks[toLine] ?? state.src.length) : state.src.length
-      return buildSourceAttrs({
-        sourceStartLine: fromLine,
-        sourceEndLine: toLine,
-        sourceStartOffset,
-        sourceEndOffset
-      }, 'block')
-    }
+      const sourceStartOffset = state.bMarks[fromLine] ?? 0;
+      const sourceEndOffset =
+        toLine < state.bMarks.length
+          ? (state.bMarks[toLine] ?? state.src.length)
+          : state.src.length;
+      return buildSourceAttrs(
+        {
+          sourceStartLine: fromLine,
+          sourceEndLine: toLine,
+          sourceStartOffset,
+          sourceEndOffset,
+        },
+        'block'
+      );
+    };
 
-    const pos = (state.bMarks[startLine] ?? 0) + (state.tShift[startLine] ?? 0)
-    const max = state.eMarks[startLine] ?? 0
-    const lineText = state.src.slice(pos, max).trim()
+    const pos = (state.bMarks[startLine] ?? 0) + (state.tShift[startLine] ?? 0);
+    const max = state.eMarks[startLine] ?? 0;
+    const lineText = state.src.slice(pos, max).trim();
 
     // 检查是否为自定义块起始标签
     if (!lineText.startsWith(':::')) {
-      return false
+      return false;
     }
 
     // 检查是否为自闭合标签
     if (isSelfClosing(lineText)) {
-      if (silent) return true
+      if (silent) return true;
 
-      const { tag, params } = extractTagAndParams(lineText)
+      const { tag, params } = extractTagAndParams(lineText);
 
       // 处理自闭合标签
-      let html = ''
+      let html = '';
       if (tag === 'link') {
-        html = renderLinkCard(params, buildBlockSourceAttrs(startLine, startLine + 1))
+        html = renderLinkCard(params, buildBlockSourceAttrs(startLine, startLine + 1));
       } else if (tag === 'video') {
-        html = renderVideo(params, buildBlockSourceAttrs(startLine, startLine + 1))
+        html = renderVideo(params, buildBlockSourceAttrs(startLine, startLine + 1));
       }
 
       if (html) {
-        const token = state.push('html_block', '', 0)
-        token.content = html
-        token.map = [startLine, startLine + 1]
-        state.line = startLine + 1
-        return true
+        const token = state.push('html_block', '', 0);
+        token.content = html;
+        token.map = [startLine, startLine + 1];
+        state.line = startLine + 1;
+        return true;
       }
 
-      return false
+      return false;
     }
 
     // 处理块级标签
-    const { tag, params } = extractTagAndParams(lineText)
-    if (!tag) return false
+    const { tag, params } = extractTagAndParams(lineText);
+    if (!tag) return false;
 
     // 查找结束标签
-    const endTagFull = `end${tag}`
-    let nextLine = startLine + 1
-    let foundEnd = false
-    let contentLines: string[] = []
+    const endTagFull = `end${tag}`;
+    let nextLine = startLine + 1;
+    let foundEnd = false;
+    let contentLines: string[] = [];
 
     // 特殊处理 tabs
     if (tag === 'tabs') {
-      const tabsData: Array<{ name: string; content: string }> = []
-      let currentTab: { name: string; content: string } | null = null
+      const tabsData: Array<{ name: string; content: string }> = [];
+      let currentTab: { name: string; content: string } | null = null;
 
       while (nextLine < endLine) {
-        const linePos = state.bMarks[nextLine] ?? 0
-        const lineMax = state.eMarks[nextLine] ?? 0
-        const line = state.src.slice(linePos, lineMax).trim()
+        const linePos = state.bMarks[nextLine] ?? 0;
+        const lineMax = state.eMarks[nextLine] ?? 0;
+        const line = state.src.slice(linePos, lineMax).trim();
 
         if (line.startsWith(':::endtabs')) {
-          foundEnd = true
-          break
+          foundEnd = true;
+          break;
         }
 
         if (line.startsWith(':::tab')) {
           // 保存上一个 tab
           if (currentTab) {
-            tabsData.push(currentTab)
+            tabsData.push(currentTab);
           }
           // 开始新 tab
-          const tabParams = extractTagAndParams(line).params
-          currentTab = { name: tabParams[0] || `Tab ${tabsData.length + 1}`, content: '' }
+          const tabParams = extractTagAndParams(line).params;
+          currentTab = {
+            name: tabParams[0] || `Tab ${tabsData.length + 1}`,
+            content: '',
+          };
         } else if (line.startsWith(':::endtab')) {
           // tab 结束，不做处理
         } else {
           // tab 内容
           if (currentTab) {
-            currentTab.content += state.src.slice(linePos, lineMax) + '\n'
+            currentTab.content += state.src.slice(linePos, lineMax) + '\n';
           }
         }
-        nextLine++
+        nextLine++;
       }
 
       // 保存最后一个 tab
       if (currentTab) {
-        tabsData.push(currentTab)
+        tabsData.push(currentTab);
       }
 
       if (foundEnd && tabsData.length > 0) {
-        if (silent) return true
+        if (silent) return true;
 
         // 渲染每个 tab 的内容
         // 注意：嵌套内容会产生错误的行号（从0开始），需要移除
         const renderedTabs = tabsData.map(tab => {
-          let content = md.render(tab.content)
+          let content = md.render(tab.content);
           // 移除嵌套块的同步属性，避免行号/偏移冲突
-          content = stripNestedSyncAttrs(content)
-          return { name: tab.name, content }
-        })
+          content = stripNestedSyncAttrs(content);
+          return { name: tab.name, content };
+        });
 
-        const html = renderTabs(renderedTabs, params, buildBlockSourceAttrs(startLine, nextLine + 1))
+        const html = renderTabs(
+          renderedTabs,
+          params,
+          buildBlockSourceAttrs(startLine, nextLine + 1)
+        );
 
-        const token = state.push('html_block', '', 0)
-        token.content = html
-        token.map = [startLine, nextLine + 1]
-        state.line = nextLine + 1
-        return true
+        const token = state.push('html_block', '', 0);
+        token.content = html;
+        token.map = [startLine, nextLine + 1];
+        state.line = nextLine + 1;
+        return true;
       }
 
-      return false
+      return false;
     }
 
     // 特殊处理 photo
     if (tag === 'photo') {
-      const rows: string[][] = []
-      let currentRow: string[] = []
+      const rows: string[][] = [];
+      let currentRow: string[] = [];
 
       while (nextLine < endLine) {
-        const linePos = (state.bMarks[nextLine] ?? 0) + (state.tShift[nextLine] ?? 0)
-        const lineMax = state.eMarks[nextLine] ?? 0
-        const line = state.src.slice(linePos, lineMax).trim()
+        const linePos = (state.bMarks[nextLine] ?? 0) + (state.tShift[nextLine] ?? 0);
+        const lineMax = state.eMarks[nextLine] ?? 0;
+        const line = state.src.slice(linePos, lineMax).trim();
 
         if (line === ':::endphoto') {
-          foundEnd = true
-          break
+          foundEnd = true;
+          break;
         }
 
         // 检查是否为换行标记 :::n
         if (line === ':::n') {
           // 保存当前行并开始新行
           if (currentRow.length > 0) {
-            rows.push(currentRow)
-            currentRow = []
+            rows.push(currentRow);
+            currentRow = [];
           }
         } else {
           // 解析图片（支持多个图片用空格分隔）
-          const images = line.split(/\s+/).filter(img => img.trim())
-          currentRow.push(...images)
+          const images = line.split(/\s+/).filter(img => img.trim());
+          currentRow.push(...images);
         }
 
-        nextLine++
+        nextLine++;
       }
 
       // 保存最后一行
       if (currentRow.length > 0) {
-        rows.push(currentRow)
+        rows.push(currentRow);
       }
 
       if (foundEnd && rows.length > 0) {
-        if (silent) return true
+        if (silent) return true;
 
-        const html = renderPhotoWall(rows, buildBlockSourceAttrs(startLine, nextLine + 1))
+        const html = renderPhotoWall(rows, buildBlockSourceAttrs(startLine, nextLine + 1));
 
-        const token = state.push('html_block', '', 0)
-        token.content = html
-        token.map = [startLine, nextLine + 1]
-        state.line = nextLine + 1
-        return true
+        const token = state.push('html_block', '', 0);
+        token.content = html;
+        token.map = [startLine, nextLine + 1];
+        state.line = nextLine + 1;
+        return true;
       }
 
-      return false
+      return false;
     }
 
     // 处理其他块级标签（note, fold）
     while (nextLine < endLine) {
-      const linePos = state.bMarks[nextLine] ?? 0
-      const lineMax = state.eMarks[nextLine] ?? 0
-      const line = state.src.slice(linePos, lineMax).trim()
+      const linePos = state.bMarks[nextLine] ?? 0;
+      const lineMax = state.eMarks[nextLine] ?? 0;
+      const line = state.src.slice(linePos, lineMax).trim();
 
       if (line === `:::${endTagFull}`) {
-        foundEnd = true
-        break
+        foundEnd = true;
+        break;
       }
 
-      contentLines.push(state.src.slice(linePos, lineMax))
-      nextLine++
+      contentLines.push(state.src.slice(linePos, lineMax));
+      nextLine++;
     }
 
-    if (!foundEnd) return false
-    if (silent) return true
+    if (!foundEnd) return false;
+    if (silent) return true;
 
     // 渲染内容
     // 注意：嵌套内容会产生错误的行号（从0开始），需要移除
-    let content = md.render(contentLines.join('\n'))
-    content = stripNestedSyncAttrs(content)
+    let content = md.render(contentLines.join('\n'));
+    content = stripNestedSyncAttrs(content);
 
-    let html = ''
+    let html = '';
     if (tag === 'note') {
-      html = renderNote(content, params, buildBlockSourceAttrs(startLine, nextLine + 1))
+      html = renderNote(content, params, buildBlockSourceAttrs(startLine, nextLine + 1));
     } else if (tag === 'fold') {
-      html = renderFold(content, params, buildBlockSourceAttrs(startLine, nextLine + 1))
+      html = renderFold(content, params, buildBlockSourceAttrs(startLine, nextLine + 1));
     }
 
     if (html) {
-      const token = state.push('html_block', '', 0)
-      token.content = html
-      token.map = [startLine, nextLine + 1]
-      state.line = nextLine + 1
-      return true
+      const token = state.push('html_block', '', 0);
+      token.content = html;
+      token.map = [startLine, nextLine + 1];
+      state.line = nextLine + 1;
+      return true;
     }
 
-    return false
-  })
+    return false;
+  });
 }
 
 // DOMPurify 配置
 const SANITIZE_CONFIG = {
   ALLOWED_TAGS: [
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'hr',
-    'strong', 'em', 'u', 's', 'del', 'ins', 'mark', 'code', 'pre',
-    'ul', 'ol', 'li', 'blockquote', 'cite', 'footer',
-    'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
-    'div', 'span', 'sup', 'sub', 'kbd', 'abbr',
-    'input', 'label', 'button', 'i', 'section',
-    'svg', 'path', 'g', 'rect', 'circle', 'ellipse', 'line', 'polygon', 'polyline', 'text', 'foreignObject',
-    'video', 'iframe', 'audio', 'source',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'p',
+    'br',
+    'hr',
+    'strong',
+    'em',
+    'u',
+    's',
+    'del',
+    'ins',
+    'mark',
+    'code',
+    'pre',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'cite',
+    'footer',
+    'a',
+    'img',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'th',
+    'td',
+    'div',
+    'span',
+    'sup',
+    'sub',
+    'kbd',
+    'abbr',
+    'input',
+    'label',
+    'button',
+    'i',
+    'section',
+    'svg',
+    'path',
+    'g',
+    'rect',
+    'circle',
+    'ellipse',
+    'line',
+    'polygon',
+    'polyline',
+    'text',
+    'foreignObject',
+    'video',
+    'iframe',
+    'audio',
+    'source',
     // KaTeX / MathML 标签
-    'math', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'msubsup', 'mfrac', 'msqrt', 'mroot',
-    'mover', 'munder', 'munderover', 'mtable', 'mtr', 'mtd', 'mtext', 'mspace', 'mpadded',
-    'menclose', 'mstyle', 'merror', 'mfenced', 'mphantom', 'annotation', 'semantics'
+    'math',
+    'mrow',
+    'mi',
+    'mo',
+    'mn',
+    'msup',
+    'msub',
+    'msubsup',
+    'mfrac',
+    'msqrt',
+    'mroot',
+    'mover',
+    'munder',
+    'munderover',
+    'mtable',
+    'mtr',
+    'mtd',
+    'mtext',
+    'mspace',
+    'mpadded',
+    'menclose',
+    'mstyle',
+    'merror',
+    'mfenced',
+    'mphantom',
+    'annotation',
+    'semantics',
   ],
   ALLOWED_ATTR: [
-    'href', 'title', 'target', 'rel', 'src', 'alt', 'width', 'height',
-    'class', 'id', 'colspan', 'rowspan', 'align',
-    'type', 'checked', 'disabled', 'for', 'onclick', 'start',
-    'data-source-line', 'data-source-start-line', 'data-source-end-line',
-    'data-source-start-offset', 'data-source-end-offset', 'data-sync-kind',
-    'd', 'fill', 'stroke', 'stroke-width', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
-    'x1', 'y1', 'x2', 'y2', 'points', 'transform', 'viewBox', 'xmlns',
-    'text-anchor', 'font-size', 'font-family', 'dominant-baseline', 'data-processed',
-    'controls', 'preload', 'autoplay', 'loop', 'muted', 'poster',
-    'allowfullscreen', 'scrolling', 'border', 'frameborder', 'framespacing', 'allow',
-    'sandbox', 'referrerpolicy',
-    'data-server', 'data-type', 'data-id',
+    'href',
+    'title',
+    'target',
+    'rel',
+    'src',
+    'alt',
+    'width',
+    'height',
+    'class',
+    'id',
+    'colspan',
+    'rowspan',
+    'align',
+    'type',
+    'checked',
+    'disabled',
+    'for',
+    'onclick',
+    'start',
+    'data-source-line',
+    'data-source-start-line',
+    'data-source-end-line',
+    'data-source-start-offset',
+    'data-source-end-offset',
+    'data-sync-kind',
+    'd',
+    'fill',
+    'stroke',
+    'stroke-width',
+    'x',
+    'y',
+    'cx',
+    'cy',
+    'r',
+    'rx',
+    'ry',
+    'x1',
+    'y1',
+    'x2',
+    'y2',
+    'points',
+    'transform',
+    'viewBox',
+    'xmlns',
+    'text-anchor',
+    'font-size',
+    'font-family',
+    'dominant-baseline',
+    'data-processed',
+    'controls',
+    'preload',
+    'autoplay',
+    'loop',
+    'muted',
+    'poster',
+    'allowfullscreen',
+    'scrolling',
+    'border',
+    'frameborder',
+    'framespacing',
+    'allow',
+    'sandbox',
+    'referrerpolicy',
+    'data-server',
+    'data-type',
+    'data-id',
     // KaTeX / MathML 属性
-    'style', 'mathvariant', 'mathcolor', 'mathbackground', 'mathsize',
-    'displaystyle', 'scriptlevel', 'linethickness', 'lspace', 'rspace',
-    'stretchy', 'symmetric', 'largeop', 'movablelimits', 'accent',
-    'minsize', 'maxsize', 'open', 'close', 'separators', 'notation',
-    'encoding', 'definitionurl', 'display', 'xmlns:xlink',
-    'height', 'depth', 'voffset', 'width', 'lspace', 'width',
-    'columnalign', 'rowalign', 'columnspacing', 'rowspacing'
+    'style',
+    'mathvariant',
+    'mathcolor',
+    'mathbackground',
+    'mathsize',
+    'displaystyle',
+    'scriptlevel',
+    'linethickness',
+    'lspace',
+    'rspace',
+    'stretchy',
+    'symmetric',
+    'largeop',
+    'movablelimits',
+    'accent',
+    'minsize',
+    'maxsize',
+    'open',
+    'close',
+    'separators',
+    'notation',
+    'encoding',
+    'definitionurl',
+    'display',
+    'xmlns:xlink',
+    'height',
+    'depth',
+    'voffset',
+    'width',
+    'lspace',
+    'width',
+    'columnalign',
+    'rowalign',
+    'columnspacing',
+    'rowspacing',
   ],
   ALLOW_DATA_ATTR: true,
-  ADD_ATTR: ['target', 'onclick', 'allowfullscreen']
-}
+  ADD_ATTR: ['target', 'onclick', 'allowfullscreen'],
+};
 
 // 渲染 Markdown 为 HTML
 export function renderMarkdown(markdown: string): string {
-  if (!markdown) return ''
+  if (!markdown) return '';
 
-  const rawHtml = md.render(markdown)
+  const rawHtml = md.render(markdown);
 
-  return DOMPurify.sanitize(rawHtml, SANITIZE_CONFIG)
+  return DOMPurify.sanitize(rawHtml, SANITIZE_CONFIG);
 }
 
 // 创建带行号映射的 markdown-it 实例
 function createLineNumberMd(): MarkdownIt {
-  const lineMd = createMarkdownRenderer()
+  const lineMd = createMarkdownRenderer();
 
   lineMd.core.ruler.push('sync_source_meta', state => {
-    const lineStarts = getLineStartOffsets(state.src)
+    const lineStarts = getLineStartOffsets(state.src);
 
     state.tokens.forEach(token => {
       if (token.map?.[0] !== undefined) {
-        const sourceStartLine = token.map[0]
-        const sourceEndLine = token.map[1] ?? sourceStartLine + 1
+        const sourceStartLine = token.map[0];
+        const sourceEndLine = token.map[1] ?? sourceStartLine + 1;
         setTokenSourceMeta(
           token,
           sourceStartLine,
           sourceEndLine,
           getOffsetForLine(lineStarts, sourceStartLine, state.src.length),
           getOffsetForLine(lineStarts, sourceEndLine, state.src.length)
-        )
+        );
       }
 
-      if (token.type !== 'inline' || !token.children?.length || token.map?.[0] === undefined) return
+      if (token.type !== 'inline' || !token.children?.length || token.map?.[0] === undefined)
+        return;
 
-      const sourceStartLine = token.map[0]
-      const sourceEndLine = token.map[1] ?? sourceStartLine + 1
-      const blockStartOffset = getOffsetForLine(lineStarts, sourceStartLine, state.src.length)
-      const blockEndOffset = getOffsetForLine(lineStarts, sourceEndLine, state.src.length)
-      let cursor = blockStartOffset
+      const sourceStartLine = token.map[0];
+      const sourceEndLine = token.map[1] ?? sourceStartLine + 1;
+      const blockStartOffset = getOffsetForLine(lineStarts, sourceStartLine, state.src.length);
+      const blockEndOffset = getOffsetForLine(lineStarts, sourceEndLine, state.src.length);
+      let cursor = blockStartOffset;
 
       token.children.forEach(child => {
         if (child.type === 'image') {
-          setTokenSourceMeta(child, sourceStartLine, sourceEndLine, blockStartOffset, blockEndOffset)
-          return
+          setTokenSourceMeta(
+            child,
+            sourceStartLine,
+            sourceEndLine,
+            blockStartOffset,
+            blockEndOffset
+          );
+          return;
         }
 
-        if (child.type !== 'text' && child.type !== 'code_inline') return
-        if (!child.content) return
+        if (child.type !== 'text' && child.type !== 'code_inline') return;
+        if (!child.content) return;
 
-        let matchIndex = state.src.indexOf(child.content, cursor)
+        let matchIndex = state.src.indexOf(child.content, cursor);
         if (matchIndex === -1 || matchIndex >= blockEndOffset) {
-          matchIndex = state.src.indexOf(child.content, blockStartOffset)
+          matchIndex = state.src.indexOf(child.content, blockStartOffset);
         }
-        if (matchIndex === -1 || matchIndex >= blockEndOffset) return
+        if (matchIndex === -1 || matchIndex >= blockEndOffset) return;
 
-        const matchEnd = Math.min(matchIndex + child.content.length, blockEndOffset)
-        setTokenSourceMeta(child, sourceStartLine, sourceEndLine, matchIndex, matchEnd)
-        cursor = matchEnd
-      })
-    })
-  })
+        const matchEnd = Math.min(matchIndex + child.content.length, blockEndOffset);
+        setTokenSourceMeta(child, sourceStartLine, sourceEndLine, matchIndex, matchEnd);
+        cursor = matchEnd;
+      });
+    });
+  });
 
   const applySourceAttrsToToken = (token: any, kind: 'block' | 'text' = 'block') => {
-    const meta = token?.meta
-    if (!meta) return
+    const meta = token?.meta;
+    if (!meta) return;
 
     if (meta.sourceStartLine !== undefined) {
-      token.attrSet('data-source-line', String(meta.sourceStartLine))
-      token.attrSet('data-source-start-line', String(meta.sourceStartLine))
+      token.attrSet('data-source-line', String(meta.sourceStartLine));
+      token.attrSet('data-source-start-line', String(meta.sourceStartLine));
     }
-    if (meta.sourceEndLine !== undefined) token.attrSet('data-source-end-line', String(meta.sourceEndLine))
-    if (meta.sourceStartOffset !== undefined) token.attrSet('data-source-start-offset', String(meta.sourceStartOffset))
-    if (meta.sourceEndOffset !== undefined) token.attrSet('data-source-end-offset', String(meta.sourceEndOffset))
-    token.attrSet('data-sync-kind', kind)
-  }
+    if (meta.sourceEndLine !== undefined)
+      token.attrSet('data-source-end-line', String(meta.sourceEndLine));
+    if (meta.sourceStartOffset !== undefined)
+      token.attrSet('data-source-start-offset', String(meta.sourceStartOffset));
+    if (meta.sourceEndOffset !== undefined)
+      token.attrSet('data-source-end-offset', String(meta.sourceEndOffset));
+    token.attrSet('data-sync-kind', kind);
+  };
 
   lineMd.renderer.rules.fence = (tokens, idx) => {
-    const token = tokens[idx]
-    if (!token) return ''
-    return renderFence(token, lineMd.utils.escapeHtml, buildSourceAttrs(token.meta, 'block'))
-  }
+    const token = tokens[idx];
+    if (!token) return '';
+    return renderFence(token, lineMd.utils.escapeHtml, buildSourceAttrs(token.meta, 'block'));
+  };
 
-  const blockTags = ['heading_open', 'blockquote_open', 'bullet_list_open', 'ordered_list_open', 'list_item_open', 'table_open', 'hr']
+  const blockTags = [
+    'heading_open',
+    'blockquote_open',
+    'bullet_list_open',
+    'ordered_list_open',
+    'list_item_open',
+    'table_open',
+    'hr',
+  ];
 
   blockTags.forEach(tag => {
-    const originalRule = lineMd.renderer.rules[tag]
+    const originalRule = lineMd.renderer.rules[tag];
     lineMd.renderer.rules[tag] = (tokens, idx, options, env, self) => {
-      const token = tokens[idx]
-      if (token) applySourceAttrsToToken(token, 'block')
-      return originalRule ? originalRule(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
-    }
-  })
+      const token = tokens[idx];
+      if (token) applySourceAttrsToToken(token, 'block');
+      return originalRule
+        ? originalRule(tokens, idx, options, env, self)
+        : self.renderToken(tokens, idx, options);
+    };
+  });
 
-  const originalImageRule = lineMd.renderer.rules.image
+  const originalImageRule = lineMd.renderer.rules.image;
   lineMd.renderer.rules.image = (tokens, idx, options, env, self) => {
-    const token = tokens[idx]
+    const token = tokens[idx];
     if (token) {
-      applySourceAttrsToToken(token, 'block')
-      token.attrJoin('class', 'preview-collapsible-image')
+      applySourceAttrsToToken(token, 'block');
+      token.attrJoin('class', 'preview-collapsible-image');
     }
-    return originalImageRule ? originalImageRule(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
-  }
+    return originalImageRule
+      ? originalImageRule(tokens, idx, options, env, self)
+      : self.renderToken(tokens, idx, options);
+  };
 
-  const originalParagraphOpen = lineMd.renderer.rules.paragraph_open
+  const originalParagraphOpen = lineMd.renderer.rules.paragraph_open;
   lineMd.renderer.rules.paragraph_open = (tokens, idx, options, env, self) => {
-    const token = tokens[idx]
-    if (token) applySourceAttrsToToken(token, 'block')
-    return originalParagraphOpen ? originalParagraphOpen(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
-  }
+    const token = tokens[idx];
+    if (token) applySourceAttrsToToken(token, 'block');
+    return originalParagraphOpen
+      ? originalParagraphOpen(tokens, idx, options, env, self)
+      : self.renderToken(tokens, idx, options);
+  };
 
   lineMd.renderer.rules.text = (tokens, idx) => {
-    const token = tokens[idx]
-    if (!token) return ''
-    return renderAnchoredText(token.content, token.meta?.sourceStartOffset, token.meta?.sourceEndOffset, lineMd.utils.escapeHtml)
-  }
+    const token = tokens[idx];
+    if (!token) return '';
+    return renderAnchoredText(
+      token.content,
+      token.meta?.sourceStartOffset,
+      token.meta?.sourceEndOffset,
+      lineMd.utils.escapeHtml
+    );
+  };
 
   lineMd.renderer.rules.code_inline = (tokens, idx) => {
-    const token = tokens[idx]
-    if (!token) return ''
-    return `<code${buildSourceAttrs(token.meta, 'text')}>${lineMd.utils.escapeHtml(token.content)}</code>`
-  }
+    const token = tokens[idx];
+    if (!token) return '';
+    return `<code${buildSourceAttrs(token.meta, 'text')}>${lineMd.utils.escapeHtml(token.content)}</code>`;
+  };
 
-  return lineMd
+  return lineMd;
 }
 
-const lineMd = createLineNumberMd()
+const lineMd = createLineNumberMd();
 
 // 渲染 Markdown 为带行号映射的 HTML（用于滚动同步）
 export function renderMarkdownWithSourceMap(markdown: string): string {
-  if (!markdown) return ''
+  if (!markdown) return '';
 
-  const rawHtml = lineMd.render(markdown)
+  const rawHtml = lineMd.render(markdown);
 
-  return DOMPurify.sanitize(rawHtml, SANITIZE_CONFIG)
+  return DOMPurify.sanitize(rawHtml, SANITIZE_CONFIG);
 }
 
 // Markdown 内容样式（从 _prose.scss 提取的核心样式）
@@ -813,21 +1059,21 @@ const MARKDOWN_STYLES = `
 .markdown-content .custom-link-info { flex: 1; min-width: 0; } .markdown-content .custom-link-title { font-weight: 600; font-size: 1.1em; color: #2c3e50; } .markdown-content .custom-link-desc { font-size: 0.875em; color: #5a6c7d; line-height: 1.5; }
 .markdown-content .custom-photo-wall{margin:1em 0;border-radius:8px;overflow-x:auto}.markdown-content .custom-photo-wall-container{display:flex;flex-direction:column}.markdown-content .custom-photo-wall-row{display:flex;align-items:stretch;flex-wrap:nowrap}.markdown-content .custom-photo-wall-item{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;padding:5px;height:100%}.markdown-content .custom-photo-wall-item img{margin:0;display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;background:rgba(249,250,251,.8)}
 .markdown-content .katex-inline{display:inline}.markdown-content .katex-block{display:block;margin:1.5rem 0;text-align:center;overflow-x:auto;padding:0.5rem 0}.markdown-content .katex-block .katex{font-size:1.15em}.markdown-content .katex{font-size:1em;line-height:1.6}.markdown-content .katex .base{color:inherit}.markdown-content .katex .katex-mathml{position:absolute;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}.markdown-content .katex-error{color:#cc0000;font-style:italic}
-`
+`;
 
 // 渲染 Markdown 为带样式的完整 HTML（用于复制）
 export function renderMarkdownWithStyles(markdown: string): string {
-  if (!markdown) return ''
+  if (!markdown) return '';
 
-  const html = renderMarkdown(markdown)
-  const script = `;(function(){function f(t){var e=t.closest('.code-block-container');if(!e)return'';var n=e.querySelector('code');if(!n)return'';var r=Array.from(n.querySelectorAll('.line-content'));return r.map(function(o){return o.textContent||''}).join('\\n')}function c(t,e){try{if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(t).then(e)} }catch(o){}var n=document.createElement('textarea');n.value=t;n.style.position='fixed';n.style.opacity='0';document.body.appendChild(n);n.select();try{document.execCommand('copy')}catch(o){}document.body.removeChild(n);e&&e()}function copyCodeBlock(t){var e=f(t);if(!e)return;c(e,function(){var n=t.querySelector('i');if(n){n.className='ri-check-line';t.classList.add('copied')}setTimeout(function(){if(n){n.className='ri-file-copy-fill';t.classList.remove('copied')}},2000)})}function switchTab(t,e){var n=document.getElementById(t);if(!n)return;Array.from(n.querySelectorAll('.custom-tab-btn')).forEach(function(r){r.textContent===e?r.classList.add('active'):r.classList.remove('active')});Array.from(n.querySelectorAll('.custom-tab-panel')).forEach(function(r){var o=r; o.dataset&&o.dataset.tab===e?r.classList.add('active'):r.classList.remove('active')})}function toggleFold(t){var e=document.getElementById(t);if(!e)return;e.classList.toggle('open')}window.copyCodeBlock=copyCodeBlock;window.switchTab=switchTab;window.toggleFold=toggleFold})();`
+  const html = renderMarkdown(markdown);
+  const script = `;(function(){function f(t){var e=t.closest('.code-block-container');if(!e)return'';var n=e.querySelector('code');if(!n)return'';var r=Array.from(n.querySelectorAll('.line-content'));return r.map(function(o){return o.textContent||''}).join('\\n')}function c(t,e){try{if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(t).then(e)} }catch(o){}var n=document.createElement('textarea');n.value=t;n.style.position='fixed';n.style.opacity='0';document.body.appendChild(n);n.select();try{document.execCommand('copy')}catch(o){}document.body.removeChild(n);e&&e()}function copyCodeBlock(t){var e=f(t);if(!e)return;c(e,function(){var n=t.querySelector('i');if(n){n.className='ri-check-line';t.classList.add('copied')}setTimeout(function(){if(n){n.className='ri-file-copy-fill';t.classList.remove('copied')}},2000)})}function switchTab(t,e){var n=document.getElementById(t);if(!n)return;Array.from(n.querySelectorAll('.custom-tab-btn')).forEach(function(r){r.textContent===e?r.classList.add('active'):r.classList.remove('active')});Array.from(n.querySelectorAll('.custom-tab-panel')).forEach(function(r){var o=r; o.dataset&&o.dataset.tab===e?r.classList.add('active'):r.classList.remove('active')})}function toggleFold(t){var e=document.getElementById(t);if(!e)return;e.classList.toggle('open')}window.copyCodeBlock=copyCodeBlock;window.switchTab=switchTab;window.toggleFold=toggleFold})();`;
 
-  return `<style>${MARKDOWN_STYLES}</style><div class="markdown-content">${html}</div>\n<script>${script}</script>\n`
+  return `<style>${MARKDOWN_STYLES}</style><div class="markdown-content">${html}</div>\n<script>${script}</script>\n`;
 }
 
 // 计算字数
 export function countWords(markdown: string): number {
-  if (!markdown) return 0
+  if (!markdown) return 0;
 
   const text = markdown
     .replace(/```[\s\S]*?```/g, ' ')
@@ -843,172 +1089,175 @@ export function countWords(markdown: string): number {
     .replace(/<[^>]+>/g, ' ')
     .replace(/[`*_~>#\-|]/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim()
+    .trim();
 
-  const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || []
-  const englishWords = text.match(/[a-zA-Z]+/g) || []
-  return chineseChars.length + englishWords.length
+  const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || [];
+  const englishWords = text.match(/[a-zA-Z]+/g) || [];
+  return chineseChars.length + englishWords.length;
 }
 
 // 计算阅读时长（分钟）
 export function estimateReadingTime(markdown: string, wordsPerMinute = 300): number {
-  return Math.ceil(countWords(markdown) / wordsPerMinute)
+  return Math.ceil(countWords(markdown) / wordsPerMinute);
 }
 
 // 目录项接口
 export interface TocItem {
-  id: string
-  level: number
-  text: string
-  children?: TocItem[]
+  id: string;
+  level: number;
+  text: string;
+  children?: TocItem[];
 }
 
 // 提取目录
 export function extractToc(markdown: string): TocItem[] {
-  if (!markdown) return []
+  if (!markdown) return [];
 
   // 移除代码块
   let cleanedMarkdown = markdown
     .replace(/```[\s\S]*?```/g, '')
     .replace(/~~~[\s\S]*?~~~\s*/g, '')
-    .replace(/^(    |\t).+$/gm, '')
+    .replace(/^(    |\t).+$/gm, '');
 
   // 处理单行自定义块
-  cleanedMarkdown = cleanedMarkdown.replace(/^:::link\s+.*?:::$/gm, '')
-  cleanedMarkdown = cleanedMarkdown.replace(/^:::video\s+.*?:::$/gm, '')
+  cleanedMarkdown = cleanedMarkdown.replace(/^:::link\s+.*?:::$/gm, '');
+  cleanedMarkdown = cleanedMarkdown.replace(/^:::video\s+.*?:::$/gm, '');
   // 处理多行自定义块
-  cleanedMarkdown = cleanedMarkdown.replace(/^:::note[\s\S]*?^:::endnote$/gm, '')
-  cleanedMarkdown = cleanedMarkdown.replace(/^:::tabs[\s\S]*?^:::endtabs$/gm, '')
-  cleanedMarkdown = cleanedMarkdown.replace(/^:::fold[\s\S]*?^:::endfold$/gm, '')
-  cleanedMarkdown = cleanedMarkdown.replace(/^:::photo[\s\S]*?^:::endphoto$/gm, '')
+  cleanedMarkdown = cleanedMarkdown.replace(/^:::note[\s\S]*?^:::endnote$/gm, '');
+  cleanedMarkdown = cleanedMarkdown.replace(/^:::tabs[\s\S]*?^:::endtabs$/gm, '');
+  cleanedMarkdown = cleanedMarkdown.replace(/^:::fold[\s\S]*?^:::endfold$/gm, '');
+  cleanedMarkdown = cleanedMarkdown.replace(/^:::photo[\s\S]*?^:::endphoto$/gm, '');
 
-  const headings: TocItem[] = []
+  const headings: TocItem[] = [];
 
   for (const line of cleanedMarkdown.split('\n')) {
-    const match = line.match(/^(#{1,6})\s+(.+)$/)
+    const match = line.match(/^(#{1,6})\s+(.+)$/);
     if (match?.[1] && match[2]) {
       headings.push({
         id: generateHeadingId(match[2].trim()),
         level: match[1].length,
-        text: match[2].trim()
-      })
+        text: match[2].trim(),
+      });
     }
   }
 
-  return headings
+  return headings;
 }
 
 // 简单 Markdown 渲染（用于评论）
 export function renderSimpleMarkdown(markdown: string): string {
-  if (!markdown) return ''
+  if (!markdown) return '';
 
   const simpleMd = new MarkdownIt({
     html: false,
     breaks: true,
-    linkify: true
-  })
+    linkify: true,
+  });
 
-  const simpleHtml = simpleMd.render(markdown)
+  const simpleHtml = simpleMd.render(markdown);
 
   return DOMPurify.sanitize(simpleHtml, {
     ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'pre', 'ul', 'ol', 'li', 'blockquote', 'a'],
     ALLOWED_ATTR: ['href', 'title'],
-    ALLOW_DATA_ATTR: false
-  })
+    ALLOW_DATA_ATTR: false,
+  });
 }
 
 // 复制代码块功能
 export function copyCodeBlock(button: HTMLElement): void {
-  const container = button.closest('.code-block-container')
-  if (!container) return
+  const container = button.closest('.code-block-container');
+  if (!container) return;
 
-  const code = container.querySelector('code')
-  if (!code) return
+  const code = container.querySelector('code');
+  if (!code) return;
 
   // 只提取代码内容，不包含行号
-  const codeLines = Array.from(code.querySelectorAll('.line-content'))
-  const codeText = codeLines.map(line => line.textContent || '').join('\n')
+  const codeLines = Array.from(code.querySelectorAll('.line-content'));
+  const codeText = codeLines.map(line => line.textContent || '').join('\n');
 
   // 复制到剪贴板
-  navigator.clipboard.writeText(codeText).then(() => {
-    // 更新按钮状态
-    const icon = button.querySelector('i')
-    if (icon) {
-      icon.className = 'ri-check-line'
-      button.classList.add('copied')
-    }
-
-    // 2秒后恢复
-    setTimeout(() => {
+  navigator.clipboard
+    .writeText(codeText)
+    .then(() => {
+      // 更新按钮状态
+      const icon = button.querySelector('i');
       if (icon) {
-        icon.className = 'ri-file-copy-fill'
-        button.classList.remove('copied')
+        icon.className = 'ri-check-line';
+        button.classList.add('copied');
       }
-    }, 2000)
-  }).catch(err => {
-    console.error('复制失败:', err)
-  })
+
+      // 2秒后恢复
+      setTimeout(() => {
+        if (icon) {
+          icon.className = 'ri-file-copy-fill';
+          button.classList.remove('copied');
+        }
+      }, 2000);
+    })
+    .catch(err => {
+      console.error('复制失败:', err);
+    });
 }
 
 // 标签页切换功能
 export function switchTab(tabsId: string, tabName: string): void {
-  const tabsContainer = document.getElementById(tabsId)
-  if (!tabsContainer) return
+  const tabsContainer = document.getElementById(tabsId);
+  if (!tabsContainer) return;
 
   // 更新标签按钮状态
-  const buttons = tabsContainer.querySelectorAll('.custom-tab-btn')
+  const buttons = tabsContainer.querySelectorAll('.custom-tab-btn');
   buttons.forEach(btn => {
     if (btn.textContent === tabName) {
-      btn.classList.add('active')
+      btn.classList.add('active');
     } else {
-      btn.classList.remove('active')
+      btn.classList.remove('active');
     }
-  })
+  });
 
   // 更新内容面板状态
-  const panels = tabsContainer.querySelectorAll('.custom-tab-panel')
+  const panels = tabsContainer.querySelectorAll('.custom-tab-panel');
   panels.forEach(panel => {
-    const panelElement = panel as HTMLElement
+    const panelElement = panel as HTMLElement;
     if (panelElement.dataset.tab === tabName) {
-      panel.classList.add('active')
+      panel.classList.add('active');
     } else {
-      panel.classList.remove('active')
+      panel.classList.remove('active');
     }
-  })
+  });
 }
 
 // 折叠面板切换功能
 export function toggleFold(foldId: string): void {
-  const foldContainer = document.getElementById(foldId)
-  if (!foldContainer) return
+  const foldContainer = document.getElementById(foldId);
+  if (!foldContainer) return;
 
-  const isOpening = !foldContainer.classList.contains('open')
-  const contentDiv = foldContainer.querySelector('.custom-fold-content > div') as HTMLElement
+  const isOpening = !foldContainer.classList.contains('open');
+  const contentDiv = foldContainer.querySelector('.custom-fold-content > div') as HTMLElement;
 
   if (isOpening && contentDiv) {
     // 展开时：先获取内容的实际高度
-    const contentHeight = contentDiv.scrollHeight
+    const contentHeight = contentDiv.scrollHeight;
     // 设置 max-height 为内容的实际高度
-    const contentContainer = foldContainer.querySelector('.custom-fold-content') as HTMLElement
+    const contentContainer = foldContainer.querySelector('.custom-fold-content') as HTMLElement;
     if (contentContainer) {
-      contentContainer.style.maxHeight = `${contentHeight}px`
+      contentContainer.style.maxHeight = `${contentHeight}px`;
     }
   } else {
     // 折叠时：重置 max-height 为 0
-    const contentContainer = foldContainer.querySelector('.custom-fold-content') as HTMLElement
+    const contentContainer = foldContainer.querySelector('.custom-fold-content') as HTMLElement;
     if (contentContainer) {
-      contentContainer.style.maxHeight = '0px'
+      contentContainer.style.maxHeight = '0px';
     }
   }
 
-  foldContainer.classList.toggle('open')
+  foldContainer.classList.toggle('open');
 }
 
 // 挂载全局函数供内联 onclick 使用
 if (typeof window !== 'undefined') {
   (window as any).copyCodeBlock = copyCodeBlock;
   (window as any).switchTab = switchTab;
-  (window as any).toggleFold = toggleFold
+  (window as any).toggleFold = toggleFold;
 }
 
 export default {
@@ -1017,5 +1266,5 @@ export default {
   countWords,
   estimateReadingTime,
   extractToc,
-  copyCodeBlock
-}
+  copyCodeBlock,
+};
