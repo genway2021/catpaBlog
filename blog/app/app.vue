@@ -109,9 +109,6 @@ onMounted(() => {
     { passive: true }
   );
   window.addEventListener('pagehide', save);
-
-  // 异步加载 remixicon，避免阻塞首屏渲染
-  import('remixicon/fonts/remixicon.css');
 });
 
 // SEO Meta

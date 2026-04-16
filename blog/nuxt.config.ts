@@ -51,6 +51,7 @@ export default defineNuxtConfig({
   css: [
     '@/assets/css/color.css',
     '@/assets/css/global.scss',
+    'remixicon/fonts/remixicon.css',
   ],
 
   // SEO 配置
