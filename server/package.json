@@ -9,8 +9,7 @@
   },
   "dependencies": {
     "hono": "^4.0.0",
-    "@cloudflare/workers-types": "^4.20240117.0",
-    "@modelcontextprotocol/sdk": "^0.1.0"
+    "@cloudflare/workers-types": "^4.20240117.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0"
