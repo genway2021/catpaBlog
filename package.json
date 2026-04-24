@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "generate": "cd blog && npm run generate",
+    "install:blog": "cd blog && npm install",
+    "generate": "npm run install:blog && cd blog && npm run generate",
     "dev": "cd blog && npm run dev",
-    "build": "cd blog && npm run build"
+    "build": "npm run install:blog && cd blog && npm run build"
   }
 }
