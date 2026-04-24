@@ -1,5 +1,5 @@
 import { Context, Next } from 'hono';
-import { verify } from './jwt';
+import { verify } from '../utils/jwt';
 
 export interface UserPayload {
   id: number;

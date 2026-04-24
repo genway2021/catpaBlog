@@ -1,4 +1,4 @@
-import { encodeBase64Url, decodeBase64Url } from 'hono/utils/base64';
+import { encodeBase64Url, decodeBase64Url } from 'hono/utils/encode';
 
 interface Header {
   alg: string;
