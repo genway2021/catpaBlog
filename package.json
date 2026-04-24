@@ -6,7 +6,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "install:blog": "cd blog && npm install",
+    "install:blog": "cd blog && npm install --legacy-peer-deps",
     "generate": "npm run install:blog && cd blog && npm run generate",
     "dev": "cd blog && npm run dev",
     "build": "npm run install:blog && cd blog && npm run build"
