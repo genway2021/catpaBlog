@@ -20,6 +20,7 @@ bucket_name = "catpablog-uploads"
 [vars]
 NODE_ENV = "production"
 RATE_LIMIT_MAX = "500"
+MCP_SECRET = "your-mcp-secret-key"
 
 [[d1_databases]]
 binding = "DB"

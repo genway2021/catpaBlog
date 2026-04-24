@@ -21,12 +21,14 @@ import { adminRouter } from './routes/admin';
 import { feedsRouter } from './routes/feeds';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { rateLimitMiddleware } from './middleware/rateLimit';
+import { MCPServer } from './mcp/server';
 
 export interface Env {
   DB: D1Database;
   JWT_SECRET: string;
   SERVER_ALLOW_ORIGINS: string;
   RATE_LIMIT_MAX?: number;
+  MCP_SECRET: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -55,6 +57,24 @@ app.route('/api/v1/subscribe', subscribeRouter);
 app.route('/api/v1/notifications', notificationsRouter);
 app.route('/api/v1/admin', adminRouter);
 app.route('/api/v1', feedsRouter);
+
+// MCP endpoint
+const mcpServer = new MCPServer();
+mcpServer.registerTools();
+
+app.post('/mcp', async (c) => {
+  const authHeader = c.req.header('Authorization');
+  const expectedSecret = c.env.MCP_SECRET;
+
+  if (!authHeader || authHeader !== `Bearer ${expectedSecret}`) {
+    return c.json({
+      code: 401,
+      message: 'Unauthorized'
+    }, 401);
+  }
+
+  return await mcpServer.handleRequest(c.req.raw);
+});
 
 app.get('/', (c) => c.text('CatpaBlog API Running'));
 
