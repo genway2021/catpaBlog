@@ -354,7 +354,7 @@ export function useSysConfig() {
     author: '',
     author_email: '',
     author_desc: '',
-    author_avatar: '',
+    author_avatar: '/er.png',
     author_photo: '',
     icp: '',
     police_record: '',
@@ -364,14 +364,14 @@ export function useSysConfig() {
   }));
 
   const blogConfig = useState<Record<string, string>>('sysconfig-blog', () => ({
-    title: 'FlecBLOG',
-    subtitle: 'FlecBLOG',
+    title: '猫品安 | CATPA',
+    subtitle: '猫品安 | CATPA',
     slogan: '',
     description: '',
     keywords: '',
     established: '',
     favicon: '',
-    background_image: '',
+    background_image: '/background.jpg',
     screenshot: '',
     announcement: '',
     typing_texts: '',

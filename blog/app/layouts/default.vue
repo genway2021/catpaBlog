@@ -3,7 +3,7 @@ import Navbar from '@/components/layouts/navbar/index.vue';
 import Header from '@/components/layouts/header/index.vue';
 import Sidebar from '@/components/layouts/sidebar/index.vue';
 import Footer from '@/components/layouts/footer/index.vue';
-import FloatButton from '@/components/ui/FloatButton.vue';
+// import FloatButton from '@/components/ui/FloatButton.vue';
 import MomentWidget from '@/components/features/moment/MomentWidget.vue';
 
 const route = useRoute();
@@ -25,7 +25,7 @@ const showMomentWidget = computed(() => route.path == '/');
       </div>
     </main>
     <Footer />
-    <FloatButton />
+    <!-- <FloatButton /> -->
   </div>
 </template>
 

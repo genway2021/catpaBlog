@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getArticlesForWeb } from '@/composables/api/article';
+import InterestSection from '@/components/features/interest/InterestSection.vue';
 
 definePageMeta({
   typeHeader: 'home',
@@ -84,6 +85,9 @@ useSeoMeta({
 
 <template>
   <div>
+    <!-- 兴趣爱好和卡片展示 -->
+    <InterestSection />
+
     <!-- 瀑布流布局 -->
     <div v-if="homeLayout === 'waterfall'" id="post-list">
       <div v-for="article in articles" :key="article.id" class="post-items">
