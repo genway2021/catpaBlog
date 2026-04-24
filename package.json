@@ -2,6 +2,9 @@
   "name": "catpablog",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "install:blog": "cd blog && npm install",
     "generate": "npm run install:blog && cd blog && npm run generate",
