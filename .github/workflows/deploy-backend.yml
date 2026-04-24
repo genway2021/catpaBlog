@@ -31,4 +31,4 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           workingDirectory: ./server
           command: deploy
-          wranglerVersion: '4.85.0'
+          wranglerVersion: "latest"
