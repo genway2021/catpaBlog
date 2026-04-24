@@ -1,0 +1,10 @@
+{
+  "name": "catpablog",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "cd blog && npm run generate",
+    "dev": "cd blog && npm run dev",
+    "build": "cd blog && npm run build"
+  }
+}
