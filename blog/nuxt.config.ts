@@ -34,7 +34,6 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@nuxt/image',
-    '@vite-pwa/nuxt',
     [
       '@nuxtjs/critters',
       {
@@ -54,39 +53,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'https://api.catpablog.example.com/api/v1',
-    },
-  },
-
-  // PWA 配置
-  pwa: {
-    registerType: 'autoUpdate',
-    manifest: false, // 使用自定义的动态 manifest
-    workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,ico,webp,woff,woff2}'],
-      globIgnores: ['**/remixicon*.svg'],
-      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-      runtimeCaching: [
-        {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'images',
-            expiration: {
-              maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 天
-            },
-          },
-        },
-      ],
-    },
-    client: {
-      installPrompt: true,
-      periodicSyncForUpdates: 3600, // 每小时检查更新
-    },
-    devOptions: {
-      enabled: true,
-      type: 'module',
     },
   },
 

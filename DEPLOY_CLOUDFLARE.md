@@ -12,7 +12,7 @@
    - 构建命令：`npm run generate`
    - 输出目录：`.output/public`
    - 环境变量：
-     - `NODE_VERSION`: `18`
+     - `NODE_VERSION`: `20`
      - `NPM_VERSION`: `9`
 
 ## 环境变量配置
