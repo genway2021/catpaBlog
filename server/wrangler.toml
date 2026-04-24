@@ -1,5 +1,5 @@
 name = "catpablog-backend"
-main = "index.js"
+main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
 [env.production]
@@ -8,5 +8,24 @@ routes = [
   { pattern = "api.catpablog.example.com", zone_name = "example.com" }
 ]
 
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "catpablog-db"
+database_id = "your-database-id"
+
+[[env.production.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "catpablog-uploads"
+
 [vars]
 NODE_ENV = "production"
+RATE_LIMIT_MAX = "500"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "catpablog-db"
+database_id = "your-database-id"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "catpablog-uploads"
