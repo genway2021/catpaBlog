@@ -50,27 +50,6 @@ export default defineNuxtConfig({
   // CSS 配置
   css: ['@/assets/css/color.css', '@/assets/css/global.scss', 'remixicon/fonts/remixicon.css'],
 
-  // SEO 配置
-  site: {
-    url: process.env.NUXT_SITE_URL || 'https://catpablog.example.com',
-    defaultLocale: 'zh-CN',
-  },
-
-  // Sitemap 配置
-  sitemap: {
-    strictNuxtContentPaths: true,
-  },
-
-  // Robots 配置
-  robots: {
-    allow: '/',
-  },
-
-  // 禁用 OG Image 自动生成
-  ogImage: {
-    enabled: false,
-  },
-
   // 运行时配置
   runtimeConfig: {
     public: {
@@ -182,14 +161,5 @@ export default defineNuxtConfig({
     options: {
       scrollBehaviorType: 'smooth',
     },
-  },
-
-  // 排除不应出现在 sitemap 中的路径
-  routeRules: {
-    '/oauth/**': { sitemap: false },
-    '/profile': { sitemap: false },
-    '/notifications': { sitemap: false },
-    '/feedback': { sitemap: false },
-    '/subscribe': { sitemap: false },
   },
 });
