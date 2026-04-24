@@ -34,7 +34,6 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@nuxt/image',
-    '@nuxtjs/seo',
     '@vite-pwa/nuxt',
     [
       '@nuxtjs/critters',
