@@ -53,7 +53,7 @@ export default defineNuxtConfig({
 
   // SEO 配置
   site: {
-    url: '',
+    url: process.env.NUXT_SITE_URL || 'https://catpablog.example.com',
     defaultLocale: 'zh-CN',
   },
 
@@ -75,7 +75,7 @@ export default defineNuxtConfig({
   // 运行时配置
   runtimeConfig: {
     public: {
-      apiUrl: '',
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'https://api.catpablog.example.com/api/v1',
     },
   },
 
